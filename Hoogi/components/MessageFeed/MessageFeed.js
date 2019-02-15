@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, ScrollView, Image } from 'react-native';
 import { Subheading, Caption, Modal, TextInput, Portal, Button, Title, Card, IconButton, FAB, Appbar } from 'react-native-paper';
 
 const feedMessagesInit = [
@@ -21,6 +21,50 @@ const feedMessagesInit = [
     },
     {
         id: 'd4a56sd4asd4wq4dggga',
+        Datetime: new Date().toLocaleString(),
+        message: "very very long, pass pass its a come. i can run very fast and score many goals",
+        Photos: []
+    },
+    {
+        id: 'd4a56sd4asd4wq4sas',
+        Datetime: new Date().toLocaleString(),
+        message: "agado do do do",
+        Photos: ['https://picsum.photos/700']
+    }, {
+        id: 'd4a56sd4asd4wq4qqrere',
+        Datetime: new Date().toLocaleString(),
+        message: "Ish Katan",
+        Photos: []
+    }, {
+        id: 'd4a56sd4asd4wq4dgggtrt',
+        Datetime: new Date().toLocaleString(),
+        message: "Ose Cafe",
+        Photos: []
+    },
+    {
+        id: 'd4a56sd4asd4wq4dgggarer',
+        Datetime: new Date().toLocaleString(),
+        message: "very very long, pass pass its a come. i can run very fast and score many goals",
+        Photos: []
+    },
+    {
+        id: 'd4a56sd4asd4wq4dyty',
+        Datetime: new Date().toLocaleString(),
+        message: "agado do do do",
+        Photos: ['https://picsum.photos/700']
+    }, {
+        id: 'd4a56sd4asd4wq4qqqqeref',
+        Datetime: new Date().toLocaleString(),
+        message: "Ish Katan",
+        Photos: []
+    }, {
+        id: 'd4a56sd4asd4wq4dggguyr',
+        Datetime: new Date().toLocaleString(),
+        message: "Ose Cafe",
+        Photos: []
+    },
+    {
+        id: 'd4a56sd4asd4wq4dgggau6tr',
         Datetime: new Date().toLocaleString(),
         message: "very very long, pass pass its a come. i can run very fast and score many goals",
         Photos: []
@@ -90,10 +134,7 @@ export default class MessageFeed extends React.Component {
     render() {
         const { feedMessages, newMessageText, isAddNewMessageMode } = this.state
         return (
-            <View>
-                <Appbar>
-                    <Appbar.Content title="הודעות קבוצה חרטא ברטה" ></Appbar.Content>
-                </Appbar>
+            <ScrollView>
                 <View style={styles.container}>
                     <View style={styles.messageList}>
                         {feedMessages.map(message => {
@@ -143,7 +184,7 @@ export default class MessageFeed extends React.Component {
                         </Modal>
                     </Portal>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }
