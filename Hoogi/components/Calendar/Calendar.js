@@ -81,7 +81,7 @@ export default class CalendarView extends React.Component {
       };
     }
 
-    handleDayPress(day) {
+    handleDayPress = (day) => {
         this.setState({dayAgenda: instances.filter(instance => instance.date === day.dateString)});
     }
   
@@ -94,7 +94,7 @@ export default class CalendarView extends React.Component {
                     hideArrows={true}
                     markedDates={markedDatesObject}
                     markingType={'multi-dot'}
-                    onDayPress={(day) => this.handleDayPress(day)}/>
+                    onDayPress={this.handleDayPress}/>
                 <DayAgenda dayAgenda={this.state.dayAgenda}/>
             </View>
         );

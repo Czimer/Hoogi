@@ -4,24 +4,25 @@ import { Surface, Text, Button } from 'react-native-paper';
 
 export default class DayAgenda extends React.Component {
     constructor(props) {
-      super(props);    }
+        super(props);
 
-    state = {
-        dayAgenda: []   
+        this.state = {
+            dayAgenda: []
+        }
     }
 
     static getDerivedStateFromProps(props, state) {
-        return { 
-            dayAgenda : props.dayAgenda 
+        return {
+            dayAgenda: props.dayAgenda
         };
     }
-  
+
     render() {
 
         return (
             <ScrollView>
-                {this.state.dayAgenda.map((hoog, i) =>  
-                    <Surface key={i} style={[styles.surface, {borderRightColor: hoog.color}]}>
+                {this.state.dayAgenda.map((hoog, i) =>
+                    <Surface key={i} style={[styles.surface, { borderRightColor: hoog.color }]}>
                         <View style={styles.line}>
                             <Text style={styles.groupName}>{hoog.name}</Text>
                         </View>
@@ -35,7 +36,7 @@ export default class DayAgenda extends React.Component {
     }
 }
 
-  const styles = {
+const styles = {
     surface: {
         marginTop: 15,
         marginLeft: 20,
@@ -49,12 +50,12 @@ export default class DayAgenda extends React.Component {
         flex: 1,
         flexDirection: 'row'
     },
-    hours : {
+    hours: {
         textAlign: 'left',
         fontSize: 14,
         marginTop: 5
     },
-    location : {
+    location: {
         textAlign: 'left',
         fontSize: 14,
         marginLeft: 5,
@@ -65,7 +66,7 @@ export default class DayAgenda extends React.Component {
         borderRadius: 30,
         height: 50,
         width: 50,
-        marginTop: 5 
+        marginTop: 5
     },
     groupName: {
         textAlign: 'left',
@@ -77,4 +78,4 @@ export default class DayAgenda extends React.Component {
     text: {
         textAlign: 'left'
     }
-  }
+}
