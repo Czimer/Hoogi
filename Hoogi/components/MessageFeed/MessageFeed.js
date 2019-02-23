@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, ScrollView, Image } from 'react-native';
 import { Subheading, Caption, Modal, TextInput, Portal, Button, Title, Card, IconButton, FAB, Appbar } from 'react-native-paper';
 
 const feedMessagesInit = [
@@ -90,10 +91,7 @@ export default class MessageFeed extends React.Component {
     render() {
         const { feedMessages, newMessageText, isAddNewMessageMode } = this.state
         return (
-            <View>
-                <Appbar>
-                    <Appbar.Content title="הודעות קבוצה חרטא ברטה" ></Appbar.Content>
-                </Appbar>
+            <ScrollView>
                 <View style={styles.container}>
                     <View style={styles.messageList}>
                         {feedMessages.map(message => {
@@ -143,7 +141,7 @@ export default class MessageFeed extends React.Component {
                         </Modal>
                     </Portal>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }
