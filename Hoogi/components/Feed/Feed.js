@@ -2,13 +2,15 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Image } from 'react-native';
 import { Subheading, Caption, Modal, TextInput, Portal, Button, Title, Card, IconButton, FAB, Appbar } from 'react-native-paper';
+import { ImagePicker } from 'expo';
+import Message from './Message';
 
 const feedMessagesInit = [
     {
         id: 'd4a56sd4asd4wq4d',
         Datetime: new Date().toLocaleString(),
         message: "agado do do do",
-        Photos: ['https://picsum.photos/700']
+        Photos: []
     }, {
         id: 'd4a56sd4asd4wq4qqqq',
         Datetime: new Date().toLocaleString(),
@@ -28,13 +30,16 @@ const feedMessagesInit = [
     }
 ]
 
-export default class MessageFeed extends React.Component {
+let index = 4
+
+export default class Feed extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             feedMessages: feedMessagesInit,
             newMessageText: '',
-            isAddNewMessageMode: false
+            isAddNewMessageMode: false,
+            newPhotos: []
         }
     }
 
@@ -69,42 +74,45 @@ export default class MessageFeed extends React.Component {
         //  fetch(`path/to/server/`,props).then(()=>{
         //
         //}).catch((err)=>{ // Handle error})
-        const { newMessageText } = this.state
+        const { newMessageText, newPhotos } = this.state
 
         if (newMessageText === '') return
 
         const message = {
-            id: 'dsadsadsadsad',
+            id: index++,
             Datetime: new Date().toLocaleString(),
             message: newMessageText,
-            Photos: []
+            Photos: newPhotos
         }
+
         this.setState(prevState => ({
             feedMessages: [...prevState.feedMessages, message]
         }), this.onCloseMessageMode)
     }
+
+    openGallery = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            base64: true
+        });
+
+        this.setState(prevState => ({
+            newPhotos: [...prevState.newPhotos, result.base64]
+        }))
+    };
 
     onCloseMessageMode = () => {
         this.setState({ isAddNewMessageMode: false, newMessageText: '' })
     }
 
     render() {
-        const { feedMessages, newMessageText, isAddNewMessageMode } = this.state
+        const { feedMessages, newMessageText, isAddNewMessageMode, newPhotos } = this.state
         return (
             <ScrollView>
                 <View style={styles.container}>
                     <View style={styles.messageList}>
                         {feedMessages.map(message => {
                             return (
-                                <Card key={message.id} style={styles.card}>
-                                    <Subheading>{message.message}</Subheading>
-                                    {/* TODO: find a way to display images */}
-                                    {message.Photos.length > 0 &&
-                                        message.Photos.map(photo => {
-                                            <Image src={photo} />
-                                        })}
-                                    <Caption>{message.Datetime}</Caption>
-                                </Card>)
+                                <Message message={message}></Message>)
                         })}
                     </View>
                     {/*TODO: this is a reminder for me to check, if this is a parentview then Fab component should not be appeared */}
@@ -119,11 +127,10 @@ export default class MessageFeed extends React.Component {
                             <Card>
                                 <Card.Content>
                                     <Title style={{ textAlign: 'right' }}>הודעה חדשה</Title>
-                                    {/* TODO: write a logic to upload photos */}
                                     <IconButton
                                         icon="add-a-photo"
                                         size={20}
-                                        onPress={() => console.log('Pressed')}
+                                        onPress={this.openGallery}
                                     />
                                     <TextInput
                                         label="הודעה חדשה"
@@ -132,6 +139,9 @@ export default class MessageFeed extends React.Component {
                                         numberOfLines={4}
                                         onChangeText={this.onNewMessageChange}
                                     />
+                                    {newPhotos.length > 0 &&
+                                        <Subheading>{`נוספו ${newPhotos.length} תמונות`}</Subheading>
+                                    }
                                 </Card.Content>
                                 <Card.Actions>
                                     <Button mode="contained" onPress={this.sendNewMessage}>שלח</Button>

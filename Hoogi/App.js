@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Provider as PaperProvider, BottomNavigation } from 'react-native-paper'
-import MessageFeed from './components/MessageFeed/MessageFeed'
+import Feed from './components/Feed/Feed'
 import Calendar from './components/Calendar/Calendar'
 
 const CalendarRoute = () => <Calendar/>;
-const FeedRoute = () => <MessageFeed/>;
+const FeedRoute = () => <Feed/>;
 
 export default class App extends React.Component {
   state = {
