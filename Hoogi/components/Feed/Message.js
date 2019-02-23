@@ -3,11 +3,11 @@ import React from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { Subheading, Caption, Card } from 'react-native-paper';
 
-export default class Message extends React.Component {
+export default class Message extends React.PureComponent {
     render() {
         const { message } = this.props
         return (
-            <Card key={message.id} style={styles.card}>
+            <Card style={styles.card}>
                 <Subheading>{message.message}</Subheading>
                 <Caption>{message.Datetime}</Caption>
                 {/* for some reason its not working */}

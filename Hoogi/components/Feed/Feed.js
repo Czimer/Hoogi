@@ -4,6 +4,7 @@ import { StyleSheet, View, ScrollView, Image } from 'react-native';
 import { Subheading, Caption, Modal, TextInput, Portal, Button, Title, Card, IconButton, FAB, Appbar } from 'react-native-paper';
 import { ImagePicker } from 'expo';
 import Message from './Message';
+import NewMessage from "./NewMessage";
 
 const feedMessagesInit = [
     {
@@ -37,9 +38,7 @@ export default class Feed extends React.Component {
         super(props)
         this.state = {
             feedMessages: feedMessagesInit,
-            newMessageText: '',
-            isAddNewMessageMode: false,
-            newPhotos: []
+            isAddNewMessageMode: false
         }
     }
 
@@ -60,11 +59,11 @@ export default class Feed extends React.Component {
         this.setState({ isAddNewMessageMode: true })
     }
 
-    onNewMessageChange = (text) => {
-        this.setState({ newMessageText: text })
+    onCloseMessageMode = () => {
+        this.setState({ isAddNewMessageMode: false})
     }
 
-    sendNewMessage = () => {
+    sendNewMessage = (message,Photos) => {
         // send it to some api
         //  const {groupId} = this.props
         // const props = {
@@ -74,82 +73,33 @@ export default class Feed extends React.Component {
         //  fetch(`path/to/server/`,props).then(()=>{
         //
         //}).catch((err)=>{ // Handle error})
-        const { newMessageText, newPhotos } = this.state
 
-        if (newMessageText === '') return
-
-        const message = {
+        const newMessage = {
             id: index++,
             Datetime: new Date().toLocaleString(),
-            message: newMessageText,
-            Photos: newPhotos
+            message,
+            Photos
         }
 
         this.setState(prevState => ({
-            feedMessages: [...prevState.feedMessages, message]
+            feedMessages: [...prevState.feedMessages, newMessage]
         }), this.onCloseMessageMode)
     }
 
-    openGallery = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            base64: true
-        });
-
-        this.setState(prevState => ({
-            newPhotos: [...prevState.newPhotos, result.base64]
-        }))
-    };
-
-    onCloseMessageMode = () => {
-        this.setState({ isAddNewMessageMode: false, newMessageText: '' })
-    }
-
     render() {
-        const { feedMessages, newMessageText, isAddNewMessageMode, newPhotos } = this.state
+        const { feedMessages, isAddNewMessageMode } = this.state
         return (
             <ScrollView>
                 <View style={styles.container}>
                     <View style={styles.messageList}>
                         {feedMessages.map(message => {
                             return (
-                                <Message message={message}></Message>)
+                                <Message key={message.id} message={message}></Message>)
                         })}
                     </View>
                     {/*TODO: this is a reminder for me to check, if this is a parentview then Fab component should not be appeared */}
-                    {true &&
-                        <FAB
-                            style={styles.fab}
-                            icon="add"
-                            onPress={this.onAddMessageMode}
-                        />}
-                    <Portal>
-                        <Modal visible={isAddNewMessageMode} onDismiss={this.onCloseMessageMode} contentContainerStyle={styles.modal}>
-                            <Card>
-                                <Card.Content>
-                                    <Title style={{ textAlign: 'right' }}>הודעה חדשה</Title>
-                                    <IconButton
-                                        icon="add-a-photo"
-                                        size={20}
-                                        onPress={this.openGallery}
-                                    />
-                                    <TextInput
-                                        label="הודעה חדשה"
-                                        value={newMessageText}
-                                        multiline
-                                        numberOfLines={4}
-                                        onChangeText={this.onNewMessageChange}
-                                    />
-                                    {newPhotos.length > 0 &&
-                                        <Subheading>{`נוספו ${newPhotos.length} תמונות`}</Subheading>
-                                    }
-                                </Card.Content>
-                                <Card.Actions>
-                                    <Button mode="contained" onPress={this.sendNewMessage}>שלח</Button>
-                                    <Button style={{ marginLeft: 10 }} onPress={this.onCloseMessageMode}>בטל</Button>
-                                </Card.Actions>
-                            </Card>
-                        </Modal>
-                    </Portal>
+                    {true && <FAB icon="add" onPress={this.onAddMessageMode} style={styles.fab} />}
+                    <NewMessage isOpen={isAddNewMessageMode} onClose={this.onCloseMessageMode} onAccept={this.sendNewMessage}  ></NewMessage>
                 </View>
             </ScrollView>
         );
@@ -169,22 +119,5 @@ const styles = StyleSheet.create({
         margin: 16,
         right: 0,
         bottom: 0,
-    },
-    card: {
-        minHeight: 50,
-        backgroundColor: '#E0E0E0',
-        margin: 10
-    },
-    bottom: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-    },
-    modal: {
-        backgroundColor: '#fff',
-    },
-    modalHeader: {
-        justifyContent: 'center',
     }
 });
