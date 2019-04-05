@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { StyleSheet, View, ScrollView, Image } from 'react-native';
-import { Subheading, Caption, Modal, TextInput, Portal, Button, Title, Card, IconButton, FAB, Appbar } from 'react-native-paper';
-import { ImagePicker } from 'expo';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { FAB } from 'react-native-paper';
 import Message from './Message';
 import NewMessage from "./NewMessage";
 

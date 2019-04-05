@@ -1,8 +1,8 @@
+import { Permissions } from 'expo';
+import { ImageBrowser } from 'expo-multiple-imagepicker';
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Subheading, Modal, TextInput, Portal, Button, Title, Card, IconButton } from 'react-native-paper';
-import { ImageBrowser } from 'expo-multiple-imagepicker';
-import { Permissions } from 'expo'
+import { Button, Card, IconButton, Modal, Portal, Subheading, TextInput, Title } from 'react-native-paper';
 
 export default class Message extends React.Component {
     constructor(props) {

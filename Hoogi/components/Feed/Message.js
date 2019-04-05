@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { StyleSheet, Image } from 'react-native';
-import { Subheading, Caption, Card } from 'react-native-paper';
+import { Image, StyleSheet } from 'react-native';
+import { Caption, Card, Subheading } from 'react-native-paper';
 
 export default class Message extends React.PureComponent {
     render() {
