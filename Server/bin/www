@@ -7,7 +7,6 @@
 var app = require('../app');
 var debug = require('debug')('init:server');
 var http = require('http');
-var DataAccess = require('../dal/DataAccess')
 /**
  * Get port from environment and store in Express.
  */
@@ -87,6 +86,5 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  DataAccess.createConnection()
   debug('Listening on ' + bind);
 }

@@ -1,12 +1,12 @@
 const { Pool } = require('pg')
 const config = require('../appConfig')
 
-let pool;
+let pool = new Pool({connectionString: config.ConnectionString});
 
 class DataAccess {
 
   static createConnection(){
-    pool = new Pool({connectionString: config.ConnectionString})
+   // pool = 
   }
 
   static async executeQuery(query, params = []) {
