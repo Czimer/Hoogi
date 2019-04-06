@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text, TextInput, Button } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
+import { Button } from "react-native-paper";
 
 
 export default class Home extends React.Component {

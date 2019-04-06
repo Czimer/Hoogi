@@ -1,7 +1,6 @@
 import React from 'react';
-import { Text, TextInput, Button } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
-import { NavigationActions } from 'react-navigation'
+import { Button, Text, TextInput } from "react-native-paper";
 
 export default class SignIn extends React.Component {
     constructor(props) {
