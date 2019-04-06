@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FAB } from 'react-native-paper';
 import Message from './Message';
 import NewMessage from "./NewMessage";
@@ -59,10 +59,10 @@ export default class Feed extends React.Component {
     }
 
     onCloseMessageMode = () => {
-        this.setState({ isAddNewMessageMode: false})
+        this.setState({ isAddNewMessageMode: false })
     }
 
-    sendNewMessage = (message,Photos) => {
+    sendNewMessage = (message, Photos) => {
         // send it to some api
         //  const {groupId} = this.props
         // const props = {
@@ -88,19 +88,17 @@ export default class Feed extends React.Component {
     render() {
         const { feedMessages, isAddNewMessageMode } = this.state
         return (
-            <ScrollView>
-                <View style={styles.container}>
-                    <View style={styles.messageList}>
-                        {feedMessages.map(message => {
-                            return (
-                                <Message key={message.id} message={message}></Message>)
-                        })}
-                    </View>
-                    {/*TODO: this is a reminder for me to check, if this is a parentview then Fab component should not be appeared */}
-                    {true && <FAB icon="add" onPress={this.onAddMessageMode} style={styles.fab} />}
-                    <NewMessage isOpen={isAddNewMessageMode} onClose={this.onCloseMessageMode} onAccept={this.sendNewMessage}  ></NewMessage>
+            <View style={styles.container}>
+                <View style={styles.messageList}>
+                    {feedMessages.map(message => {
+                        return (
+                            <Message key={message.id} message={message}></Message>)
+                    })}
                 </View>
-            </ScrollView>
+                {/*TODO: this is a reminder for me to check, if this is a parentview then Fab component should not be appeared */}
+                {true && <FAB icon="add" onPress={this.onAddMessageMode} style={styles.fab} />}
+                <NewMessage isOpen={isAddNewMessageMode} onClose={this.onCloseMessageMode} onAccept={this.sendNewMessage}  ></NewMessage>
+            </View>
         );
     }
 }
