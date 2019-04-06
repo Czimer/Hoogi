@@ -3,7 +3,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Provider as PaperProvider, BottomNavigation } from 'react-native-paper'
 import Feed from './components/Feed/Feed'
 import Calendar from './components/Calendar/Calendar'
-
+import SignIn from './components/SignIn/SignIn';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import AppContainer from './AppContainer';
 const CalendarRoute = () => <Calendar/>;
 const FeedRoute = () => <Feed/>;
 
@@ -27,11 +29,7 @@ export default class App extends React.Component {
   render() {
     return (
       <PaperProvider>
-        <BottomNavigation
-          navigationState={this.state}
-          onIndexChange={this.handleIndexChange}
-          renderScene={this.renderScene}
-        />
+        <AppContainer></AppContainer>
       </PaperProvider>
     );
   }

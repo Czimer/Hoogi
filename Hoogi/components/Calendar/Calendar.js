@@ -70,7 +70,6 @@ const uniqueDates = [...new Set([].concat.apply([], children.map(child => child.
 
 const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : children.filter( y => y.dates.includes(x))}}));
 const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: d.value, selected: true, marked: true})));
-console.log(markedDatesObject);
 
 export default class CalendarView extends React.Component {
     constructor(props) {
