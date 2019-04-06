@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import GraphQLClient from 'graphql-js-client';
+import GenericList from '../../genericComponents/genericList/GenericList'
 // import types from '../../../types.js';
 
 
@@ -45,7 +46,7 @@ export default class GroupsList extends Component{
     render(){
         const {tableData, tableHead} = this.state;
         return(
-          <List tableHead={tableHead} tableData={tableData} listType="groups"/>
+          <GenericList tableHead={tableHead} tableData={tableData} listType="groups"/>
         );
     }
 }

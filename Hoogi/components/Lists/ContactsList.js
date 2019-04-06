@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import axios from 'axios'
+import GenericList from '../../genericComponents/genericList/GenericList'
+
 
 export default class ContactsList extends Component{
     constructor(props){
@@ -17,10 +20,18 @@ export default class ContactsList extends Component{
         };    
     };
 
+    getData = () =>{
+        axios.get('/ContactsList').then(res =>{
+            console.log(res)
+        }).catch(error => {    
+            console.log(error)
+        })
+    }
+
     render(){
         const {tableData, tableHead} = this.state;
         return(
-          <List tableHead={tableHead} tableData={tableData} listType="contacts"/>
+          <GenericList tableHead={tableHead} tableData={tableData} listType="contacts"/>
         );
     }
 }

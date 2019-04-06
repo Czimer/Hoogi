@@ -6,16 +6,8 @@ import {CheckBox} from 'react-native-elements'
 import { NativeRouter, Route, Link } from "react-router-native";
 import GroupsList from "../Lists/GroupsList"
 import { StackNavigator } from "react-navigation";
+import axios from 'axios';
 
-// export const Routes = StackNavigator({   
-//     GroupsList: { screen: GroupsList },
-//   });
-
-//   const AppNavigator = createStackNavigator({
-//     GroupsList: {
-//       screen: GroupsList
-//     }
-//   });
 
 export default class HoogSearch extends Component{
     constructor(props){
@@ -27,18 +19,32 @@ export default class HoogSearch extends Component{
             locationChkB:false,
             tagSearch: "",
             gender:"נקבה",
-            ages:{
-                min:0,
-                max:20
-            }
+            minAge:1,
+            maxAge:20,
+            location: ""
         };    
     };
-
       
    
     onSearchButtonPress = (event) =>{
-        console.log(this.props) 
-        console.log(this.props.navigation) 
+        let searchParams = {};
+
+        this.state.tagSearchChkB ? searchParams.tags = this.state.tagSearch : '';
+        this.state.genderChkB ? searchParams.gender = this.state.gender : '';
+        this.state.ageRangeChkB ? searchParams.minAge = this.state.minAge : '';
+        this.state.ageRangeChkB ? searchParams.maxAge = this.state.maxAge : '';
+        this.state.locationChkB ? searchParams.location = this.state.location : '';
+        if(searchParams === {}){
+            axios.get('/hoogs').then(response =>{}).catch(error => {console.log(error)});
+        }
+        else{
+            axios.get('/hoogs', {params:searchParams}).then(response =>{
+                // do something with the response
+            }).catch(error => {    
+                console.log(error)
+            });
+        } 
+
         this.props.navigation.navigate('SearchResults');
     }
 
@@ -46,27 +52,23 @@ export default class HoogSearch extends Component{
         return(
                 <View style={styles.container}>
                     <Text style={styles.head}>חיפוש חוגים</Text>
-                    <CheckBox id="Tags" title="תגית" style={styles.checkbox} checked={this.state.tagSearchChkB} onPress={() => this.setState({tagSearchChkB : !this.state.tagSearchChkB})}/>
+                    <CheckBox id="Tags" title="תגית" style={styles.checkbox} checked={this.state.tagSearchChkB} onPress={() => this.setState(prevState => ({tagSearchChkB : !prevState.tagSearchChkB}))}/>
                         <TextInput id="tagSearch"   onChangeText={(text) => this.setState({tagSearch:text})}/>
-                    <CheckBox id="Gender" title="מין" style={styles.checkbox} checked={this.state.genderChkB} onPress={() => this.setState({genderChkB: !this.state.genderChkB})}/>
+                    <CheckBox id="Gender" title="מין" style={styles.checkbox} checked={this.state.genderChkB} onPress={() => this.setState(prevState => ({genderChkB: !prevState.genderChkB}))}/>
                         <Picker
                             selectedValue={this.state.gender}
                             style={{height: 50, width: 100}}
                             onValueChange={(itemValue, itemIndex) =>
-                                this.setState({gender: itemValue})
-                            }>
+                                this.setState({gender: itemValue})}>
                             <Picker.Item label="זכר" value="Male" />
                             <Picker.Item label="נקבה" value="Female" />
                         </Picker>
-                    <CheckBox id="Ages" title="טווח גילאים" style={styles.checkbox} checked={this.state.ageRangeChkB} onPress={() => this.setState({ageRangeChkB: !this.state.ageRangeChkB})}/>
+                    <CheckBox id="Ages" title="טווח גילאים" style={styles.checkbox} checked={this.state.ageRangeChkB} onPress={() => this.setState(prevState => ({ageRangeChkB: !prevState.ageRangeChkB}))}/>
                         <NumericInput initValue={this.state.ages.max} maxValue={99}
-                            onChange={value => this.setState({ages:{max:value, min: this.state.ages.min}})} />
+                            onChange={value => this.setState({maxAge:value})} />
                         <NumericInput initValue={this.state.ages.min} minValue={1}
-                            onChange={value => {this.setState({ages:{min:value, max: this.state.ages.max}});}} />
-                    <CheckBox id="location" title="מיקום"
-                        checked={this.state.locationChkB}
-                        onPress={() => { this.setState({ locationChkB: !this.state.locationChkB});}}
-                    />
+                            onChange={value => {this.setState({minAge:value});}} />
+                    <CheckBox id="location" title="מיקום" checked={this.state.locationChkB} onPress={() => this.setState(prevState => ({ locationChkB: !prevState.locationChkB}))}/>
                     <Button onPress={this.onSearchButtonPress}>חפש</Button>
                    
                 </View>

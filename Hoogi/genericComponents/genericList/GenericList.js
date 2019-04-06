@@ -4,7 +4,7 @@ import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-ta
 import { DataTable, FAB, Portal } from 'react-native-paper';
 
 
-export default class List extends Component{
+export default class GenericList extends Component{
     constructor(props){
         super(props);
         this.state = {          
