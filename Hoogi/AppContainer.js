@@ -7,7 +7,7 @@ import Feed from "./components/Feed/Feed";
 import AuthLoadingScreen from "./AuthLoadingScreen";
 import HoogSearch from './components/Search/HoogSearch';
 import SearchResults from './components/Search/SearchResults';
-
+import SignUpView from "./components/SignUp/SignUpView";
 
 const AppStack = createStackNavigator(
     {
@@ -24,7 +24,8 @@ const AppStack = createStackNavigator(
 
 const AuthStack = createStackNavigator(
     {
-        SignIn: SignIn
+        SignIn: SignIn,
+        SignUp: SignUpView
     },
     {
         initialRouteName: 'SignIn',

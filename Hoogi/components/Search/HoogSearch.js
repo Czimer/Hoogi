@@ -73,7 +73,7 @@ export default class HoogSearch extends Component{
                         <NumericInput initValue={this.state.minAge} minValue={1}
                             onChange={value => {this.setState({minAge:value});}} />
                     <CheckBox id="location" title="מיקום" checked={this.state.locationChkB} onPress={() => this.setState(prevState => ({ locationChkB: !prevState.locationChkB}))}/>
-                    <Button onPress={this.onSearchButtonPress}>חפש</Button>
+                    <Button mode='contained' onPress={this.onSearchButtonPress}>חפש</Button>
                    
                 </View>
         );
