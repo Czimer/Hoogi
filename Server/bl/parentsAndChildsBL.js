@@ -41,7 +41,8 @@ class parentAndChildBL {
         PARENT.PARENT_PHONE, CHILD.CHILD_PHONE, PARENT.GENDER AS PARENT_GENDER, CHILD.GENDER AS CHILD_GENDER,
         CHILD.BIRTH_DATE, CHILD.CHILD_ID
         FROM public.children CHILD, public.parents PARENT
-        LEFT JOIN public.groups GRP ON (????)
+        INNER JOIN public.participants PARTS ON (PARTS.CHILD_ID == CHILD.ID)
+        LEFT JOIN public.groups GRP ON (GRP.ID == PARTS.GROUP_ID))
         WHERE CHILD.CHILD_ID IN PARENT.CHILDREN_ARRAY`; // TODO - CHECK HOW TO RELATE GROUPS TO CHILDREN
 
         try{
