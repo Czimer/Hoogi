@@ -1,27 +1,5 @@
 import React, { Component } from 'react';
-import GraphQLClient from 'graphql-js-client';
 import GenericList from '../../genericComponents/genericList/GenericList'
-// import types from '../../../types.js';
-
-
-
-// const client = new GraphQLClient(types, {
-//     url: 'https://graphql.myshopify.com/api/graphql',
-//     fetcherOptions: {
-//       headers: `Authorization: Basic aGV5LXRoZXJlLWZyZWluZCA=`
-//     }
-//   });
-
-//   const query = client.query((root) => {
-//     root.add('AllGroups', (group) => {
-//       group.add('hoogId');
-//       group.add('minAge');
-//       group.add('maxAge');
-//       group.add('gender');
-//       group.add('groupTimes');
-//       group.add('maxParticipants');
-//     });
-//   });
 
 export default class GroupsList extends Component{
     constructor(props){

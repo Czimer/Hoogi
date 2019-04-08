@@ -1,17 +1,21 @@
 
 import { createSwitchNavigator, createStackNavigator, createAppContainer } from 'react-navigation';
-
 import SignIn from "./components/SignIn/SignIn";
 import Home from "./components/Home/Home";
 import CalendarView from "./components/Calendar/Calendar";
 import Feed from "./components/Feed/Feed";
 import AuthLoadingScreen from "./AuthLoadingScreen";
+import HoogSearch from './components/Search/HoogSearch';
+import SearchResults from './components/Search/SearchResults';
+
 
 const AppStack = createStackNavigator(
     {
         Home: Home,
         Calander: CalendarView,
-        Feed: Feed
+        Feed: Feed,
+        HoogSearch: HoogSearch,
+        SearchResults: SearchResults
     },
     {
         initialRouteName: 'Home',

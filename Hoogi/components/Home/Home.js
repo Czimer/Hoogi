@@ -13,11 +13,16 @@ export default class Home extends React.Component {
         this.props.navigation.navigate('Calander')
     }
 
+    navigateToSearch = () =>{
+        this.props.navigation.navigate('HoogSearch')
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <Button mode="contained" onPress={this.navigateToCalander}>לוח שנה</Button>
                 <Button mode="contained" onPress={this.navigateToFeed}>לוח הודעות</Button>
+                <Button mode="contained" onPress={this.navigateToSearch}>חיפוש</Button>
             </View>
   
         );

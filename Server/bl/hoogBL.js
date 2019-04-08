@@ -3,8 +3,8 @@
 
 class hoogBL {
     static async GetAllHoogs(){
-        const query = `SELECT id, manager_id, name, address, tags, description
-        FROM public.hoogs`
+        const query = `select * from groups
+        left join hoogs on hoogs.id = groups.hoog_id`;
 
         try{
             const results = await DataAccess.executeQuery(query);
@@ -16,12 +16,14 @@ class hoogBL {
         }
     }
 
-
     static async GetHoogsByParams(req, res, next){
         const params = req.params;
 
-        var query = `select * from groups
-                    left join hoogs on hoogs.id = groups.hoog_id`;
+        var query = `select hoogs.name, hoogs.id, grp.id as 'groupId', grp.min_age || '-' || grp.max_age as 'ageRange',
+                    hoogs.address as location, mng.first_name || ' ' || mng.last_name as 'guidName',
+                    mng.phone as 'guidPhone', grp.gender, hoogs.tags, 
+                     from public.groups grp
+                    left join public.hoogs hoogs on hoogs.id = groups.hoog_id`;
 
         var whereConditions = ` where `;
             whereConditions += params.gender ? `gender like ` + params.gender + ' or ' : ``;
@@ -41,7 +43,5 @@ class hoogBL {
             throw err
         }
     }
-
 }
-
 module.exports = hoogBL;

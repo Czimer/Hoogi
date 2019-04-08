@@ -11,7 +11,7 @@ router.get('/', async function(req, res, next) {
 
 /* GET groups with id of manager */
 router.get('/:params', async function(req, res, next){
-    const filteredGroupsByManager = await hoogsBL.GetAllGroupsOfSpecificManager(req, res, next);
+    const filteredGroupsByManager = await groupBL.GetAllGroupsOfSpecificManager(req, res, next);
     res.send(filteredGroupsByManager)
 });
 
