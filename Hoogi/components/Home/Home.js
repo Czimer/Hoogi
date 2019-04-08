@@ -9,14 +9,14 @@ export default class Home extends React.Component {
         this.props.navigation.navigate('Feed')
     }
 
-    navigateToCalander = () =>{
-        this.props.navigation.navigate('Calander')
+    navigateToCalender = () =>{
+        this.props.navigation.navigate('Calender')
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <Button mode="contained" onPress={this.navigateToCalander}>לוח שנה</Button>
+                <Button mode="contained" onPress={this.navigateToCalender}>לוח שנה</Button>
                 <Button mode="contained" onPress={this.navigateToFeed}>לוח הודעות</Button>
             </View>
   

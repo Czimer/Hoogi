@@ -6,11 +6,12 @@ import Home from "./components/Home/Home";
 import CalendarView from "./components/Calendar/Calendar";
 import Feed from "./components/Feed/Feed";
 import AuthLoadingScreen from "./AuthLoadingScreen";
+import SignUpView from "./components/SignUp/SignUpView";
 
 const AppStack = createStackNavigator(
     {
         Home: Home,
-        Calander: CalendarView,
+        Calender: CalendarView,
         Feed: Feed
     },
     {
@@ -20,7 +21,8 @@ const AppStack = createStackNavigator(
 
 const AuthStack = createStackNavigator(
     {
-        SignIn: SignIn
+        SignIn: SignIn,
+        SignUp: SignUpView
     },
     {
         initialRouteName: 'SignIn',
