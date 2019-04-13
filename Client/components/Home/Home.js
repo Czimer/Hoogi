@@ -9,20 +9,25 @@ export default class Home extends React.Component {
         this.props.navigation.navigate('Feed')
     }
 
-    navigateToCalender = () =>{
-        this.props.navigation.navigate('Calender')
+    navigateToCalendar = () =>{
+        this.props.navigation.navigate('Calendar')
     }
 
     navigateToSearch = () =>{
         this.props.navigation.navigate('HoogSearch')
     }
 
+    navigateToChildren = () =>{
+        this.props.navigation.navigate('MyChildren')
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <Button mode="contained" onPress={this.navigateToCalender}>לוח שנה</Button>
+                <Button mode="contained" onPress={this.navigateToCalendar}>לוח שנה</Button>
                 <Button mode="contained" onPress={this.navigateToFeed}>לוח הודעות</Button>
                 <Button mode="contained" onPress={this.navigateToSearch}>חיפוש</Button>
+                <Button mode="contained" onPress={this.navigateToChildren}>הילדים שלי</Button>
             </View>
   
         );

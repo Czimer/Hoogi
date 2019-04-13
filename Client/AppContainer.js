@@ -8,14 +8,16 @@ import AuthLoadingScreen from "./AuthLoadingScreen";
 import HoogSearch from './components/Search/HoogSearch';
 import SearchResults from './components/Search/SearchResults';
 import SignUpView from "./components/SignUp/SignUpView";
+import MyChildrenView from "./components/Children/MyChildrenView";
 
 const AppStack = createStackNavigator(
     {
         Home: Home,
-        Calander: CalendarView,
+        Calendar: CalendarView,
         Feed: Feed,
         HoogSearch: HoogSearch,
-        SearchResults: SearchResults
+        SearchResults: SearchResults,
+        MyChildren:MyChildrenView
     },
     {
         initialRouteName: 'Home',
