@@ -63,8 +63,8 @@ export default class GenericList extends Component{
 }
 
 const styles = StyleSheet.create({
-    container: {marginTop:30, flex: 1, padding: 30, paddingTop: 30, backgroundColor: '#f3f' },
-    head: {marginTop:30,  height: 40, backgroundColor: '#f1f33f' },
+    container: {marginTop:30, flex: 1, padding: 30, paddingTop: 30, backgroundColor: '#fff' },
+    head: {marginTop:30,  height: 40, backgroundColor: '#fff' },
     text: { width:30, margin: 7 },
     Portal: {marginBottom:30}
   });
