@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { IconButton,TextInput } from 'react-native-paper';
+import { IconButton, TextInput } from 'react-native-paper';
+
+const DateBeforeThreeYears = new Date(new Date().setFullYear(new Date().getFullYear() - 3))
 
 export default class DatePicker extends Component {
     state = {
@@ -18,20 +20,26 @@ export default class DatePicker extends Component {
     };
 
     render() {
-        console.log(date)
-        const { title, date, maxDate } = this.props
+        const { title, date, isLimited } = this.props
+
+        const dateTimePickerProps = {
+            date: new Date(date),
+            isVisible: this.state.isDateTimePickerVisible,
+            onConfirm: this._handleDatePicked,
+            onCancel: this._hideDateTimePicker
+        }
+
         return (
             <React.Fragment >
                 <View style={styles.container}>
-                <IconButton style={styles.Icon} icon="add-box" onPress={this._showDateTimePicker}>
+                    <IconButton style={styles.Icon} icon="add-box" onPress={this._showDateTimePicker}>
                     </IconButton>
-                    <TextInput style={styles.input} label={title} value={date} disabled />                    
+                    <TextInput style={styles.input} label={title} value={date} disabled />
                 </View>
-                <DateTimePicker
-                    isVisible={this.state.isDateTimePickerVisible}
-                    onConfirm={this._handleDatePicked}
-                    onCancel={this._hideDateTimePicker}
-                />
+                {isLimited ?
+                    <DateTimePicker maximumDate={DateBeforeThreeYears} {...dateTimePickerProps} />
+                    :
+                    <DateTimePicker   {...dateTimePickerProps} />}
             </React.Fragment>
         );
     }
@@ -41,7 +49,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         borderBottomWidth: 1,
-        backgroundColor:'#e7e7e7',
+        backgroundColor: '#e7e7e7',
         borderColor: '#000',
         paddingBottom: 10,
     },

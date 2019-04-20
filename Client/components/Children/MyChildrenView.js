@@ -34,7 +34,7 @@ export default class MyChildrenView extends React.Component {
     }
 
     componentDidMount() {
-        // DOTO: implement a call to server
+        // TODO: implement a call to server
     }
 
     onAddChild = (newChild) => {
