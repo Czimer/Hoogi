@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, StyleSheet, Image } from 'react-native';
+import { TouchableOpacity, View, ScrollView } from 'react-native';
 import { Surface, Text, Button } from 'react-native-paper';
 import { withNavigation } from 'react-navigation';
 
@@ -24,7 +24,7 @@ class DayAgenda extends React.Component {
 
     render() {
         return (
-            <View>
+            <ScrollView>
                 {this.state.dayAgenda.map((hoog, i) =>
                     <TouchableOpacity key={i} onPress={() => this.onMoveToEventDetails(hoog)}>
                         <Surface style={[styles.surface, { borderRightColor: hoog.color }]} >
@@ -37,7 +37,7 @@ class DayAgenda extends React.Component {
                             </View>
                         </Surface>
                     </TouchableOpacity >)}
-            </View>
+            </ScrollView>
         );
     }
 }
