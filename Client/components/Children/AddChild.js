@@ -33,7 +33,7 @@ export default class AddChild extends React.Component {
             isError = true
             errorObject.lastNameError = 'שם משפחה לא יכול להיות ריק או קטן מ2 אותיות'
         }
-        if (!(new RegExp("^[0-9]{10}$").test(phone))) {
+        if (!appConfig.regex.phone.test(phone)) {
             isError = true
             errorObject.phoneError = 'טלפון לא חוקי'
         }
