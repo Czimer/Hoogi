@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { ScrollView, View, StyleSheet, Image } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Image } from 'react-native';
 import { Surface, Text, Button } from 'react-native-paper';
+import { withNavigation } from 'react-navigation';
 
-export default class DayAgenda extends React.Component {
+class DayAgenda extends React.Component {
     constructor(props) {
         super(props);
 
@@ -17,21 +18,26 @@ export default class DayAgenda extends React.Component {
         };
     }
 
-    render() {
+    onMoveToEventDetails = (hoog) => {
+        this.props.navigation.navigate('EventDetails', hoog)
+    }
 
+    render() {
         return (
-            <ScrollView>
+            <View>
                 {this.state.dayAgenda.map((hoog, i) =>
-                    <Surface key={i} style={[styles.surface, { borderRightColor: hoog.color }]}>
-                        <View style={styles.line}>
-                            <Text style={styles.groupName}>{hoog.name}</Text>
-                        </View>
-                        <View style={styles.line}>
-                            <Button style={styles.hours} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_hour} - {hoog.end_hour}</Button>
-                            <Button style={styles.location} icon='location-on' color='rgb(110, 110, 110)'>{hoog.location}</Button>
-                        </View>
-                    </Surface>)}
-            </ScrollView>
+                    <TouchableOpacity key={i} onPress={() => this.onMoveToEventDetails(hoog)}>
+                        <Surface style={[styles.surface, { borderRightColor: hoog.color }]} >
+                            <View style={styles.line}>
+                                <Text style={styles.groupName}>{hoog.name}</Text>
+                            </View>
+                            <View style={styles.line}>
+                                <Button style={styles.hours} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_hour} - {hoog.end_hour}</Button>
+                                <Button style={styles.location} icon='location-on' color='rgb(110, 110, 110)'>{hoog.location}</Button>
+                            </View>
+                        </Surface>
+                    </TouchableOpacity >)}
+            </View>
         );
     }
 }
@@ -79,3 +85,5 @@ const styles = {
         textAlign: 'left'
     }
 }
+
+export default withNavigation(DayAgenda)

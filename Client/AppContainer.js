@@ -9,6 +9,7 @@ import HoogSearch from './components/Search/HoogSearch';
 import SearchResults from './components/Search/SearchResults';
 import SignUpView from "./components/SignUp/SignUpView";
 import MyChildrenView from "./components/Children/MyChildrenView";
+import EventDetails from "./components/Calendar/EventDetails";
 
 const AppStack = createStackNavigator(
     {
@@ -17,7 +18,8 @@ const AppStack = createStackNavigator(
         Feed: Feed,
         HoogSearch: HoogSearch,
         SearchResults: SearchResults,
-        MyChildren:MyChildrenView
+        MyChildren: MyChildrenView,
+        EventDetails: EventDetails
     },
     {
         initialRouteName: 'Home',

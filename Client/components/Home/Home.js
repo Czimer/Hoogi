@@ -5,19 +5,19 @@ import { Button } from "react-native-paper";
 
 export default class Home extends React.Component {
 
-    navigateToFeed = () =>{
+    navigateToFeed = () => {
         this.props.navigation.navigate('Feed')
     }
 
-    navigateToCalendar = () =>{
+    navigateToCalendar = () => {
         this.props.navigation.navigate('Calendar')
     }
 
-    navigateToSearch = () =>{
+    navigateToSearch = () => {
         this.props.navigation.navigate('HoogSearch')
     }
 
-    navigateToChildren = () =>{
+    navigateToChildren = () => {
         this.props.navigation.navigate('MyChildren')
     }
 
@@ -29,7 +29,7 @@ export default class Home extends React.Component {
                 <Button mode="contained" onPress={this.navigateToSearch}>חיפוש</Button>
                 <Button mode="contained" onPress={this.navigateToChildren}>הילדים שלי</Button>
             </View>
-  
+
         );
     }
 }

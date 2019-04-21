@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Picker } from "react-native";
 import { Text, TextInput, Modal, Portal, Card, Button, HelperText } from "react-native-paper";
-import DatePicker from '../../genericComponents/DatePicker';
+import DatePicker from '../../genericComponents/Pickers/DatePicker';
 
 export default class AddChild extends React.Component {
     constructor(props) {
