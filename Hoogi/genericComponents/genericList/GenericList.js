@@ -12,52 +12,40 @@ export default class GenericList extends Component{
     };
 
     render(){
-        const {tableData, tableHead, listType} = this.props;
+        const {tableHead, tableData} = this.props;       
         return(
-            <ScrollView  style = {styles.container}>
+            <>
                 <DataTable>
                     <DataTable.Header>
                     {
                         tableHead.map(cell => {
-                            return <DataTable.Title>{cell}</DataTable.Title>
+                            return <DataTable.Title key={cell}>{cell}</DataTable.Title>
                         })                        
                     }
                     </DataTable.Header>
                     
                     {
-                        tableData.map(row =>{
+                        (tableData !== undefined) && tableData.map((row, rowIndex) =>{
                             return (
-                                <DataTable.Row>
-                                {
-                                    Object.keys(row).map((keyName,item) =>{
-                                        return <DataTable.Cell>{row[keyName]}</DataTable.Cell>                                
+                                <DataTable.Row key={rowIndex}>
+                                { 
+                                    Object.keys(row).map((keyName) =>{
+                                        return (<DataTable.Cell key={row[keyName]}>{row[keyName]}</DataTable.Cell>)
                                     })
                                 }
                                 </DataTable.Row>)
                         })
-                    }             
+                    }   
+
+                    {/* <DataTable.Pagination
+                        page={1}
+                        numberOfPages={3}
+                        onPageChange={(page) => { console.log(page); }}
+                        label="1-2 of 6"
+                    />           */}
                 
-                </DataTable>  
-            {
-                listType === "contacts" &&
-                    <Portal style={styles.Portal}>
-                        <FAB.Group
-                        open={this.state.open}
-                        icon={this.state.open ? 'today' : 'add'}
-                        actions={[
-                            { icon: 'add', onPress: () => console.log('Pressed add') },                   
-                        ]}
-                        onStateChange={({ open }) => this.setState({ open })}
-                        onPress={() => {
-                            if (this.state.open) {
-                            // do something if the speed dial is open
-                            }
-                        }}
-                        />
-                     </Portal>                 
-            }        
-            
-        </ScrollView>
+                </DataTable>      
+        </>
         );
     }
 }
@@ -65,8 +53,7 @@ export default class GenericList extends Component{
 const styles = StyleSheet.create({
     container: {marginTop:30, flex: 1, padding: 30, paddingTop: 30, backgroundColor: '#fff' },
     head: {marginTop:30,  height: 40, backgroundColor: '#fff' },
-    text: { width:30, margin: 7 },
-    Portal: {marginBottom:30}
+    text: { width:30, margin: 7 }
   });
 
 

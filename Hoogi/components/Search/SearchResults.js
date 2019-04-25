@@ -63,7 +63,7 @@ export default class SearchResults extends Component{
                 <Text>תוצאות חיפוש</Text>
                 <View>
                     <FlatList
-                        data={this.state.hoogsSearchResults}
+                        data={this.props.hoogsSearchResults}
                         renderItem={({item}) =>
                         <View key={item.id}>
                             <Text>קוד חוג</Text>
