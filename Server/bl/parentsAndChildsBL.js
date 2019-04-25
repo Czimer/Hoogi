@@ -2,9 +2,9 @@ const DataAccess = require('../dal/DataAccess')
 
 
 class parentBL {
-    static async GetAllPArents(){
+    static async GetAllParents(){
         const query = `SELECT *
-        FROM public.parents` 
+        FROM parents` 
 
         try{
             const results = await DataAccess.executeQuery(query);
@@ -20,7 +20,7 @@ class parentBL {
 class childBL {
     static async GetAllChildren(){
         const query = `SELECT *
-        FROM public.children` 
+        FROM children` 
 
         try{
             const results = await DataAccess.executeQuery(query);
@@ -35,16 +35,20 @@ class childBL {
 
 class parentAndChildBL {  
     static async GetParentsAndChildrenOfGroup(req, res, next){
-        const groupId = res.params.groupId;
-        const query = `SELECT PARENTS.FIRST_NAME || PARENTS.LAST_NAME AS PARENT_FULL_NAME,
-        CHILDREN.FIRST_NAME || CHILDREN.LAST_NAME AS CHILD_FULL_NAME,
-        PARENT.PARENT_PHONE, CHILD.CHILD_PHONE, PARENT.GENDER AS PARENT_GENDER, CHILD.GENDER AS CHILD_GENDER,
-        CHILD.BIRTH_DATE, CHILD.CHILD_ID
-        FROM public.children CHILD, public.parents PARENT
-        INNER JOIN public.participants PARTS ON (PARTS.CHILD_ID == CHILD.ID)
-        LEFT JOIN public.groups GRP ON (GRP.ID == PARTS.GROUP_ID))
-        WHERE CHILD.CHILD_ID IN PARENT.CHILDREN_ARRAY`; // TODO - CHECK HOW TO RELATE GROUPS TO CHILDREN
-
+        const groupId = req.query.groupId;
+        const query = `SELECT 
+        CHILD.CHILD_ID,
+        DATE_PART('YEAR',AGE(CHILD.BIRTH_DATE)) AGE,
+        CHILD.GENDER AS CHILD_GENDER,
+        CHILD.PHONE CHILD_PHONE, 
+        PARENT.PHONE PARENT_PHONE, 
+        CHILD.FIRST_NAME || ' ' || CHILD.LAST_NAME AS CHILD_FULL_NAME,
+        PARENT.FIRST_NAME || ' ' || PARENT.LAST_NAME AS PARENT_FULL_NAME
+        FROM children CHILD
+		INNER JOIN parents PARENT ON (CHILD.CHILD_ID = ANY (PARENT.CHILDREN_ARRAY))
+        INNER JOIN participants PARTS ON (PARTS.CHILD_ID = CHILD.CHILD_ID)
+        LEFT JOIN groups GRP ON (GRP.ID = PARTS.GROUP_ID)
+        WHERE PARTS.GROUP_ID = ` + groupId; // TODO: FIGURE THIS SHIT OUT AND DONT USE 2 TABLES - USE ONLY JOINS
         try{
             const results = await DataAccess.executeQuery(query);
             return results
@@ -56,6 +60,6 @@ class parentAndChildBL {
     }
 }
 
-module.exports = parentBL;
-module.exports = childBL;
-module.exports = parentsAndChildrenBL;
+// module.exports = parentBL;
+// module.exports = childBL;
+module.exports = parentAndChildBL;
