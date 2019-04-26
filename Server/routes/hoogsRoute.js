@@ -10,7 +10,12 @@ router.get('/', async function(req, res, next) {
 });
 
 /* GET hoogs with params */
-router.get('/:params', async function(req, res, next){
+router.post('/', async function(req, res, next){
+    const filteredHoogs = await hoogBL.GetHoogsByParams(req, res, next);
+    res.send(filteredHoogs)
+});
+
+router.post('/:params', async function(req, res, next){
     const filteredHoogs = await hoogBL.GetHoogsByParams(req, res, next);
     res.send(filteredHoogs)
 });

@@ -35,7 +35,7 @@ class childBL {
 
 class parentAndChildBL {  
     static async GetParentsAndChildrenOfGroup(req, res, next){
-        const groupId = req.query.groupId;
+        const groupId = req.body.groupId;
         const query = `SELECT 
         CHILD.CHILD_ID,
         DATE_PART('YEAR',AGE(CHILD.BIRTH_DATE)) AGE,

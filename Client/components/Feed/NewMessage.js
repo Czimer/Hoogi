@@ -34,13 +34,6 @@ export default class Message extends React.Component {
     }
 
     openGallery = async () => {
-        // let result = await ImagePicker.launchImageLibraryAsync({
-        //     base64: true
-        // });
-
-        // this.setState(prevState => ({
-        //     newPhotos: [...prevState.newPhotos, result.base64]
-        // }))
         const perm = await Permissions.askAsync(Permissions.CAMERA_ROLL);
         if (perm.status === 'granted') {
             this.setState({ imageBrowserOpen: true })

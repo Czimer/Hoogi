@@ -25,7 +25,7 @@ class groupBL {
     }
     
     static async GetAllGroupsOfSpecificManager(req, res, next){
-        const managerId = req.query.managerId;
+        const managerId = req.body.managerId;
         const query = `SELECT  
             grp.max_participants,
             grp.group_times::json->>'time' SHAA,

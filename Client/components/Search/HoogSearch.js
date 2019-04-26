@@ -5,6 +5,7 @@ import NumericInput from 'react-native-numeric-input'
 import {CheckBox} from 'react-native-elements'
 import axios from 'axios';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import AnimatedLoader from "react-native-animated-loader";
 
 export default class HoogSearch extends Component{
     constructor(props){
@@ -18,7 +19,8 @@ export default class HoogSearch extends Component{
             gender:"נקבה",
             minAge:1,
             maxAge:20,
-            location: ""
+            location: "",
+            // visible:false
         };    
     };
       
@@ -32,23 +34,20 @@ export default class HoogSearch extends Component{
         this.state.ageRangeChkB ? searchParams.maxAge = this.state.maxAge : '';
         this.state.locationChkB ? searchParams.location = this.state.location : '';
 
-        console.log("state = \n");
-        console.log(this.state);
-        console.log("params = \n");
-        console.log(searchParams);
-
+        console.log("in the button")
        // GOAL - navigate to another screen (search results) and do the request in there       
-        axios.get('http://192.168.43.80:3000/api/hoogs/', {params:searchParams}).then(response =>{
+        axios.post('http://10.100.102.16:3000/api/hoogs/:params', searchParams).then(response =>{
             console.log(response.data); // TODO: remove it after it works
             this.props.navigation.navigate('SearchResults', {hoogsSearchResults:response.data});
         }).catch(error => {console.log(error)});     
         
     }
 
+    
     render(){
         return(
-                <>
-                    <Text style={styles.head}>חיפוש חוגים</Text>
+            <>             
+                <Text style={styles.head}>חיפוש חוגים</Text>
                     <CheckBox id="Tags" title="תגית" style={styles.checkbox} checked={this.state.tagSearchChkB} onPress={() => this.setState(prevState => ({tagSearchChkB : !prevState.tagSearchChkB}))}/>
                         <TextInput id="tagSearch"   onChangeText={(text) => this.setState({tagSearch:text})}/>
                     <CheckBox id="Gender" title="מין" style={styles.checkbox} checked={this.state.genderChkB} onPress={() => this.setState(prevState => ({genderChkB: !prevState.genderChkB}))}/>
@@ -66,7 +65,7 @@ export default class HoogSearch extends Component{
                         <NumericInput initValue={this.state.minAge} minValue={1}
                             onChange={value => {this.setState({minAge:value});}} />
                     <CheckBox id="location" title="מיקום" checked={this.state.locationChkB} onPress={() => this.setState(prevState => ({ locationChkB: !prevState.locationChkB}))}/>
-                   
+                
                     {/*  beginning of google search */}
                     <GooglePlacesAutocomplete
                         placeholder='Search'
@@ -81,7 +80,7 @@ export default class HoogSearch extends Component{
                             const lng = details.geometry.location.lng;
                             this.setState({location: lat + "," + lng});                               
                         }}
-                          
+                        
                         getDefaultValue={() => ''}
                         
                         query={{
@@ -108,7 +107,7 @@ export default class HoogSearch extends Component{
                         GoogleReverseGeocodingQuery={{
                             // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
                         }}
-                      
+                    
                         GooglePlacesSearchQuery={{
                             // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
                             rankby: 'distance',
@@ -126,18 +125,33 @@ export default class HoogSearch extends Component{
                     {/* end of google search */}
 
                     <Button mode='contained' onPress={this.onSearchButtonPress}>חפש</Button>
-                   
-                </>
+            
+            </>
         );
     }
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 30, paddingTop: 30, backgroundColor: '#fff' },
-    head: { height: 40, backgroundColor: '#fff' },
+    container: { 
+        flex: 1, 
+        padding: 30, 
+        paddingTop: 30, 
+        backgroundColor: '#fff'
+     },
+    head: { 
+        height: 40, 
+        backgroundColor: '#fff' 
+    },
     text: { textAlign: 'right' },
     Portal: {marginBottom:30},
-    checkbox:{position: 'absolute', right: 0}
+    checkbox:{
+        position: 'absolute', 
+        right: 0
+    },
+    lottie: {
+        width: 100,
+        height: 100
+      }
   });
 
 

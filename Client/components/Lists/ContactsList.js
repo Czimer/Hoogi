@@ -18,7 +18,7 @@ export default class ContactsList extends Component{
     componentDidMount = () =>{ // TODO: change to the wanted group id
         const { groupId } = this.props;
         // axios.get('http://192.168.1.10:3000/api/parentsAndChilds', {params:{groupId:groupId}}).then(response =>{ TODO: 
-        axios.get('http://192.168.1.10:3000/api/parentsAndChilds', {params:{groupId:3}}).then(response =>{
+        axios.post('http://10.100.102.16:3000/api/parentsAndChilds/:params', {groupId:3}).then(response =>{
             this.setState({tableData:response.data});
         }).catch(error => {console.log("dana banana \n" + error)});
     }
