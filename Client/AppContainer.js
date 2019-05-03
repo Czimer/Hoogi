@@ -27,6 +27,11 @@ const AppStack = createStackNavigator(
     },
     {
         initialRouteName: 'Home',
+        defaultNavigationOptions: {
+            headerStyle: {
+              backgroundColor: '#284bc7',
+            }
+        }
     }
 );
 
@@ -37,6 +42,11 @@ const AuthStack = createStackNavigator(
     },
     {
         initialRouteName: 'SignIn',
+        defaultNavigationOptions: {
+            headerStyle: {
+              backgroundColor: '#284bc7',
+            }
+        }
     }
 );
 
@@ -48,6 +58,11 @@ const RootStack = createSwitchNavigator(
     },
     {
         initialRouteName: 'AuthLoading',
+        defaultNavigationOptions: {
+            headerStyle: {
+              backgroundColor: '#284bc7',
+            }
+        }
     }
 );
 

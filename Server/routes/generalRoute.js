@@ -13,7 +13,8 @@ router.post('/signUp', async (req, res, next) => {
 });
 
 router.post('/signIn', async (req, res, next) => {
-    const data = await genenralBl.performSignIn()
+    const { email, password } = req.body
+    const data = await genenralBl.performSignIn(email, password)
     if (data) {
         res.send(data)
     }

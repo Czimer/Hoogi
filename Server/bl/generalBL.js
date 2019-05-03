@@ -20,7 +20,7 @@ class generalBL {
         }
     }
 
-    static async performSignIn() {
+    static async performSignIn(email, password) {
         return await userBL.GetUserData(email, password)
     }
 }

@@ -1,16 +1,25 @@
 import React from 'react';
 import { Text, Chip, FAB, Button } from 'react-native-paper';
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet,AsyncStorage } from "react-native";
+import { Manager } from '../../consts';
 
 export default class EventDetails extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             hoog: this.props.navigation.state.params,
-            isEditMode: false
-        }
-        
+            isEditMode: false,
+            isManager:false
+        }        
     }
+
+    async componentDidMount(){
+        const loginData = await AsyncStorage.getItem('loginData')
+        const isManager = JSON.parse(loginData).user_type === Manager
+
+        if(isManager) this.setState({isManagerMode:isManager})
+    }
+
 
     onEditMode = () => this.setState({ isEditMode: true })
     onCloseEditMode = () => this.setState({ isEditMode: false })
@@ -35,10 +44,9 @@ export default class EventDetails extends React.Component {
                     </View>
                 </View>
                 <View >
-                    <Text>מה היה היום - {hoog.notes}</Text>
+                    <Text>מה היה היום - {hoog.notes ? hoog.notes : 'אין תיעוד'}</Text>
                 </View>
-                {//Todo: check if this is a parent or manager view
-                    (true && isEditMode) && <FAB icon="edit" onPress={this.onEditMode} style={styles.fab} />}
+                { (true && isEditMode) && <FAB icon="edit" onPress={this.onEditMode} style={styles.fab} />}
 
             </View>
         );

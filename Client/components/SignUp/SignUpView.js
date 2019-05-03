@@ -3,10 +3,12 @@ import { View, StyleSheet, Picker, ScrollView } from "react-native";
 import { Text, TextInput, RadioButton, Button, HelperText } from "react-native-paper";
 import appConfig from '../../appConfig';
 import Axios from 'axios';
-
-const Manager = "מדריך"
+import { Manager } from '../../consts';
 
 export default class SignUpView extends Component {
+    static navigationOptions = {
+        title: 'הרשמה'
+    }
     constructor(props) {
         super(props)
         this.state = {
@@ -94,10 +96,7 @@ export default class SignUpView extends Component {
         return (
             <ScrollView>
                 <View style={{ flex: 1, padding: 15 }}>
-                    <View style={styles.title}>
-                        <Text>הרשמה</Text>
-                    </View>
-                    <View style={styles.body}>
+                      <View style={styles.body}>
                         <TextInput label='תעודת זהות'
                             value={personalId} onChangeText={personalId => this.setState({ personalId })} />
                         {!!this.state.personalIdError && <HelperText type="error">{this.state.personalIdError}</HelperText>}
