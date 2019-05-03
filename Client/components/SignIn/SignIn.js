@@ -44,7 +44,7 @@ export default class SignIn extends React.Component {
                 <Text >Hoogi. make a logo</Text>
                 <View>
                     <TextInput label="אימייל" value={email} onChangeText={this.onEmailChange} />
-                    <TextInput label="סיסמה" value={password} onChangeText={this.onPasswordChange} />
+                    <TextInput label="סיסמה" value={password} onChangeText={this.onPasswordChange} secureTextEntry={true} />
                 </View>
                 <View style={styles.buttons}>
                     <Button style={{ width: '50%' }} onPress={this.navigateToSignUp} >הרשם</Button>
