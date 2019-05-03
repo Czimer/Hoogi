@@ -46,6 +46,7 @@ export default class Home extends React.Component {
     navigateToChildren = () => this.props.navigation.navigate('MyChildren')
     navigateToContactsList = () => this.props.navigation.navigate('ContactsList')
     navigateToGroupList = () => this.props.navigation.navigate('GroupList')
+    navigateToSettings = () => this.props.navigation.navigate('Settings')
 
     render() {
         const { showSpin, ManagerMode } = this.state
@@ -66,6 +67,7 @@ export default class Home extends React.Component {
                             <Button mode="contained" onPress={this.navigateToSearch}>חיפוש</Button>
                             <Button mode="contained" onPress={this.navigateToChildren}>הילדים שלי</Button>
                             <Button mode="contained" onPress={this.navigateToContactsList}>רשימת משתתפים</Button>
+                            <Button mode="contained" onPress={this.navigateToSettings}>הגדרות</Button>
                         </Fragment>
                 }
             </View>
