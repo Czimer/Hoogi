@@ -33,14 +33,14 @@ class userBL {
     }
 
     static async GetUserData(email, password) {
-        const user = await getUserByEmailAndPassword(email, password)
+        const user = await this.getUserByEmailAndPassword(email, password)
         let objUser = { user_type: user.user_type }
         if (user) {
             if (user.user_type === 'מדריך') {
-                const manager = await getManagerIdBySequenceId(user.id)
+                const manager = await this.getManagerIdBySequenceId(user.id)
                 objUser.id = manager.id
             } else {
-                const parent = await getParentIdBySequenceId(user.id)
+                const parent = await this.getParentIdBySequenceId(user.id)
                 objUser.id = parent.id
             }
 
