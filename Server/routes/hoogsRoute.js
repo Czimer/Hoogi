@@ -5,7 +5,11 @@ var router = express.Router();
 /* GET hoogs listing. */
 router.get('/', async function(req, res, next) {
     const hoogs = await hoogBL.GetAllHoogs();
+    res.send(hoogs)
+});
 
+router.get('/getAllHoogsNames', async function(req, res, next) {
+    const hoogs = await hoogBL.GetAllHoogsNames();
     res.send(hoogs)
 });
 

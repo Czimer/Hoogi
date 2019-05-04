@@ -30,6 +30,19 @@ class childBL {
             throw err
         }
     }
+
+    static async DeleteChildByID(req, res, next){
+        const childId = req.body.childId;
+        const query = `DELETE FROM CHILDREN WHERE CHILD_ID = ` + childId;
+        
+        try{
+            const results = await DataAccess.executeQuery(query);
+            return results
+        }
+        catch(err){
+            throw err
+        }
+    }
 }
 
 
@@ -48,7 +61,7 @@ class parentAndChildBL {
 		INNER JOIN parents PARENT ON (CHILD.CHILD_ID = ANY (PARENT.CHILDREN_ARRAY))
         INNER JOIN participants PARTS ON (PARTS.CHILD_ID = CHILD.CHILD_ID)
         LEFT JOIN groups GRP ON (GRP.ID = PARTS.GROUP_ID)
-        WHERE PARTS.GROUP_ID = ` + groupId; // TODO: FIGURE THIS SHIT OUT AND DONT USE 2 TABLES - USE ONLY JOINS
+        WHERE PARTS.GROUP_ID = ` + groupId;
         try{
             const results = await DataAccess.executeQuery(query);
             return results

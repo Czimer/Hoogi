@@ -26,9 +26,28 @@ router.get('/all', function(req, res, next) {
     res.send('respond with a resource 2'); //todo ?
 });
 
-router.post('/registerNewParticipantTpGroup/:params', async function(req, res, next){
+router.post('/addNewGroup/:params', async function(req, res, next){
+    const newGroup = await groupBL.addNewGroup(req, res, next);
+    res.send(newGroup);
+});
+
+router.post('/registerNewParticipantToGroup/:params', async function(req, res, next){
     const registerNewParticipant = await groupBL.RegisterNewParticipantTpGroup(req, res, next);
     res.send(registerNewParticipant);
 });
+
+router.delete('/', async function(req, res, next){
+    res.send('respond with a resource 2');
+});
+
+router.delete('/deleteGroupById', async function(req, res, next){
+    const deletedGroup = await groupBL.deleteGroupById(req, res, next);
+    res.send(deletedGroup);
+});
+
+router.delete('/removeChildFromGroupById:params', async function(req, res, next){
+    const removedChild = await groupBL.removeChildFromGroupById(req, res, next);
+    res.send(removedChild);
+})
 
 module.exports = router;
