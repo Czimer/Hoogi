@@ -35,7 +35,6 @@ export default class MyChildrenView extends React.Component {
     }
 
     onAddChild = async (newChild) => {
-        // some api call
         const loginData = await AsyncStorage.getItem('loginData')
         const parentId = JSON.parse(loginData).id
 
@@ -55,9 +54,20 @@ export default class MyChildrenView extends React.Component {
     onOpenAddMode = () => this.setState({ isAddChildMode: true })
     onCloseAddMode = () => this.setState({ isAddChildMode: false })
 
-    onEditChild = (editedChild) => {
-        const childrenList = this.state.children.map(child => child.id == editedChild.id ? editedChild : child)
-        this.setState({ children: childrenList })
+    onEditChild = async (editedChild) => {
+
+        const params = {
+            ...editedChild
+        }
+
+        try {
+            await request(appConfig.ServerGraphqlUrl, updateChildMutation, params)
+            const childrenList = this.state.children.map(child => child.childId === editedChild.childId ? editedChild : child)
+            this.setState({ children: childrenList })
+        }
+        catch (err) {
+            console.log(err.message)
+        }
     }
 
     render() {
@@ -65,7 +75,7 @@ export default class MyChildrenView extends React.Component {
         return (
             <View style={styles.container}>
                 {children.map(child => {
-                    return <Child key={child.childId} child={child} onEditChild={this.onChildEdit}></Child>
+                    return <Child key={child.childId} child={child} onEditChild={this.onEditChild}></Child>
                 })}
                 <FAB icon="add" onPress={this.onOpenAddMode} style={styles.fab} />
                 {isAddChildMode && <AddChild onClose={this.onCloseAddMode} onAdd={this.onAddChild}></AddChild>}
@@ -103,6 +113,25 @@ const addChildMutation = `mutation addChild($childId:String!,$firstName:String!,
         id
       }
     }    
+  }`
+
+const updateChildMutation = `mutation updateChild($childId:String!,$firstName:String!,$lastName:String!,$gender:String!,$phone:String!,$birthDate:Date!){
+    updateChildByChildId(input:
+    {
+      childId:$childId
+      childPatch:{
+          firstName:$firstName
+          lastName:$lastName
+          gender:$gender
+          phone:$phone
+          birthDate:$birthDate
+      }
+    }) 
+      {
+      child{
+        childId
+      }
+    }
   }`
 
 const styles = StyleSheet.create({

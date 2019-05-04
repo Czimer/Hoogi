@@ -1,7 +1,8 @@
 import React from 'react';
-import { List, Avatar, Text, Button, TextInput } from "react-native-paper";
+import { List, Avatar, Text, Button, TextInput, HelperText } from "react-native-paper";
 import { View , Picker} from "react-native";
 import DatePicker from "../../genericComponents/Pickers/DatePicker";
+import appConfig from '../../appConfig';
 
 export default class Child extends React.Component {
     constructor(props) {
@@ -26,7 +27,7 @@ export default class Child extends React.Component {
     }
 
     onSaveChildNewData = () => {
-        const { firstName, lastName, phone} = this.state.child
+        const { firstName, lastName, phone } = this.state.child
         const errorObject = {
             firstNameError: undefined,
             lastNameError: undefined,
@@ -71,8 +72,8 @@ export default class Child extends React.Component {
                 left={() => this.renderAvatar()}
                 expanded={isExpanded}
                 onPress={this._handlePress}>
-                {/* {isEditMode ?
-                    <View>
+                {isEditMode ?
+                    <View style={{marginRight:20}}>
                         <TextInput label='שם פרטי'
                             value={child.firstName} onChangeText={firstName => this.setState(prevState => ({ child: { ...prevState.child, firstName } }))} />
                              {!!this.state.firstNameError && <HelperText type="error">{this.state.firstNameError}</HelperText>}
@@ -95,15 +96,15 @@ export default class Child extends React.Component {
                         <DatePicker title={'הזן תאריך לידה'} date={child.birthDate} isLimited onChange={birthDate => this.setState(prevState => ({ child: { ...prevState.child, birthDate } }))}></DatePicker>
                         <Button onPress={this.onSaveChildNewData}>שמור</Button>
                         <Button onPress={this.cancelEdit}>ביטול</Button>
-                    </View> : */}
+                    </View> :
                     <View>
                         <Text>שם - {`${child.firstName} ${child.lastName}`}</Text>
                         <Text>מין - {child.gender}</Text>
                         <Text>טלפון - {child.phone}</Text>
                         <Text>תאריך לידה - {child.birthDate}</Text>
-                        {/* <Button onPress={() => this.setState({ isEditMode: true })}>ערוך</Button> */}
+                        <Button onPress={() => this.setState({ isEditMode: true })}>ערוך</Button>
                     </View>
-                {/* } */}
+                 }
             </List.Accordion>
         );
     }
