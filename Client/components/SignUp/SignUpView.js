@@ -1,20 +1,23 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, Picker,ScrollView } from "react-native";
+import { View, StyleSheet, Picker, ScrollView } from "react-native";
 import { Text, TextInput, RadioButton, Button, HelperText } from "react-native-paper";
 import appConfig from '../../appConfig';
-
-const Manager = "מדריך"
+import Axios from 'axios';
+import { Manager } from '../../consts';
 
 export default class SignUpView extends Component {
+    static navigationOptions = {
+        title: 'הרשמה'
+    }
     constructor(props) {
         super(props)
         this.state = {
+            personalId: '',
             firstName: '',
             lastName: '',
-            gender: '',
+            gender: 'male',
             phone: '',
             role: Manager,
-            address: '',
             email: '',
             password1: '',
             password2: ''
@@ -22,17 +25,22 @@ export default class SignUpView extends Component {
     }
 
     performeRegister = () => {
-        const { firstName, lastName, address, email, phone, password1, password2 } = this.state
+        const { personalId, firstName, lastName, email, phone, password1, password2, role, gender } = this.state
         const errorObject = {
+            personalIdError: undefined,
             firstNameError: undefined,
             lastNameError: undefined,
             phoneError: undefined,
-            addressError: undefined,
             emailError: undefined,
             passwordError: undefined
         }
 
         let isError = false
+
+        if (personalId.trim() === '' || personalId.trim().length < 2) {
+            isError = true
+            errorObject.personalIdError = 'תעודת זהות לא תקינה'
+        }
 
         if (firstName.trim() === '' || firstName.trim().length < 2) {
             isError = true
@@ -42,16 +50,16 @@ export default class SignUpView extends Component {
             isError = true
             errorObject.lastNameError = 'שם משפחה לא יכול להיות ריק או קטן מ2 אותיות'
         }
+
+        console.log(phone)
+        console.log(appConfig.regex.phone.test(phone))
         if (!appConfig.regex.phone.test(phone)) {
             isError = true
             errorObject.phoneError = 'טלפון לא חוקי'
         }
 
-        if (address.trim() === '') {
-            isError = true
-            errorObject.addressError = 'כתובת לא יכולה להיות ריקה'
-        }
-
+        console.log(email)
+        console.log(appConfig.regex.email.test(email))
         if (!appConfig.regex.email.test(email)) {
             isError = true
             errorObject.emailError = 'אימייל לא חוקי'
@@ -66,24 +74,30 @@ export default class SignUpView extends Component {
             errorObject.passwordError = 'הסיסמאות לא תואמות'
         }
 
-        if (isError) {
-            this.setState({ ...errorObject })
-        } else {
-            // api call and then go back
-            this.props.navigation.goBack()
+        this.setState({ ...errorObject })
+        if (!isError) {
+
+            const params = {
+                personalId, firstName, lastName, email, phone, password: password1, role, gender
+            }
+            Axios.post(`${appConfig.ServerApiUrl}/general/signUp`, params).then(() => {
+                this.props.navigation.goBack()
+            }).catch(err => {
+                console.log(err.message)
+            })
         }
 
     }
 
     render() {
-        const { firstName, lastName, gender, phone, role, address, email, password1, password2 } = this.state
+        const { personalId, firstName, lastName, gender, phone, role, email, password1, password2 } = this.state
         return (
             <ScrollView>
                 <View style={{ flex: 1, padding: 15 }}>
-                    <View style={styles.title}>
-                        <Text>הרשמה</Text>
-                    </View>
                     <View style={styles.body}>
+                        <TextInput label='תעודת זהות'
+                            value={personalId} onChangeText={personalId => this.setState({ personalId })} />
+                        {!!this.state.personalIdError && <HelperText type="error">{this.state.personalIdError}</HelperText>}
                         <TextInput label='שם פרטי'
                             value={firstName} onChangeText={firstName => this.setState({ firstName })} />
                         {!!this.state.firstNameError && <HelperText type="error">{this.state.firstNameError}</HelperText>}
@@ -115,10 +129,6 @@ export default class SignUpView extends Component {
                                 </View>
                             </View>
                         </RadioButton.Group>
-                        <TextInput label='כתובת'
-                            value={address}
-                            onChangeText={address => this.setState({ address })} />
-                        {!!this.state.addressError && <HelperText type="error">{this.state.addressError}</HelperText>}
                         <TextInput label='אימייל'
                             value={email} onChangeText={email => this.setState({ email })} />
                         {!!this.state.emailError && <HelperText type="error">{this.state.emailError}</HelperText>}

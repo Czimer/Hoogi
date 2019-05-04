@@ -1,11 +1,11 @@
 const regex = {
     phone: new RegExp("^[0-9]{10}$"),
-    email: new RegExp('/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/')
+    email: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 }
 
 const appConfig = {
-    ServerGraphqlUrl: 'http://localhost:3000/graphql',
-    ServerApiUrl: 'http://localhost:3000/api',
+    ServerGraphqlUrl: 'http://10.0.0.29:3000/graphql',
+    ServerApiUrl: 'http://10.0.0.29:3000/api',
     regex
 }
 

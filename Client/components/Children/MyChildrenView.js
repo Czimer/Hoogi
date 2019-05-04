@@ -1,54 +1,73 @@
 import React from 'react';
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, AsyncStorage } from "react-native";
 import { FAB } from 'react-native-paper';
 import Child from './Child';
 import AddChild from "./AddChild";
-
-const someonesChildren = [{
-    id: '111122233',
-    firstName: 'ילד',
-    lastName: 'ראשון',
-    gender: 'זכר',
-    phone: '04567089765',
-    birthDate: '19/4/2004',
-    photo: undefined
-},
-{
-    id: '111124433',
-    firstName: 'ילד',
-    lastName: 'שני',
-    gender: 'זכר',
-    phone: '04567089765',
-    birthDate: '19/4/2004',
-    photo: undefined
-}]
+import request from 'graphql-request';
+import appConfig from '../../appConfig';
 
 
 export default class MyChildrenView extends React.Component {
+    static navigationOptions = {
+        title: 'הילדים שלי'
+    }
     constructor(props) {
         super(props);
         this.state = {
-            children: someonesChildren,
+            children: [],
             isAddChildMode: false
         };
     }
 
-    componentDidMount() {
-        // TODO: implement a call to server
+    async componentDidMount() {
+        const loginData = await AsyncStorage.getItem('loginData')
+        const parentId = JSON.parse(loginData).id
+
+        const params = {
+            parentId
+        }
+        try {
+            const data = await request(appConfig.ServerGraphqlUrl, getChildrenQuery, params)
+            this.setState({ children: data.children.nodes })
+        } catch (err) {
+            console.log(err.message)
+        }
     }
 
-    onAddChild = (newChild) => {
-        // some api call
+    onAddChild = async (newChild) => {
+        const loginData = await AsyncStorage.getItem('loginData')
+        const parentId = JSON.parse(loginData).id
 
-        this.setState(prevstate => ({ children: [...prevstate.children, newChild], isAddChildMode: false }))
+        const params = {
+            ...newChild,
+            parentId
+        }
+
+        try {
+            await request(appConfig.ServerGraphqlUrl, addChildMutation, params)
+            this.setState(prevstate => ({ children: [...prevstate.children, newChild], isAddChildMode: false }))
+        } catch (err) {
+            console.log(err.message)
+        }
     }
 
     onOpenAddMode = () => this.setState({ isAddChildMode: true })
     onCloseAddMode = () => this.setState({ isAddChildMode: false })
 
-    onEditChild = (editedChild) => {
-        const childrenList = this.state.children.map(child => child.id == editedChild.id ? editedChild : child)
-        this.setState({ children: childrenList })
+    onEditChild = async (editedChild) => {
+
+        const params = {
+            ...editedChild
+        }
+
+        try {
+            await request(appConfig.ServerGraphqlUrl, updateChildMutation, params)
+            const childrenList = this.state.children.map(child => child.childId === editedChild.childId ? editedChild : child)
+            this.setState({ children: childrenList })
+        }
+        catch (err) {
+            console.log(err.message)
+        }
     }
 
     render() {
@@ -56,15 +75,64 @@ export default class MyChildrenView extends React.Component {
         return (
             <View style={styles.container}>
                 {children.map(child => {
-                    return <Child key={child.id} child={child} onEditChild={this.onChildEdit}></Child>
+                    return <Child key={child.childId} child={child} onEditChild={this.onEditChild}></Child>
                 })}
                 <FAB icon="add" onPress={this.onOpenAddMode} style={styles.fab} />
-                {isAddChildMode && <AddChild onClose={this.onCloseAddMode} onAccept={this.onAddChild}></AddChild>}
+                {isAddChildMode && <AddChild onClose={this.onCloseAddMode} onAdd={this.onAddChild}></AddChild>}
             </View>
         );
     }
 }
 
+const getChildrenQuery = `query AllChilds($parentId: String!){
+    children:allChildren(filter:{parentId:{equalTo:$parentId}}){
+      nodes{
+        childId
+        firstName
+        lastName
+        gender
+        phone
+        birthDate
+      }
+    } 
+  }`
+
+const addChildMutation = `mutation addChild($childId:String!,$firstName:String!,$lastName:String!,$gender:String!,$phone:String!,$birthDate:Date!,$parentId:String!){
+    createChild(input:{
+      child:{
+        childId:$childId
+        firstName:$firstName
+        lastName:$lastName
+        gender:$gender
+        phone:$phone
+        birthDate:$birthDate
+        parentId:$parentId
+      }
+    }){
+      child{
+        id
+      }
+    }    
+  }`
+
+const updateChildMutation = `mutation updateChild($childId:String!,$firstName:String!,$lastName:String!,$gender:String!,$phone:String!,$birthDate:Date!){
+    updateChildByChildId(input:
+    {
+      childId:$childId
+      childPatch:{
+          firstName:$firstName
+          lastName:$lastName
+          gender:$gender
+          phone:$phone
+          birthDate:$birthDate
+      }
+    }) 
+      {
+      child{
+        childId
+      }
+    }
+  }`
 
 const styles = StyleSheet.create({
     container: {

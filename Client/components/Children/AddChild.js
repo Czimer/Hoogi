@@ -2,11 +2,13 @@ import React from 'react';
 import { StyleSheet, Picker } from "react-native";
 import { Text, TextInput, Modal, Portal, Card, Button, HelperText } from "react-native-paper";
 import DatePicker from '../../genericComponents/Pickers/DatePicker';
+import appConfig from '../../appConfig';
 
 export default class AddChild extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            childId: '',
             firstName: '',
             lastName: '',
             gender: 'זכר',
@@ -16,14 +18,20 @@ export default class AddChild extends React.Component {
     }
 
     addNew = () => {
-        const { firstName, lastName, gender, phone, birthDate } = this.state
+        const { childId, firstName, lastName, gender, phone, birthDate } = this.state
         const errorObject = {
+            childIdError: undefined,
             firstNameError: undefined,
             lastNameError: undefined,
             phoneError: undefined,
             birthDateError: undefined
         }
         let isError = false
+
+        if (childId.trim() === '' || childId.trim().length < 2) {
+            isError = true
+            errorObject.childIdError = 'תעודת זהות לא תקינה'
+        }
 
         if (firstName.trim() === '' || firstName.trim().length < 2) {
             isError = true
@@ -43,22 +51,24 @@ export default class AddChild extends React.Component {
             errorObject.birthDateError = 'יש להזין תאריך לידה'
         }
 
-        if (isError) {
-            this.setState({ ...errorObject })
-        } else {
-            const child = { firstName, lastName, gender, phone, birthDate }
-            this.props.onAccept(child)
+        this.setState({ ...errorObject })
+        if (!isError) {
+            const child = { childId, firstName, lastName, gender, phone, birthDate }
+            this.props.onAdd(child)
         }
     }
 
     render() {
         const { onClose } = this.props
-        const { firstName, lastName, gender, phone, birthDate } = this.state
+        const { childId, firstName, lastName, gender, phone, birthDate } = this.state
         return (
             <Portal>
                 <Modal visible={true} onDismiss={onClose} contentContainerStyle={styles.modal}>
                     <Card>
                         <Card.Content>
+                            <TextInput label='תעודת זהות'
+                                value={childId} onChangeText={childId => this.setState({ childId })} />
+                            {!!this.state.childIdError && <HelperText type="error">{this.state.childIdError}</HelperText>}
                             <TextInput label='שם פרטי'
                                 value={firstName} onChangeText={firstName => this.setState({ firstName })} />
                             {!!this.state.firstNameError && <HelperText type="error">{this.state.firstNameError}</HelperText>}

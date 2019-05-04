@@ -1,6 +1,9 @@
 import React from 'react';
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, AsyncStorage } from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
+import Axios from 'axios';
+import appConfig from '../../appConfig';
+
 
 export default class SignIn extends React.Component {
     constructor(props) {
@@ -20,12 +23,17 @@ export default class SignIn extends React.Component {
     }
 
     onConnect = () => {
-        console.log(this.state.email)
-        console.log(this.state.password)
-        this.props.navigation.navigate('App')
+        const { email, password } = this.state
+        const params = { email, password }
+        Axios.post(`${appConfig.ServerApiUrl}/general/signIn`, params).then((res) => {
+            AsyncStorage.setItem("loginData",JSON.stringify(res.data))
+            this.props.navigation.navigate('App')
+        }).catch(err => {
+            console.log(err.message)
+        })
     }
 
-    navigateToSignUp = ()=>{
+    navigateToSignUp = () => {
         this.props.navigation.navigate('SignUp')
     }
 
@@ -36,11 +44,11 @@ export default class SignIn extends React.Component {
                 <Text >Hoogi. make a logo</Text>
                 <View>
                     <TextInput label="אימייל" value={email} onChangeText={this.onEmailChange} />
-                    <TextInput label="סיסמה" value={password} onChangeText={this.onPasswordChange} />
+                    <TextInput label="סיסמה" value={password} onChangeText={this.onPasswordChange} secureTextEntry={true} />
                 </View>
                 <View style={styles.buttons}>
                     <Button style={{ width: '50%' }} onPress={this.navigateToSignUp} >הרשם</Button>
-                    <Button style={{ width: '50%' }} onPress={this.onConnect}  mode="contained">התחבר</Button>
+                    <Button style={{ width: '50%' }} onPress={this.onConnect} mode="contained">התחבר</Button>
                 </View>
             </View>
         );

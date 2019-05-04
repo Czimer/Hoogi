@@ -1,7 +1,8 @@
 import React from 'react';
-import { List, Avatar, Text, Button, TextInput } from "react-native-paper";
+import { List, Avatar, Text, Button, TextInput, HelperText } from "react-native-paper";
 import { View , Picker} from "react-native";
 import DatePicker from "../../genericComponents/Pickers/DatePicker";
+import appConfig from '../../appConfig';
 
 export default class Child extends React.Component {
     constructor(props) {
@@ -26,7 +27,7 @@ export default class Child extends React.Component {
     }
 
     onSaveChildNewData = () => {
-        const { firstName, lastName, phone} = this.state.child
+        const { firstName, lastName, phone } = this.state.child
         const errorObject = {
             firstNameError: undefined,
             lastNameError: undefined,
@@ -72,7 +73,7 @@ export default class Child extends React.Component {
                 expanded={isExpanded}
                 onPress={this._handlePress}>
                 {isEditMode ?
-                    <View>
+                    <View style={{marginRight:20}}>
                         <TextInput label='שם פרטי'
                             value={child.firstName} onChangeText={firstName => this.setState(prevState => ({ child: { ...prevState.child, firstName } }))} />
                              {!!this.state.firstNameError && <HelperText type="error">{this.state.firstNameError}</HelperText>}
@@ -103,7 +104,7 @@ export default class Child extends React.Component {
                         <Text>תאריך לידה - {child.birthDate}</Text>
                         <Button onPress={() => this.setState({ isEditMode: true })}>ערוך</Button>
                     </View>
-                }
+                 }
             </List.Accordion>
         );
     }

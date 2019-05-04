@@ -12,6 +12,7 @@ import MyChildrenView from "./components/Children/MyChildrenView";
 import EventDetails from "./components/Calendar/EventDetails";
 import ContactsList from './components/Lists/ContactsList';
 import GroupList from './components/Lists/GroupsList';
+import Settings from './components/Settings/Settings';
 
 const AppStack = createStackNavigator(
     {
@@ -23,10 +24,16 @@ const AppStack = createStackNavigator(
         MyChildren: MyChildrenView,
         EventDetails: EventDetails,
         ContactsList: ContactsList,
-        GroupList: GroupList
+        GroupList: GroupList,
+        Settings: Settings
     },
     {
         initialRouteName: 'Home',
+        defaultNavigationOptions: {
+            headerStyle: {
+              backgroundColor: '#284bc7',
+            }
+        }
     }
 );
 
@@ -37,6 +44,11 @@ const AuthStack = createStackNavigator(
     },
     {
         initialRouteName: 'SignIn',
+        defaultNavigationOptions: {
+            headerStyle: {
+              backgroundColor: '#284bc7',
+            }
+        }
     }
 );
 
@@ -48,6 +60,11 @@ const RootStack = createSwitchNavigator(
     },
     {
         initialRouteName: 'AuthLoading',
+        defaultNavigationOptions: {
+            headerStyle: {
+              backgroundColor: '#284bc7',
+            }
+        }
     }
 );
 
