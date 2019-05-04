@@ -71,7 +71,7 @@ export default class Child extends React.Component {
                 left={() => this.renderAvatar()}
                 expanded={isExpanded}
                 onPress={this._handlePress}>
-                {isEditMode ?
+                {/* {isEditMode ?
                     <View>
                         <TextInput label='שם פרטי'
                             value={child.firstName} onChangeText={firstName => this.setState(prevState => ({ child: { ...prevState.child, firstName } }))} />
@@ -95,15 +95,15 @@ export default class Child extends React.Component {
                         <DatePicker title={'הזן תאריך לידה'} date={child.birthDate} isLimited onChange={birthDate => this.setState(prevState => ({ child: { ...prevState.child, birthDate } }))}></DatePicker>
                         <Button onPress={this.onSaveChildNewData}>שמור</Button>
                         <Button onPress={this.cancelEdit}>ביטול</Button>
-                    </View> :
+                    </View> : */}
                     <View>
                         <Text>שם - {`${child.firstName} ${child.lastName}`}</Text>
                         <Text>מין - {child.gender}</Text>
                         <Text>טלפון - {child.phone}</Text>
                         <Text>תאריך לידה - {child.birthDate}</Text>
-                        <Button onPress={() => this.setState({ isEditMode: true })}>ערוך</Button>
+                        {/* <Button onPress={() => this.setState({ isEditMode: true })}>ערוך</Button> */}
                     </View>
-                }
+                {/* } */}
             </List.Accordion>
         );
     }
