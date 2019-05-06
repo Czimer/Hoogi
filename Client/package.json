@@ -13,6 +13,7 @@
     "expo-multiple-imagepicker": "^1.0.6",
     "graphql-request": "^1.8.2",
     "link": "^0.1.5",
+    "lodash": "^4.17.11",
     "lottie-react-native": "^2.5.11",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
@@ -24,7 +25,7 @@
     "react-native-numeric-input": "^1.6.5",
     "react-native-paper": "2.11.0",
     "react-native-vector-icons": "^6.4.2",
-    "react-navigation": "^3.6.1"
+    "react-navigation": "^3.9.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"

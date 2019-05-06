@@ -9,11 +9,11 @@ export default class Message extends React.PureComponent {
         return (
             <Card style={styles.card}>
                 <Subheading>{message.message}</Subheading>
-                <Caption>{message.Datetime}</Caption>
+                <Caption>{message.date}</Caption>
                 {/* for some reason its not working */}
-                {message.Photos.length > 0 && message.Photos.map(photo => {
+                {/* {message.Photos.length > 0 && message.Photos.map(photo => {
                     return <Image height={50} width={50} source={{ uri: `data:image/jpeg;base64,${photo}`, isStatic: true, }} />
-                })}
+                })} */}
             </Card>
         );
     }

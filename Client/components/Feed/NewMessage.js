@@ -20,7 +20,7 @@ export default class Message extends React.Component {
 
         if (newMessageText === '') return
         this.setState({ newMessageText: '', newPhotos: [] })
-        this.props.onAccept(newMessageText, newPhotos)
+        this.props.onAddNewMessage(newMessageText, newPhotos)
     }
 
     imageBrowserCallback = (callback) => {
@@ -48,38 +48,35 @@ export default class Message extends React.Component {
         const { isOpen, onClose } = this.props
         const { newMessageText, newPhotos, imageBrowserOpen } = this.state
 
-        if (imageBrowserOpen) {
-            return (<ImageBrowser max={10} callback={this.imageBrowserCallback} />);
-        }
-
         return (
             <Portal>
-                <Modal visible={isOpen} onDismiss={onClose} contentContainerStyle={styles.modal}>
-                    <Card>
-                        <Card.Content>
-                            <Title style={{ textAlign: 'right' }}>הודעה חדשה</Title>
-                            <IconButton
-                                icon="add-a-photo"
-                                size={20}
-                                onPress={this.openGallery}
-                            />
-                            <TextInput
-                                label="הודעה חדשה"
-                                value={newMessageText}
-                                multiline
-                                numberOfLines={4}
-                                onChangeText={this.onNewMessageChange}
-                            />
-                            {newPhotos.length > 0 &&
-                                <Subheading style={{ textAlign: 'right' }}>{`נוספו ${newPhotos.length} תמונות`}</Subheading>
-                            }
-                        </Card.Content>
-                        <Card.Actions>
-                            <Button mode="contained" onPress={this.sendNewMessage}>שלח</Button>
-                            <Button style={{ marginLeft: 10 }} onPress={onClose}>בטל</Button>
-                        </Card.Actions>
-                    </Card>
-                </Modal>
+                {imageBrowserOpen ? <ImageBrowser max={10} callback={this.imageBrowserCallback} /> :
+                    <Modal visible={isOpen} onDismiss={onClose} contentContainerStyle={styles.modal}>
+                        <Card>
+                            <Card.Content>
+                                <Title style={{ textAlign: 'right' }}>הודעה חדשה</Title>
+                                <IconButton
+                                    icon="add-a-photo"
+                                    size={20}
+                                    onPress={this.openGallery}
+                                />
+                                <TextInput
+                                    label="הודעה חדשה"
+                                    value={newMessageText}
+                                    multiline
+                                    numberOfLines={4}
+                                    onChangeText={this.onNewMessageChange}
+                                />
+                                {newPhotos.length > 0 &&
+                                    <Subheading style={{ textAlign: 'right' }}>{`נוספו ${newPhotos.length} תמונות`}</Subheading>
+                                }
+                            </Card.Content>
+                            <Card.Actions>
+                                <Button mode="contained" onPress={this.sendNewMessage}>שלח</Button>
+                                <Button style={{ marginLeft: 10 }} onPress={onClose}>בטל</Button>
+                            </Card.Actions>
+                        </Card>
+                    </Modal>}
             </Portal>
         )
     }
