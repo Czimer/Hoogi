@@ -2,6 +2,7 @@
 
 
 class hoogBL {
+
     static async GetAllHoogs(){
         const query = `select hoogs.name, hoogs.id, grp.id, grp.min_age || '-' || grp.max_age as age_Range,
         hoogs.address loc, mng.first_name || ' ' || mng.last_name as guid_Name,
@@ -9,6 +10,20 @@ class hoogBL {
         from public.groups grp
         left join public.hoogs hoogs on hoogs.id = grp.hoog_id
 		left join public.managers mng on mng.manager_id = hoogs.manager_id`;
+
+        try{
+            const results = await DataAccess.executeQuery(query);
+
+            return results
+        }
+        catch(err){
+            throw err
+        }
+    }
+
+    static async GetAllHoogsNames(req, res, next){
+        const manager_id = req.body.manager_id;
+        const query = `SELECT ID, NAME FROM HOOGS WHERE MANAGER_ID = ` + manager_id;
 
         try{
             const results = await DataAccess.executeQuery(query);
@@ -48,6 +63,7 @@ class hoogBL {
 
         try{
             const results = await DataAccess.executeQuery(query);
+
             return results
         }
         catch(err){

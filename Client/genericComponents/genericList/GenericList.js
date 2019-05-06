@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, TouchableHighlight } from 'react-native';
 import { DataTable, FAB, Portal } from 'react-native-paper';
 
 
@@ -12,7 +12,7 @@ export default class GenericList extends Component{
     };
 
     render(){
-        const {tableHead, tableData} = this.props;       
+        const {tableHead, tableData, handleLongPress, children} = this.props;       
         return(
             <>
                 <DataTable>
@@ -27,13 +27,15 @@ export default class GenericList extends Component{
                     {
                         (tableData !== undefined) && tableData.map((row, rowIndex) =>{
                             return (
-                                <DataTable.Row key={rowIndex}>
-                                { 
-                                    Object.keys(row).map((keyName) =>{
-                                        return (<DataTable.Cell key={row[keyName]}>{row[keyName]}</DataTable.Cell>)
-                                    })
-                                }
-                                </DataTable.Row>)
+                                <TouchableHighlight  key={rowIndex} onLongPress={(eventic) => handleLongPress(eventic, row)}>
+                                     <DataTable.Row key={rowIndex}>
+                                    { 
+                                        Object.keys(row).map((keyName) =>{
+                                            return (<DataTable.Cell key={row[keyName]}>{row[keyName]}</DataTable.Cell>)
+                                        })
+                                    }
+                                    </DataTable.Row>
+                                </TouchableHighlight>)
                         })
                     }   
 
@@ -44,7 +46,8 @@ export default class GenericList extends Component{
                         label="1-2 of 6"
                     />           */}
                 
-                </DataTable>      
+                </DataTable> 
+                {children}     
         </>
         );
     }

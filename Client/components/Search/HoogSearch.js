@@ -36,7 +36,7 @@ export default class HoogSearch extends Component{
 
         console.log("in the button")
        // GOAL - navigate to another screen (search results) and do the request in there       
-        axios.post('http://10.100.102.16:3000/api/hoogs/:params', searchParams).then(response =>{
+        axios.post('http://192.168.1.10:3000/api/hoogs/:params', searchParams).then(response =>{
             console.log(response.data); // TODO: remove it after it works
             this.props.navigation.navigate('SearchResults', {hoogsSearchResults:response.data});
         }).catch(error => {console.log(error)});     
@@ -49,25 +49,10 @@ export default class HoogSearch extends Component{
             <>             
                 <Text style={styles.head}>חיפוש חוגים</Text>
                     <CheckBox id="Tags" title="תגית" style={styles.checkbox} checked={this.state.tagSearchChkB} onPress={() => this.setState(prevState => ({tagSearchChkB : !prevState.tagSearchChkB}))}/>
-                        <TextInput id="tagSearch"   onChangeText={(text) => this.setState({tagSearch:text})}/>
-                    <CheckBox id="Gender" title="מין" style={styles.checkbox} checked={this.state.genderChkB} onPress={() => this.setState(prevState => ({genderChkB: !prevState.genderChkB}))}/>
-                        <Picker
-                            selectedValue={this.state.gender}
-                            style={{height: 50, width: 100}}
-                            onValueChange={(itemValue, itemIndex) =>
-                                this.setState({gender: itemValue})}>
-                            <Picker.Item label="זכר" value="Male" />
-                            <Picker.Item label="נקבה" value="Female" />
-                        </Picker>
-                    <CheckBox id="Ages" title="טווח גילאים" style={styles.checkbox} checked={this.state.ageRangeChkB} onPress={() => this.setState(prevState => ({ageRangeChkB: !prevState.ageRangeChkB}))}/>
-                        <NumericInput initValue={this.state.maxAge} maxValue={99}
-                            onChange={value => this.setState({maxAge:value})} />
-                        <NumericInput initValue={this.state.minAge} minValue={1}
-                            onChange={value => {this.setState({minAge:value});}} />
+                        <TextInput id="tagSearch" onChangeText={(text) => this.setState({tagSearch:text})}/>
                     <CheckBox id="location" title="מיקום" checked={this.state.locationChkB} onPress={() => this.setState(prevState => ({ locationChkB: !prevState.locationChkB}))}/>
-                
-                    {/*  beginning of google search */}
-                    <GooglePlacesAutocomplete
+                      {/*  beginning of google search */}
+                      <GooglePlacesAutocomplete
                         placeholder='Search'
                         minLength={3} // minimum length of text to search
                         autoFocus={false}
@@ -85,7 +70,7 @@ export default class HoogSearch extends Component{
                         
                         query={{
                             // available options: https://developers.google.com/places/web-service/autocomplete
-                            key: 'AIzaSyC-RknzrGoZd7QhL-1Vc1O1cGN5K1UZF2A', // TODO: save the key somewhere safer
+                            key: 'AIzaSyCJNmwQWr1gli1Se440KkI14nsFfgqQkAM', // TODO: save the key somewhere safer
                             language: 'iw', // language of the results                           
                         }}
                         
@@ -123,6 +108,22 @@ export default class HoogSearch extends Component{
                     />
 
                     {/* end of google search */}
+
+
+                    <CheckBox id="Gender" title="מין" style={styles.checkbox} checked={this.state.genderChkB} onPress={() => this.setState(prevState => ({genderChkB: !prevState.genderChkB}))}/>
+                        <Picker
+                            selectedValue={this.state.gender}
+                            style={{height: 50, width: 100}}
+                            onValueChange={(itemValue, itemIndex) =>
+                                this.setState({gender: itemValue})}>
+                            <Picker.Item label="זכר" value="Male" />
+                            <Picker.Item label="נקבה" value="Female" />
+                        </Picker>
+                    <CheckBox id="Ages" title="טווח גילאים" style={styles.checkbox} checked={this.state.ageRangeChkB} onPress={() => this.setState(prevState => ({ageRangeChkB: !prevState.ageRangeChkB}))}/>
+                        <NumericInput initValue={this.state.maxAge} maxValue={99}
+                            onChange={value => this.setState({maxAge:value})} />
+                        <NumericInput initValue={this.state.minAge} minValue={1}
+                            onChange={value => {this.setState({minAge:value});}} />                 
 
                     <Button mode='contained' onPress={this.onSearchButtonPress}>חפש</Button>
             
