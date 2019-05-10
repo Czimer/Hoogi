@@ -19,7 +19,7 @@ export default class FeedContainer extends React.Component {
                             style={{ height: 50, width: 200 }}
                             onValueChange={params.onGroupChange}>
                             {params.groups.map(group => {
-                                return <Picker.Item key={group.id} label={group.name} value={group.id} />
+                                return <Picker.Item key={group.id} label={group.name} value={group.id} color={params.currGroupId === group.id ? '#d6d6d6' : 'black'} />
                             })}
                         </Picker>
                         : <Fragment></Fragment>}
