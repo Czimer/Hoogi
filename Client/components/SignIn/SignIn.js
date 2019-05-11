@@ -1,11 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, AsyncStorage } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { StyleSheet, Image, View, AsyncStorage } from "react-native";
+import { Button, TextInput } from "react-native-paper";
 import Axios from 'axios';
 import appConfig from '../../appConfig';
 
 
 export default class SignIn extends React.Component {
+    static navigationOptions = {
+        title: 'חוגי'
+    }
     constructor(props) {
         super(props);
         this.state = {
@@ -26,7 +29,7 @@ export default class SignIn extends React.Component {
         const { email, password } = this.state
         const params = { email, password }
         Axios.post(`${appConfig.ServerApiUrl}/general/signIn`, params).then((res) => {
-            AsyncStorage.setItem("loginData",JSON.stringify(res.data))
+            AsyncStorage.setItem("loginData", JSON.stringify(res.data))
             this.props.navigation.navigate('App')
         }).catch(err => {
             console.log(err.message)
@@ -41,14 +44,18 @@ export default class SignIn extends React.Component {
         const { email, password } = this.state
         return (
             <View style={styles.container}>
-                <Text >Hoogi. make a logo</Text>
-                <View>
-                    <TextInput label="אימייל" value={email} onChangeText={this.onEmailChange} />
-                    <TextInput label="סיסמה" value={password} onChangeText={this.onPasswordChange} secureTextEntry={true} />
+                <View style={{ alignItems: 'center' }}>
+                    <Image style={{ height: 250, width: 250 }} source={require('../../assets/logo.jpg')} />
                 </View>
-                <View style={styles.buttons}>
-                    <Button style={{ width: '50%' }} onPress={this.navigateToSignUp} >הרשם</Button>
-                    <Button style={{ width: '50%' }} onPress={this.onConnect} mode="contained">התחבר</Button>
+                <View style={styles.inputView}>
+                    <View>
+                        <TextInput label="אימייל" value={email} onChangeText={this.onEmailChange} />
+                        <TextInput label="סיסמה" value={password} onChangeText={this.onPasswordChange} secureTextEntry={true} />
+                    </View>
+                    <View style={styles.buttons}>
+                        <Button style={styles.button} onPress={this.navigateToSignUp} >הרשם</Button>
+                        <Button style={styles.button} onPress={this.onConnect} mode="contained">התחבר</Button>
+                    </View>
                 </View>
             </View>
         );
@@ -59,9 +66,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        textAlign: 'center',
+        padding: 15
+
+    },
+    inputView: {
+        flex: 1,
+        marginTop: 50
     },
     buttons: {
         flexDirection: 'row'
+    },
+    button: {
+        width: '50%'
     }
 })
