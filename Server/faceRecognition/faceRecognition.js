@@ -1,55 +1,4 @@
-//#region try face-recognition library - it wouldnt download
-// const fr = require('face-recognition')
-
-// function face(){
-//     const image1 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\IMG_20161030_145042.jpg')
-//     const image2 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\20160815_125314.jpg')
-//     const image3 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\20160213_163451.jpg')
-//     const image4 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\1387581104850.jpg')
-//     const image5 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\20150508_162453.jpg')
-//     const image6 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\IMG_20170623_224656.jpg')
-//     const image7 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\IMG_20170401_121239.jpg')
-//     const image8 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\IMG_20170323_233741.jpg')
-//     const image9 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\IMG_20170311_204429.jpg')
-//     const image9 = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\IMG_20161111_203720.jpg')
-//     // const image2 = fr.loadImage('path/to/image2.jpg')
-
-//     // detect and extract faces for the training
-//     const detector = fr.FaceDetector()
-
-//     // const faceRectangles = detector.locateFaces(image)
-//     const faceImage1 = detector.detectFaces(image1)
-//     const faceImage2 = detector.detectFaces(image2)
-//     const faceImage3 = detector.detectFaces(image3)
-//     const faceImage4 = detector.detectFaces(image4)
-//     const faceImage5 = detector.detectFaces(image5)
-//     const faceImage6 = detector.detectFaces(image6)
-//     const faceImage7 = detector.detectFaces(image7)
-//     const faceImage8 = detector.detectFaces(image8)
-//     const faceImage9 = detector.detectFaces(image9)
-//     const faceImage10 = detector.detectFaces(image10)
-
-//     const recognizer = fr.FaceRecognizer()
-
-//     // arrays of face images, (use FaceDetector to detect and extract faces)
-//     const danaFaces = [ faceImage1, faceImage2, faceImage3, faceImage4, faceImage5, faceImage6, faceImage7, faceImage8, faceImage9, faceImage10 ]
-
-
-//     recognizer.addFaces(danaFaces, 'dana')
-
-//     const danaFaceImage = fr.loadImage('C:\Users\Dana\Documents\Users\Dana\Galaxy S 5\Camera\IMG_20161023_120648.jpg')
-//     const predictions = recognizer.predict(danaFaceImage)
-//     console.log(predictions)
-
-// }
-
-// module.exports = face;
-//#endregion 
-
-// import * as faceapi from 'face-api.js';
   var faceapi = require('face-api.js')
-
-  // import { canvas, faceDetectionNet, faceDetectionOptions, saveFile } from './commons';
 
   var canvas = require('./commons/env')
   var faceDetection = require('./commons/faceDetection')
@@ -89,7 +38,7 @@
 
   }
 
-  async function runFaceRecognition(_ImageToRecognize) {
+  async function recognizeFaces(_ImageToRecognize) {
 
     try{         
    
@@ -143,19 +92,22 @@
     }    
   }
 
-  module.exports = runFaceRecognition;
+  module.exports = {
+    recognizeFaces: recognizeFaces,
+    runLoaders:runLoaders
+  };
 
   async function runLoaders(){
     await loadAllNets();
     await loadReferencePicture();
   }
 
-  async function dana(){
-    await runLoaders();    
-    var bla = await runFaceRecognition(QUERY_IMAGE);
-    console.log(bla);
-    var bla2 = await runFaceRecognition(QUERY_IMAGE2);
-    console.log(bla2);
-  }
-dana();
+//   async function dana(){
+//     await runLoaders();    
+//     var bla = await recognizeFaces(QUERY_IMAGE);
+//     console.log(bla);
+//     var bla2 = await recognizeFaces(QUERY_IMAGE2);
+//     console.log(bla2);
+//   }
+// dana();
 

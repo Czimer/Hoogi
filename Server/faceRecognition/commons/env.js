@@ -4,8 +4,6 @@
 
 // implements nodejs wrappers for HTMLCanvasElement, HTMLImageElement, ImageData
 const canvas = require('canvas')
-
-// import * as faceapi from 'face-api.js';
 var faceapi = require('face-api.js');
 
 // patch nodejs environment, we need to provide an implementation of
