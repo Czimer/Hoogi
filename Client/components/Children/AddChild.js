@@ -3,6 +3,8 @@ import { StyleSheet, Picker } from "react-native";
 import { Text, TextInput, Modal, Portal, Card, Button, HelperText } from "react-native-paper";
 import DatePicker from '../../genericComponents/Pickers/DatePicker';
 import appConfig from '../../appConfig';
+import { HueSlider } from "react-native-color";
+import tinycolor from 'tinycolor2';
 
 export default class AddChild extends React.Component {
     constructor(props) {
@@ -14,11 +16,12 @@ export default class AddChild extends React.Component {
             gender: 'זכר',
             phone: '',
             birthDate: undefined,
+            color: tinycolor('red').toHsl()
         };
     }
 
     addNew = () => {
-        const { childId, firstName, lastName, gender, phone, birthDate } = this.state
+        const { childId, firstName, lastName, gender, phone, birthDate ,color} = this.state
         const errorObject = {
             childIdError: undefined,
             firstNameError: undefined,
@@ -53,14 +56,14 @@ export default class AddChild extends React.Component {
 
         this.setState({ ...errorObject })
         if (!isError) {
-            const child = { childId, firstName, lastName, gender, phone, birthDate }
+            const child = { childId, firstName, lastName, gender, phone, birthDate, color: tinycolor(color).toRgbString() }
             this.props.onAdd(child)
         }
     }
 
     render() {
         const { onClose } = this.props
-        const { childId, firstName, lastName, gender, phone, birthDate } = this.state
+        const { childId, firstName, lastName, gender, phone, birthDate, color } = this.state
         return (
             <Portal>
                 <Modal visible={true} onDismiss={onClose} contentContainerStyle={styles.modal}>
@@ -90,6 +93,12 @@ export default class AddChild extends React.Component {
                             {!!this.state.phoneError && <HelperText type="error">{this.state.phoneError}</HelperText>}
                             <DatePicker title={'הזן תאריך לידה'} date={birthDate} isLimited onChange={birthDate => this.setState({ birthDate })}></DatePicker>
                             {!!this.state.birthDateError && <HelperText type="error">יש לבחור תאריך לידה</HelperText>}
+                            <HueSlider
+                                style={styles.sliderRow}
+                                gradientSteps={40}
+                                value={color.h}
+                                onValueChange={h => this.setState({ color: { ...this.state.color, h } })}
+                            />
                         </Card.Content>
                         <Card.Actions>
                             <Button mode="contained" onPress={this.addNew}>הוסף</Button>
@@ -105,5 +114,10 @@ export default class AddChild extends React.Component {
 const styles = StyleSheet.create({
     modal: {
         backgroundColor: '#fff',
-    }
+    },
+    sliderRow: {
+        alignSelf: 'stretch',
+        marginLeft: 12,
+        marginTop: 12
+    },
 });

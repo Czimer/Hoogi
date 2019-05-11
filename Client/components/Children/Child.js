@@ -1,8 +1,10 @@
 import React from 'react';
 import { List, Avatar, Text, Button, TextInput, HelperText } from "react-native-paper";
-import { View , Picker} from "react-native";
+import { View, Picker, StyleSheet } from "react-native";
 import DatePicker from "../../genericComponents/Pickers/DatePicker";
 import appConfig from '../../appConfig';
+import { HueSlider } from "react-native-color";
+import tinycolor from 'tinycolor2';
 
 export default class Child extends React.Component {
     constructor(props) {
@@ -10,7 +12,7 @@ export default class Child extends React.Component {
         this.state = {
             isExpanded: false,
             isEditMode: false,
-            child: this.props.child
+            child: { ...this.props.child, color: tinycolor(this.props.child.color).toHsl() }
         };
     }
 
@@ -51,17 +53,23 @@ export default class Child extends React.Component {
         }
 
         if (isError) {
-            this.setState({...errorObject})
-        } else{
+            this.setState({ ...errorObject })
+        } else {
             // some api call
             this.props.onEditChild(this.state.child)
             this.setState({ isEditMode: false })
         }
-        
+
     }
 
     cancelEdit = () => {
         this.setState({ child: this.props.child, isEditMode: false })
+    }
+
+    onChangeHue = (h) => {
+        const { child } = this.state
+        child.color.h = h
+        this.setState({ child: { ...child } })
     }
 
     render() {
@@ -73,13 +81,13 @@ export default class Child extends React.Component {
                 expanded={isExpanded}
                 onPress={this._handlePress}>
                 {isEditMode ?
-                    <View style={{marginRight:20}}>
+                    <View style={{ marginRight: 20 }}>
                         <TextInput label='שם פרטי'
                             value={child.firstName} onChangeText={firstName => this.setState(prevState => ({ child: { ...prevState.child, firstName } }))} />
-                             {!!this.state.firstNameError && <HelperText type="error">{this.state.firstNameError}</HelperText>}
+                        {!!this.state.firstNameError && <HelperText type="error">{this.state.firstNameError}</HelperText>}
                         <TextInput label='שם משפחה'
                             value={child.lastName} onChangeText={lastName => this.setState(prevState => ({ child: { ...prevState.child, lastName } }))} />
-                            {!!this.state.lastNameError && <HelperText type="error">{this.state.lastNameError}</HelperText>}
+                        {!!this.state.lastNameError && <HelperText type="error">{this.state.lastNameError}</HelperText>}
                         <Text>מין</Text>
                         <Picker
                             selectedValue={child.gender}
@@ -92,8 +100,14 @@ export default class Child extends React.Component {
                         </Picker>
                         <TextInput label='טלפון'
                             value={child.phone} onChangeText={phone => this.setState(prevState => ({ child: { ...prevState.child, phone } }))} />
-                             {!!this.state.phoneError && <HelperText type="error">{this.state.phoneError}</HelperText>}
+                        {!!this.state.phoneError && <HelperText type="error">{this.state.phoneError}</HelperText>}
                         <DatePicker title={'הזן תאריך לידה'} date={child.birthDate} isLimited onChange={birthDate => this.setState(prevState => ({ child: { ...prevState.child, birthDate } }))}></DatePicker>
+                        <HueSlider
+                            style={styles.sliderRow}
+                            gradientSteps={40}
+                            value={child.color.h}
+                            onValueChange={this.onChangeHue}
+                        />
                         <Button onPress={this.onSaveChildNewData}>שמור</Button>
                         <Button onPress={this.cancelEdit}>ביטול</Button>
                     </View> :
@@ -102,10 +116,20 @@ export default class Child extends React.Component {
                         <Text>מין - {child.gender}</Text>
                         <Text>טלפון - {child.phone}</Text>
                         <Text>תאריך לידה - {child.birthDate}</Text>
+                        <Text style={{ color: tinycolor(child.color).toRgbString() }}>הצבע של הילד</Text>
                         <Button onPress={() => this.setState({ isEditMode: true })}>ערוך</Button>
                     </View>
-                 }
+                }
             </List.Accordion>
         );
     }
 }
+
+
+const styles = StyleSheet.create({
+    sliderRow: {
+        alignSelf: 'stretch',
+        marginLeft: 12,
+        marginTop: 12
+    },
+});

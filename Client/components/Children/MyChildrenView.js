@@ -5,7 +5,8 @@ import Child from './Child';
 import AddChild from "./AddChild";
 import request from 'graphql-request';
 import appConfig from '../../appConfig';
-
+import tinycolor from "tinycolor2";
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default class MyChildrenView extends React.Component {
     static navigationOptions = {
@@ -57,7 +58,8 @@ export default class MyChildrenView extends React.Component {
     onEditChild = async (editedChild) => {
 
         const params = {
-            ...editedChild
+            ...editedChild,
+            color: tinycolor(editedChild.color).toRgbString()
         }
 
         try {
@@ -74,9 +76,11 @@ export default class MyChildrenView extends React.Component {
         const { children, isAddChildMode } = this.state
         return (
             <View style={styles.container}>
-                {children.map(child => {
-                    return <Child key={child.childId} child={child} onEditChild={this.onEditChild}></Child>
-                })}
+                <ScrollView>
+                    {children.map(child => {
+                        return <Child key={child.childId} child={child} onEditChild={this.onEditChild}></Child>
+                    })}
+                </ScrollView>
                 <FAB icon="add" onPress={this.onOpenAddMode} style={styles.fab} />
                 {isAddChildMode && <AddChild onClose={this.onCloseAddMode} onAdd={this.onAddChild}></AddChild>}
             </View>
@@ -93,11 +97,12 @@ const getChildrenQuery = `query AllChilds($parentId: String!){
         gender
         phone
         birthDate
+        color
       }
     } 
   }`
 
-const addChildMutation = `mutation addChild($childId:String!,$firstName:String!,$lastName:String!,$gender:String!,$phone:String!,$birthDate:Date!,$parentId:String!){
+const addChildMutation = `mutation addChild($childId:String!,$firstName:String!,$lastName:String!,$gender:String!,$phone:String!,$birthDate:Date!,$parentId:String!,$color:String!){
     createChild(input:{
       child:{
         childId:$childId
@@ -107,6 +112,7 @@ const addChildMutation = `mutation addChild($childId:String!,$firstName:String!,
         phone:$phone
         birthDate:$birthDate
         parentId:$parentId
+        color:$color
       }
     }){
       child{
@@ -115,7 +121,7 @@ const addChildMutation = `mutation addChild($childId:String!,$firstName:String!,
     }    
   }`
 
-const updateChildMutation = `mutation updateChild($childId:String!,$firstName:String!,$lastName:String!,$gender:String!,$phone:String!,$birthDate:Date!){
+const updateChildMutation = `mutation updateChild($childId:String!,$firstName:String!,$lastName:String!,$gender:String!,$phone:String!,$birthDate:Date!,$color:String!){
     updateChildByChildId(input:
     {
       childId:$childId
@@ -125,6 +131,7 @@ const updateChildMutation = `mutation updateChild($childId:String!,$firstName:St
           gender:$gender
           phone:$phone
           birthDate:$birthDate
+          color:$color
       }
     }) 
       {

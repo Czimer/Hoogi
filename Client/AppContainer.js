@@ -3,7 +3,7 @@ import { createSwitchNavigator, createStackNavigator, createAppContainer } from 
 import SignIn from "./components/SignIn/SignIn";
 import Home from "./components/Home/Home";
 import CalendarView from "./components/Calendar/Calendar";
-import Feed from "./components/Feed/Feed";
+import FeedContainer from "./components/Feed/FeedContainer";
 import AuthLoadingScreen from "./AuthLoadingScreen";
 import HoogSearch from './components/Search/HoogSearch';
 import SearchResults from './components/Search/SearchResults';
@@ -18,7 +18,7 @@ const AppStack = createStackNavigator(
     {
         Home: Home,
         Calendar: CalendarView,
-        Feed: Feed,
+        Feed: FeedContainer,
         HoogSearch: HoogSearch,
         SearchResults: SearchResults,
         MyChildren: MyChildrenView,
