@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Image, View, AsyncStorage } from "react-native";
+import { StyleSheet, Image, View, AsyncStorage, Alert } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import Axios from 'axios';
 import appConfig from '../../appConfig';
@@ -33,6 +33,7 @@ export default class SignIn extends React.Component {
             this.props.navigation.navigate('App')
         }).catch(err => {
             console.log(err.message)
+            Alert.alert('שגיאה בהתחברות', 'ניסינו לחבר אותך למערכת אבל לא הצלחנו, הפרטים שהזנת נכונים?')
         })
     }
 
