@@ -35,6 +35,8 @@ class userBL {
     static async GetUserData(email, password) {
         const query = `select id,user_type from public.users where email = $1 and password = $2`;
 
+        console.log("sign in");
+
         const encryptedPassword = crypto.encrypt(password)
 
         const params = [email, encryptedPassword]

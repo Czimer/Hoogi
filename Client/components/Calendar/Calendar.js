@@ -3,100 +3,115 @@ import { Text, View, StyleSheet } from 'react-native';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import {LocaleConfig} from 'react-native-calendars';
 import DayAgenda from './DayAgenda';
+import axios from 'axios';
+import appConfig from '../../appConfig';
 
-const instances = [{
-    childName: 'נועה',
-    color: 'red',
-    date: '2019-02-11',
-    name: `הפועל כפר סבא 'תמר'`,
-    start_hour: '17:30',
-    end_hour: '19:00',
-    location: 'אולם היובל',
-    equipment: ['כדור', 'מגבת', 'בקבוק מים 1.5 ליטר', 'חולצה בהירה', 'חולצה כהה']
-}, {
-    childName: 'יותם',
-    color: 'blue',
-    date: '2019-02-11',
-    name: `מטפסים - הנבחרת הצעירה`,
-    start_hour: '15:30',
-    end_hour: '18:00',
-    location: 'iclimb כפר סבא',
-    equipment: ['נעלי טיפוס', 'שק מגנזיום']
-}, {
-    childName: 'נעמה',
-    color: 'green',
-    date: '2019-02-11',
-    name: `התעמלות קרקע - גילאים 12-15`,
-    start_hour: '16:30',
-    end_hour: '18:00',
-    location: `מרכז ספורט 'אלון'`,
-    equipment: ['בגדי התעמלות']
-}, {
-    childName: 'נועה',
-    color: 'red',
-    date: '2019-02-12',
-    name: `הפועל כפר סבא 'תמר'`,
-    start_hour: '18:30',
-    end_hour: '20:00',
-    location: 'בית ספר אופירה נבון',
-    equipment: ['כדור', 'מגבת', 'בקבוק מים 1.5 ליטר', 'חולצה בהירה', 'חולצה כהה']
-}, {
-    childName: 'נעמה',
-    color: 'green',
-    date: '2019-02-12',
-    name: `התעמלות קרקע - גילאים 12-15`,
-    start_hour: '16:30',
-    end_hour: '18:00',
-    location: `תיכון כצנלסון`,
-    equipment: ['בגדי התעמלות']
-}, {
-    childName: 'נעמה',
-    color: 'green',
-    date: '2019-02-14',
-    name: `התעמלות קרקע - גילאים 12-15`,
-    start_hour: '16:30',
-    end_hour: '18:00',
-    location: `מרכז ספורט 'אלון'`,
-    equipment: ['בגדי התעמלות']
-}];
+let instances1 = [ { name: 'דנה',
+color: 'red',
+events: '[{"id":"1","group_id":"3","group_name":"כדורסל רעננה בנות 12-14","start_time":"2019-05-05T16:00:00.000Z","end_time":"2019-05-05T17:30:00.000Z","location":"אחוזה 31, רעננה","equipment":["מגבת","בקבוק מים","כדור"],"description":null},{"id":"3","group_id":"3","group_name":"כדורסל רעננה בנות 12-14","start_time":"2019-05-12T16:00:00.000Z","end_time":"2019-05-12T17:30:00.000Z","location":"אחוזה 31, רעננה","equipment":["מגבת","בקבוק מים","כדור"],"description":null}]' },
+{ name: 'אלעד',
+color: 'blue',
+events: '[{"id":"2","group_id":"5","group_name":"טאקוואנדו רעננה בנים 8-11","start_time":"2019-05-05T13:00:00.000Z","end_time":"2019-05-05T15:00:00.000Z","location":"החרושת 26, אור יהודה","equipment":null,"description":null}]' } ];
 
-const FirstChild = {key:'FirstChild', color: 'red', dates: ['2019-02-11', '2019-02-12']};
-const SecondChild = {key:'SecondChild', color: 'blue', dates: ['2019-02-11']};
-const ThirdChild = {key:'ThirdChild', color: 'green', dates: ['2019-02-11', '2019-02-12', '2019-02-14']};
+const FirstChild = {key:'FirstChild', color: 'red', dates: ['2019-05-11', '2019-05-12']};
+const SecondChild = {key:'SecondChild', color: 'blue', dates: ['2019-05-11']};
+const ThirdChild = {key:'ThirdChild', color: 'green', dates: ['2019-05-11', '2019-05-12', '2019-05-14']};
 
-const children = [FirstChild, SecondChild, ThirdChild];
-
-const uniqueDates = [...new Set([].concat.apply([], children.map(child => child.dates)))];
-
-const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : children.filter( y => y.dates.includes(x))}}));
-const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: d.value, selected: true, marked: true})));
+const children1 = [FirstChild, SecondChild, ThirdChild];
 
 export default class CalendarView extends React.Component {
     constructor(props) {
-      super(props);
-      this.state = {
-        items: {},
-        dayAgenda: []
-      };
+        super(props);
+
+        this.state = {
+            items: {},
+            dayAgenda: [],
+            dots: {},
+            instances: []
+        };
+
+        console.log("ctor");
     }
 
     handleDayPress = (day) => {
-        this.setState({dayAgenda: instances.filter(instance => instance.date === day.dateString)});
+        console.log("daypress");
+        if (this.state.instances != []) {
+            let instancesCopy = JSON.stringify(this.state.instances);
+            instancesCopy = JSON.parse(instancesCopy);
+            this.setState({dayAgenda: instancesCopy.map(child => {
+                child.events = child.events.filter(event => event.date === day.dateString);
+                return child;
+            })});
+        }
+    }
+
+    componentDidMount() {
+        console.log("did");
+        axios.post(`${appConfig.ServerApiUrl}/parentsAndChilds/child/events`, {parentId: '123456789'}).then(response => {
+            console.log("did1");
+            const instancesEvents = response.map(child => {
+                child.events = JSON.parse(child.events).map(event => {
+                    event = {
+                        ...event, 
+                        date: event.start_time.split("T")[0], 
+                        start_time: event.start_time = event.start_time.split("T")[1].slice(0, 5), 
+                        end_time: event.end_time = event.end_time.split("T")[1].slice(0, 5)
+                    };
+        
+                    return event;
+                });
+        
+                return child;
+            });
+
+            const children = instancesEvents.map(child => {
+                return {
+                    key: child.name,
+                    color: child.color,
+                    dates: child.events.map(event => event.date)
+                };
+            });
+    
+            const uniqueDates = [...new Set([].concat.apply([], children.map(child => child.dates)))];
+            
+            const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : children.filter( y => y.dates.includes(x))}}));
+            
+            const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: d.value, selected: true, marked: true}))); 
+
+            this.setState({
+                dots: markedDatesObject,
+                instances: instancesEvents
+            });
+
+            console.log("did2");
+        }).catch(error => {
+            console.log(error);
+        });
     }
   
     render() {
-        return (
-            <View>
-                <CalendarList style={styles.calendar}
-                    horizontal={true}
-                    pagingEnabled={true}
-                    hideArrows={true}
-                    markedDates={markedDatesObject}
-                    markingType={'multi-dot'}
-                    onDayPress={this.handleDayPress}/>
-                <DayAgenda dayAgenda={this.state.dayAgenda}/>
-            </View>
-        );
+        if (this.state.dots != {})
+        {
+            return (
+                <View>
+                    <CalendarList style={styles.calendar}
+                        horizontal={true}
+                        pagingEnabled={true}
+                        hideArrows={true}
+                        markedDates={this.state.dots}
+                        markingType={'multi-dot'}
+                        onDayPress={this.handleDayPress}
+                        onMonthChange={(month) => console.log('month changed', month)}/>
+                    <DayAgenda dayAgenda={this.state.dayAgenda}/>
+                </View>
+            );
+        } else {
+            return (
+                <View>
+                    <Text>Loading...</Text>
+                </View>
+            )
+        }
     }
 }
 
