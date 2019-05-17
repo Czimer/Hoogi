@@ -3,8 +3,10 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+// var face = require('./faceRecognition/faceRecognition-try')
 
 const { postgraphile } = require("postgraphile");
+const ConnectionFilterPlugin = require("postgraphile-plugin-connection-filter");
 const config = require('./appConfig')
 
 var apiRouter = require('./routes/apiRoute');
@@ -22,7 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use('/api', apiRouter);
 app.use(postgraphile(config.ConnectionString, 'public', {
-	graphiql: true
+  graphiql: true,
+  appendPlugins: [ConnectionFilterPlugin],
 }));
 
 // catch 404 and forward to error handler

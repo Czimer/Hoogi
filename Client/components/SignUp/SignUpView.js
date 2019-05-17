@@ -37,7 +37,7 @@ export default class SignUpView extends Component {
 
         let isError = false
 
-        if (personalId.trim() === '' || firstName.trim().length < 2) {
+        if (personalId.trim() === '' || personalId.trim().length < 2) {
             isError = true
             errorObject.personalIdError = 'תעודת זהות לא תקינה'
         }
@@ -74,11 +74,9 @@ export default class SignUpView extends Component {
             errorObject.passwordError = 'הסיסמאות לא תואמות'
         }
 
-        if (isError) {
-            this.setState({ ...errorObject })
-        } else {
-            this.setState({ ...errorObject })
-            // api call and then go back
+        this.setState({ ...errorObject })
+        if (!isError) {
+
             const params = {
                 personalId, firstName, lastName, email, phone, password: password1, role, gender
             }
@@ -96,7 +94,7 @@ export default class SignUpView extends Component {
         return (
             <ScrollView>
                 <View style={{ flex: 1, padding: 15 }}>
-                      <View style={styles.body}>
+                    <View style={styles.body}>
                         <TextInput label='תעודת זהות'
                             value={personalId} onChangeText={personalId => this.setState({ personalId })} />
                         {!!this.state.personalIdError && <HelperText type="error">{this.state.personalIdError}</HelperText>}

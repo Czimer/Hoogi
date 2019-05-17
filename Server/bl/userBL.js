@@ -33,6 +33,49 @@ class userBL {
     }
 
     static async GetUserData(email, password) {
+        const user = await this.getUserByEmailAndPassword(email, password)
+        let objUser = { user_type: user.user_type }
+        if (user) {
+            if (user.user_type === 'מדריך') {
+                const manager = await this.getManagerIdBySequenceId(user.id)
+                objUser.id = manager.id
+            } else {
+                const parent = await this.getParentIdBySequenceId(user.id)
+                objUser.id = parent.id
+            }
+
+            return objUser
+        }
+        throw Error('יוזר לא קיים')
+    }
+
+    static async getManagerIdBySequenceId(id){
+        const query = `select manager_id as id from public.managers where id = $1`;
+
+        const params = [id]
+        try {
+            const results = await DataAccess.executeQuery(query, params);
+            return results[0]
+        }
+        catch (err) {
+            throw err
+        }
+    }
+
+    static async getParentIdBySequenceId(id){
+        const query = `select parent_id as id from public.parents where id = $1`;
+
+        const params = [id]
+        try {
+            const results = await DataAccess.executeQuery(query, params);
+            return results[0]
+        }
+        catch (err) {
+            throw err
+        }
+    }
+
+    static async getUserByEmailAndPassword(email, password) {
         const query = `select id,user_type from public.users where email = $1 and password = $2`;
 
         console.log("sign in");

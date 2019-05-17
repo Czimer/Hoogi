@@ -30,13 +30,6 @@ export default class Home extends React.Component {
         this.props.navigation.setParams({ logoff: this.logoff });
         const loginData = await AsyncStorage.getItem('loginData')
         const isManager = JSON.parse(loginData).user_type === Manager
-        if (isManager) {
-            // fetch manager id and set it into AsyncStorage
-
-        } else {
-            // fetch parent's kids id's and set it into AsyncStorage
-        }
-
         this.setState({ showSpin: false, ManagerMode: isManager })
     }
 
