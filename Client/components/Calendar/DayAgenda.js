@@ -34,7 +34,6 @@ class DayAgenda extends React.Component {
                                 </View>
                                 <View style={styles.line}>
                                     <Button style={styles.hours} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_time} - {hoog.end_time}</Button>
-                                    <Button style={styles.location} icon='location-on' color='rgb(110, 110, 110)'>{hoog.location}</Button>
                                 </View>
                             </Surface>
                         </TouchableOpacity >))}

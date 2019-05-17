@@ -1,23 +1,11 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { AsyncStorage, Text, View, StyleSheet } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import {LocaleConfig} from 'react-native-calendars';
 import DayAgenda from './DayAgenda';
 import axios from 'axios';
 import appConfig from '../../appConfig';
-
-let instances1 = [ { name: 'דנה',
-color: 'red',
-events: '[{"id":"1","group_id":"3","group_name":"כדורסל רעננה בנות 12-14","start_time":"2019-05-05T16:00:00.000Z","end_time":"2019-05-05T17:30:00.000Z","location":"אחוזה 31, רעננה","equipment":["מגבת","בקבוק מים","כדור"],"description":null},{"id":"3","group_id":"3","group_name":"כדורסל רעננה בנות 12-14","start_time":"2019-05-12T16:00:00.000Z","end_time":"2019-05-12T17:30:00.000Z","location":"אחוזה 31, רעננה","equipment":["מגבת","בקבוק מים","כדור"],"description":null}]' },
-{ name: 'אלעד',
-color: 'blue',
-events: '[{"id":"2","group_id":"5","group_name":"טאקוואנדו רעננה בנים 8-11","start_time":"2019-05-05T13:00:00.000Z","end_time":"2019-05-05T15:00:00.000Z","location":"החרושת 26, אור יהודה","equipment":null,"description":null}]' } ];
-
-const FirstChild = {key:'FirstChild', color: 'red', dates: ['2019-05-11', '2019-05-12']};
-const SecondChild = {key:'SecondChild', color: 'blue', dates: ['2019-05-11']};
-const ThirdChild = {key:'ThirdChild', color: 'green', dates: ['2019-05-11', '2019-05-12', '2019-05-14']};
-
-const children1 = [FirstChild, SecondChild, ThirdChild];
 
 export default class CalendarView extends React.Component {
     constructor(props) {
@@ -27,14 +15,12 @@ export default class CalendarView extends React.Component {
             items: {},
             dayAgenda: [],
             dots: {},
-            instances: []
+            instances: [],
+            showSpin: true
         };
-
-        console.log("ctor");
     }
 
     handleDayPress = (day) => {
-        console.log("daypress");
         if (this.state.instances != []) {
             let instancesCopy = JSON.stringify(this.state.instances);
             instancesCopy = JSON.parse(instancesCopy);
@@ -45,11 +31,12 @@ export default class CalendarView extends React.Component {
         }
     }
 
-    componentDidMount() {
-        console.log("did");
-        axios.post(`${appConfig.ServerApiUrl}/parentsAndChilds/child/events`, {parentId: '123456789'}).then(response => {
-            console.log("did1");
-            const instancesEvents = response.map(child => {
+    async componentDidMount() {
+        const loginData = await AsyncStorage.getItem('loginData');
+        const parentId = JSON.parse(loginData).id;
+        axios.post(`${appConfig.ServerApiUrl}/parentsAndChilds/child/events`, {parentId: parentId}).then(response => {
+            console.log(response.data);
+            const instancesEvents = response.data.map(child => {
                 child.events = JSON.parse(child.events).map(event => {
                     event = {
                         ...event, 
@@ -80,39 +67,31 @@ export default class CalendarView extends React.Component {
 
             this.setState({
                 dots: markedDatesObject,
-                instances: instancesEvents
+                instances: instancesEvents,
+                showSpin: false
             });
-
-            console.log("did2");
         }).catch(error => {
             console.log(error);
         });
     }
   
     render() {
-        if (this.state.dots != {})
-        {
-            return (
-                <View>
-                    <CalendarList style={styles.calendar}
-                        horizontal={true}
-                        pagingEnabled={true}
-                        hideArrows={true}
-                        markedDates={this.state.dots}
-                        markingType={'multi-dot'}
-                        onDayPress={this.handleDayPress}
-                        onMonthChange={(month) => console.log('month changed', month)}/>
-                    <DayAgenda dayAgenda={this.state.dayAgenda}/>
-                </View>
-            );
-        } else {
-            return (
-                <View>
-                    <Text>Loading...</Text>
-                </View>
-            )
-        }
-    }
+        const { dots, dayAgenda, showSpin} = this.state;
+        return (
+            showSpin ? <ActivityIndicator animating={true} size="large" /> : 
+            <View>
+                <CalendarList style={styles.calendar}
+                    horizontal={true}
+                    pagingEnabled={true}
+                    hideArrows={true}
+                    markedDates={dots}
+                    markingType={'multi-dot'}
+                    onDayPress={this.handleDayPress}
+                    onMonthChange={(month) => console.log('month changed', month)}/>
+                <DayAgenda dayAgenda={dayAgenda}/>
+            </View>
+        );
+    } 
 }
 
 // Hebrew Days & Monthes
