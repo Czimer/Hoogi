@@ -34,8 +34,8 @@ class userBL {
 
     static async GetUserData(email, password) {
         const user = await this.getUserByEmailAndPassword(email, password)
-        let objUser = { user_type: user.user_type }
         if (user) {
+            let objUser = { user_type: user.user_type }
             if (user.user_type === 'מדריך') {
                 const manager = await this.getManagerIdBySequenceId(user.id)
                 objUser.id = manager.id
