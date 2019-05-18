@@ -8,8 +8,8 @@ router.get('/', async function(req, res, next) {
     res.send(hoogs)
 });
 
-router.get('/getAllHoogsNames', async function(req, res, next) {
-    const hoogs = await hoogBL.GetAllHoogsNames();
+router.post('/getAllHoogsNames', async function(req, res, next) {
+    const hoogs = await hoogBL.GetAllHoogsNames(req, res, next);
     res.send(hoogs)
 });
 
