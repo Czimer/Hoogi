@@ -25,18 +25,18 @@ class DayAgenda extends React.Component {
     render() {
         return (
             <ScrollView>
-                {this.state.dayAgenda.map((hoog, i) =>
-                    <TouchableOpacity key={i} onPress={() => this.onMoveToEventDetails(hoog)}>
-                        <Surface style={[styles.surface, { borderRightColor: hoog.color }]} >
-                            <View style={styles.line}>
-                                <Text style={styles.groupName}>{hoog.name}</Text>
-                            </View>
-                            <View style={styles.line}>
-                                <Button style={styles.hours} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_hour} - {hoog.end_hour}</Button>
-                                <Button style={styles.location} icon='location-on' color='rgb(110, 110, 110)'>{hoog.location}</Button>
-                            </View>
-                        </Surface>
-                    </TouchableOpacity >)}
+                {this.state.dayAgenda.map(child =>
+                    child.events.map((hoog, i) =>
+                        <TouchableOpacity key={i} onPress={() => this.onMoveToEventDetails(hoog)}>
+                            <Surface style={[styles.surface, { borderRightColor: child.color }]} >
+                                <View style={styles.line}>
+                                    <Text style={styles.groupName}>{hoog.group_name}</Text>
+                                </View>
+                                <View style={styles.line}>
+                                    <Button style={styles.hours} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_time} - {hoog.end_time}</Button>
+                                </View>
+                            </Surface>
+                        </TouchableOpacity >))}
             </ScrollView>
         );
     }

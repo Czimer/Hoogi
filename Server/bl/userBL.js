@@ -34,8 +34,8 @@ class userBL {
 
     static async GetUserData(email, password) {
         const user = await this.getUserByEmailAndPassword(email, password)
-        let objUser = { user_type: user.user_type }
         if (user) {
+            let objUser = { user_type: user.user_type }
             if (user.user_type === 'מדריך') {
                 const manager = await this.getManagerIdBySequenceId(user.id)
                 objUser.id = manager.id
@@ -77,6 +77,8 @@ class userBL {
 
     static async getUserByEmailAndPassword(email, password) {
         const query = `select id,user_type from public.users where email = $1 and password = $2`;
+
+        console.log("sign in");
 
         const encryptedPassword = crypto.encrypt(password)
 

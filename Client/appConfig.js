@@ -3,9 +3,11 @@ const regex = {
     email: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 }
 
+const baseServerUrl = 'http://localhost:3000';
+
 const appConfig = {
-    ServerGraphqlUrl: 'http://10.0.0.29:3000/graphql',
-    ServerApiUrl: 'http://10.0.0.29:3000/api',
+    ServerGraphqlUrl: `${baseServerUrl}/graphql`,
+    ServerApiUrl: `${baseServerUrl}/api`,
     regex
 }
 

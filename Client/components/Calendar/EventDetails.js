@@ -31,8 +31,8 @@ export default class EventDetails extends React.Component {
                 <View >
                     <Text>שם החוג - {hoog.name}</Text>
                     <Text>תאריך - {hoog.date}</Text>
-                    <Text>זמן התחלה - {hoog.start_hour}</Text>
-                    <Text>זמן סיום - {hoog.end_hour}</Text>
+                    <Text>זמן התחלה - {hoog.start_time}</Text>
+                    <Text>זמן סיום - {hoog.end_time}</Text>
                     <Text>מיקום - {hoog.location}</Text>
                 </View>
                 <View >

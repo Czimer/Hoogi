@@ -1,103 +1,97 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { AsyncStorage, Text, View, StyleSheet } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import {LocaleConfig} from 'react-native-calendars';
 import DayAgenda from './DayAgenda';
-
-const instances = [{
-    childName: 'נועה',
-    color: 'red',
-    date: '2019-02-11',
-    name: `הפועל כפר סבא 'תמר'`,
-    start_hour: '17:30',
-    end_hour: '19:00',
-    location: 'אולם היובל',
-    equipment: ['כדור', 'מגבת', 'בקבוק מים 1.5 ליטר', 'חולצה בהירה', 'חולצה כהה']
-}, {
-    childName: 'יותם',
-    color: 'blue',
-    date: '2019-02-11',
-    name: `מטפסים - הנבחרת הצעירה`,
-    start_hour: '15:30',
-    end_hour: '18:00',
-    location: 'iclimb כפר סבא',
-    equipment: ['נעלי טיפוס', 'שק מגנזיום']
-}, {
-    childName: 'נעמה',
-    color: 'green',
-    date: '2019-02-11',
-    name: `התעמלות קרקע - גילאים 12-15`,
-    start_hour: '16:30',
-    end_hour: '18:00',
-    location: `מרכז ספורט 'אלון'`,
-    equipment: ['בגדי התעמלות']
-}, {
-    childName: 'נועה',
-    color: 'red',
-    date: '2019-02-12',
-    name: `הפועל כפר סבא 'תמר'`,
-    start_hour: '18:30',
-    end_hour: '20:00',
-    location: 'בית ספר אופירה נבון',
-    equipment: ['כדור', 'מגבת', 'בקבוק מים 1.5 ליטר', 'חולצה בהירה', 'חולצה כהה']
-}, {
-    childName: 'נעמה',
-    color: 'green',
-    date: '2019-02-12',
-    name: `התעמלות קרקע - גילאים 12-15`,
-    start_hour: '16:30',
-    end_hour: '18:00',
-    location: `תיכון כצנלסון`,
-    equipment: ['בגדי התעמלות']
-}, {
-    childName: 'נעמה',
-    color: 'green',
-    date: '2019-02-14',
-    name: `התעמלות קרקע - גילאים 12-15`,
-    start_hour: '16:30',
-    end_hour: '18:00',
-    location: `מרכז ספורט 'אלון'`,
-    equipment: ['בגדי התעמלות']
-}];
-
-const FirstChild = {key:'FirstChild', color: 'red', dates: ['2019-02-11', '2019-02-12']};
-const SecondChild = {key:'SecondChild', color: 'blue', dates: ['2019-02-11']};
-const ThirdChild = {key:'ThirdChild', color: 'green', dates: ['2019-02-11', '2019-02-12', '2019-02-14']};
-
-const children = [FirstChild, SecondChild, ThirdChild];
-
-const uniqueDates = [...new Set([].concat.apply([], children.map(child => child.dates)))];
-
-const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : children.filter( y => y.dates.includes(x))}}));
-const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: d.value, selected: true, marked: true})));
+import axios from 'axios';
+import appConfig from '../../appConfig';
 
 export default class CalendarView extends React.Component {
     constructor(props) {
-      super(props);
-      this.state = {
-        items: {},
-        dayAgenda: []
-      };
+        super(props);
+
+        this.state = {
+            items: {},
+            dayAgenda: [],
+            dots: {},
+            instances: [],
+            showSpin: true
+        };
     }
 
     handleDayPress = (day) => {
-        this.setState({dayAgenda: instances.filter(instance => instance.date === day.dateString)});
+        if (this.state.instances != []) {
+            let instancesCopy = JSON.stringify(this.state.instances);
+            instancesCopy = JSON.parse(instancesCopy);
+            this.setState({dayAgenda: instancesCopy.map(child => {
+                child.events = child.events.filter(event => event.date === day.dateString);
+                return child;
+            })});
+        }
+    }
+
+    async componentDidMount() {
+        const loginData = await AsyncStorage.getItem('loginData');
+        const parentId = JSON.parse(loginData).id;
+        axios.post(`${appConfig.ServerApiUrl}/parentsAndChilds/child/events`, {parentId: parentId}).then(response => {
+            console.log(response.data);
+            const instancesEvents = response.data.map(child => {
+                child.events = JSON.parse(child.events).map(event => {
+                    event = {
+                        ...event, 
+                        date: event.start_time.split("T")[0], 
+                        start_time: event.start_time = event.start_time.split("T")[1].slice(0, 5), 
+                        end_time: event.end_time = event.end_time.split("T")[1].slice(0, 5)
+                    };
+        
+                    return event;
+                });
+        
+                return child;
+            });
+
+            const children = instancesEvents.map(child => {
+                return {
+                    key: child.name,
+                    color: child.color,
+                    dates: child.events.map(event => event.date)
+                };
+            });
+    
+            const uniqueDates = [...new Set([].concat.apply([], children.map(child => child.dates)))];
+            
+            const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : children.filter( y => y.dates.includes(x))}}));
+            
+            const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: d.value, selected: true, marked: true}))); 
+
+            this.setState({
+                dots: markedDatesObject,
+                instances: instancesEvents,
+                showSpin: false
+            });
+        }).catch(error => {
+            console.log(error);
+        });
     }
   
     render() {
+        const { dots, dayAgenda, showSpin} = this.state;
         return (
+            showSpin ? <ActivityIndicator animating={true} size="large" /> : 
             <View>
                 <CalendarList style={styles.calendar}
                     horizontal={true}
                     pagingEnabled={true}
                     hideArrows={true}
-                    markedDates={markedDatesObject}
+                    markedDates={dots}
                     markingType={'multi-dot'}
-                    onDayPress={this.handleDayPress}/>
-                <DayAgenda dayAgenda={this.state.dayAgenda}/>
+                    onDayPress={this.handleDayPress}
+                    onMonthChange={(month) => console.log('month changed', month)}/>
+                <DayAgenda dayAgenda={dayAgenda}/>
             </View>
         );
-    }
+    } 
 }
 
 // Hebrew Days & Monthes

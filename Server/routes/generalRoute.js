@@ -14,11 +14,11 @@ router.post('/signUp', async (req, res, next) => {
 
 router.post('/signIn', async (req, res, next) => {
     const { email, password } = req.body
-    const data = await genenralBl.performSignIn(email, password)
-    if (data) {
+    try {
+        const data = await genenralBl.performSignIn(email, password)
         res.send(data)
     }
-    else {
+    catch (err) {
         res.status(500).end()
     }
 });

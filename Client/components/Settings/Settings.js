@@ -1,16 +1,17 @@
 
 import React from 'react';
-import { StyleSheet, Text, ScrollView, View } from 'react-native';
-import { Headline, Divider, Checkbox } from 'react-native-paper';
+import { AsyncStorage, StyleSheet, Text, ScrollView, View } from 'react-native';
+import { Headline, Divider, Checkbox, ActivityIndicator } from 'react-native-paper';
 import { Switch } from 'react-native-gesture-handler';
-
-let userNotifiSettings = [{ name: "תזכורות לחוגים", checked: true },
-                          { name: "שינוי במועד/מיקום חוג", checked: false }];
+import axios from 'axios';
+import appConfig from '../../appConfig';
 
 
 export default class Settings extends React.Component {
     state = {
-        settings: userNotifiSettings
+        settings: [],
+        families: [],
+        showSpin: true
     }
 
     handlePress = i => {
@@ -19,7 +20,7 @@ export default class Settings extends React.Component {
 
             const newSettingsArray = state.settings.map((item, j) => {
                 if (j === i) {
-                    item.checked = !item.checked;
+                    item.is_active = !item.is_active;
                     return item;
                 }
                 else {
@@ -38,27 +39,49 @@ export default class Settings extends React.Component {
         // TODO: Save settings
     }
 
+    async componentWillMount() {
+        const loginData = await AsyncStorage.getItem('loginData');
+        const parentId = JSON.parse(loginData).id;
+        axios.post(`${appConfig.ServerApiUrl}/settings/parent`, {parentId: parentId}).then(response => { 
+            console.log(response.data);
+            this.setState({
+                settings: response.data,
+                families: [...new Set(response.data.map(sett => sett.family_name))],
+                showSpin: false
+            });
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+
     render() {
-        const { settings } = this.state;
+        const { settings, families, showSpin } = this.state;
 
         return (
             <ScrollView style={styles.mainView}>
-                <Headline style={styles.notifiHeadline}>התראות</Headline>
-                <View style={styles.section}>
-                    {settings.map((notifi, i) => { 
-                        return (
-                            <View key={i} style={styles.notifi}> 
-                                <View style={styles.text}>
-                                    <Text>{notifi.name}</Text>
-                                </View>
-                                <View style={styles.switch}>
-                                    <Switch value={notifi.checked} onValueChange={() => this.handlePress(i)}/>
-                                </View>
-                                <Divider/>
+                {showSpin ? <ActivityIndicator animating={true} size="large" /> : 
+                families.map((fam, i) => {
+                    return (
+                        <View key={i}>
+                            <Headline style={styles.notifiHeadline}>{fam}</Headline>
+                            <View style={styles.section}>
+                                {settings.map((sett, j) => { 
+                                    return (
+                                        <View key={j} style={styles.sett}> 
+                                            <View style={styles.text}>
+                                                <Text>{sett.text}</Text>
+                                            </View>
+                                            <View style={sett.switch}>
+                                                <Switch value={sett.is_active} onValueChange={() => this.handlePress(j)}/>
+                                            </View>
+                                            <Divider/>
+                                        </View>
+                                    )}
+                                )}
                             </View>
-                        )}
+                        </View>
                     )}
-                </View>
+                )}
             </ScrollView>
         )
     }
@@ -81,7 +104,7 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderRadius: 8
     },
-    notifi: {
+    sett: {
         flexDirection: 'row',
         alignContent: 'center',
         alignItems: 'center',

@@ -15,7 +15,7 @@ export default class DatePicker extends Component {
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
     _handleDatePicked = (time) => {
-        this.props.onChange(new Date(date).toLocaleDateString())
+        this.props.onChange(time)
         this._hideDateTimePicker();
     };
 
