@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, FlatList, ScrollView } from 'react-native';
 import { Button } from 'react-native-paper';
-import axios from 'axios'
 
 
 export default class SearchResults extends Component{
@@ -79,7 +78,14 @@ export default class SearchResults extends Component{
                             <Text>מיקום</Text>
                             <Text>{item.loc}</Text>
                             <Text>מין</Text>
-                            <Text>{item.gender}</Text>
+                            {
+                                item.gender == 'female' &&
+                                <Text>נקבה</Text> 
+                            }
+                            {
+                                item.gender == 'male' &&
+                                <Text>זכר</Text> 
+                            }
                             <Text>טווח הגילאים</Text>
                             <Text>{item.age_range}</Text>
                             <Text>תגיות רלוונטיות</Text>

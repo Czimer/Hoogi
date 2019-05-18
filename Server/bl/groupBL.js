@@ -31,7 +31,7 @@ class groupBL {
             grp.max_participants,
             grp.group_times::json->>'time' SHAA,
             grp.group_times::json->>'day' YOM,
-            grp.gender,
+            CASE WHEN grp.gender LIKE 'female' THEN 'נקבה' ELSE 'זכר' END AS gender,
             grp.max_age,
             grp.min_age, 
             hoogs.name, 
@@ -51,17 +51,18 @@ class groupBL {
 
     static async addNewGroup(req, res, next){
 
-        const hoogId = req.body.hoogId;
-        const minAge = req.body.minAge;
-        const maxAge = req.body.maxAge;
-        const gender = req.body.gender;
-        const day = req.body.day;
-        const time = req.body.time;
-        const maxParticipants = req.body.maxParticipants;
+        const params = req.body.groupData;
+        const hoogId = params.hoogId;
+        const minAge = params.minAge;
+        const maxAge = params.maxAge;
+        const gender = params.gender;
+        const day = params.day;
+        const time = params.selectedHours + `:` + params.selectedMinutes
+        const maxParticipants = params.maxParticipants;
 
         if(hoogId && minAge && maxAge && gender && day && time && maxParticipants){
-            const query = `INSERT INTO GROUPS(HOOG_ID, MIN_AGE, MAX_AGE, GENDER, GROUP_TIME, MAX_PARTICIPANTS) VALUES(` +
-                        hoogId + `, ` + minAge + `, ` + maxAge + `, ` + gender + `, ` + day + `, ` + time + `, ` + maxParticipants + `)`;
+            const query = `INSERT INTO GROUPS(HOOG_ID, MIN_AGE, MAX_AGE, GENDER, GROUP_TIMES, MAX_PARTICIPANTS) VALUES(` +
+                        hoogId + `, ` + minAge + `, ` + maxAge + `, '` + gender + `', '{"day":"` + day + `", "time":"` + time + `"}', ` + maxParticipants + `)`;
 
             try{
                 const results = await DataAccess.executeQuery(query);
@@ -82,7 +83,7 @@ class groupBL {
         const groupId = req.body.groupId;
         const childId = req.body.childId;
 
-        const query = `INSERT INTO PARTICIPANTS (` + groupId + `, ` + childId + `)`;
+        const query = `INSERT INTO PARTICIPANTS(group_id, child_id) values(` + groupId + `, '` + childId + `')`;
 
         try{
             const results = await DataAccess.executeQuery(query);

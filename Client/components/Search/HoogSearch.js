@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, ScrollView, Picker } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Picker , Alert} from 'react-native';
 import { DataTable, FAB, Portal, Checkbox, TextInput, Button } from 'react-native-paper';
 import NumericInput from 'react-native-numeric-input'
 import {CheckBox} from 'react-native-elements'
 import axios from 'axios';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import AnimatedLoader from "react-native-animated-loader";
+import appConfig from '../../appConfig'
 
 export default class HoogSearch extends Component{
     constructor(props){
@@ -20,7 +21,6 @@ export default class HoogSearch extends Component{
             minAge:1,
             maxAge:20,
             location: "",
-            // visible:false
         };    
     };
       
@@ -34,10 +34,7 @@ export default class HoogSearch extends Component{
         this.state.ageRangeChkB ? searchParams.maxAge = this.state.maxAge : '';
         this.state.locationChkB ? searchParams.location = this.state.location : '';
 
-        console.log("in the button")
-       // GOAL - navigate to another screen (search results) and do the request in there       
-        axios.post('http://192.168.1.10:3000/api/hoogs/:params', searchParams).then(response =>{
-            console.log(response.data); // TODO: remove it after it works
+        axios.post(appConfig.ServerApiUrl + '/hoogs/:params', searchParams).then(response =>{
             this.props.navigation.navigate('SearchResults', {hoogsSearchResults:response.data});
         }).catch(error => {console.log(error)});     
         
@@ -70,7 +67,7 @@ export default class HoogSearch extends Component{
                         
                         query={{
                             // available options: https://developers.google.com/places/web-service/autocomplete
-                            key: 'AIzaSyCJNmwQWr1gli1Se440KkI14nsFfgqQkAM', // TODO: save the key somewhere safer
+                            key: appConfig.locationApiKey, // TODO: save the key somewhere safer
                             language: 'iw', // language of the results                           
                         }}
                         

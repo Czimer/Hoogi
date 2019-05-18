@@ -28,10 +28,10 @@ export default class GenericList extends Component{
                         (tableData !== undefined) && tableData.map((row, rowIndex) =>{
                             return (
                                 <TouchableHighlight  key={rowIndex} onLongPress={(eventic) => handleLongPress(eventic, row)}>
-                                     <DataTable.Row key={rowIndex}>
+                                     <DataTable.Row key={row.id}>
                                     { 
-                                        Object.keys(row).map((keyName) =>{
-                                            return (<DataTable.Cell key={row[keyName]}>{row[keyName]}</DataTable.Cell>)
+                                        Object.keys(row).map((keyName, cellRowIndex) =>{
+                                            return (<DataTable.Cell key={cellRowIndex}>{row[keyName]}</DataTable.Cell>)
                                         })
                                     }
                                     </DataTable.Row>
