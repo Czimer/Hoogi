@@ -1,10 +1,11 @@
 import React, { Fragment } from 'react';
 import Feed from './Feed';
-import { AsyncStorage, Picker, View } from "react-native";
+import { AsyncStorage, Picker, View, Platform, Alert } from "react-native";
 import { flatten, uniqBy } from "lodash";
-import request, { GraphQLClient } from 'graphql-request';
+import request from 'graphql-request';
 import appConfig from '../../appConfig';
 import { Manager } from '../../consts';
+import Axios from 'axios';
 
 export default class FeedContainer extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -65,7 +66,7 @@ export default class FeedContainer extends React.Component {
         if (groups.length > 0) {
             const feedMessages = await this.fetchGroupMessages(groups[0].id)
             const currGroupId = groups[0].id
-            this.setState({ currGroupId, feedMessages, groups })
+            this.setState({ currGroupId, groups, feedMessages })
             this.props.navigation.setParams({ onGroupChange: this.onGroupChange, groups, currGroupId });
         }
     }
@@ -115,29 +116,55 @@ export default class FeedContainer extends React.Component {
         }
     }
 
+    uploadPhotosAsync = async (photos, messageId) => {
+        const options = {
+            method: 'POST',
+            body: undefined,
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'multipart/form-data',
+            },
+        };
+
+        const photoPromises = photos.map(async photo => {
+            options.body = createFormData(photo, { messageId })
+            return await fetch(`${appConfig.ServerApiUrl}/general/upload`, options);
+        });
+
+        await Promise.all(photoPromises)
+    }
+
 
     sendNewMessage = async (message, Photos) => {
         const { currGroupId } = this.state
+        let messageUploaded = false
+        let newMessage;
         const params = {
             groupId: currGroupId,
-            message,
-            date:new Date()
+            message
         }
 
         try {
             const res = await request(appConfig.ServerGraphqlUrl, addNewMessage, params)
-            const newMessage = res.createGroupsMessage.groupsMessage
-            this.setState(prevState => ({
-                feedMessages: [...prevState.feedMessages, newMessage]
-            }))
+            newMessage = res.createGroupsMessage.groupsMessage
+            messageUploaded = true
+            await this.uploadPhotosAsync(Photos, newMessage.id)
         } catch (err) {
             console.log(err)
+            if (messageUploaded) {
+                Alert.alert('שגיאה בהעלאת התמונות', 'לא הצלחנו להעלות את כל התמונות או את חלכן')
+            }
+        }
+
+        if (newMessage) {
+            this.setState(prevState => ({
+                feedMessages: [newMessage, ...prevState.feedMessages]
+            }))
         }
     }
 
     render() {
         const { currGroupId, feedMessages } = this.state
-        console.log(currGroupId)
         return (
             <Feed groupId={currGroupId} feedMessages={feedMessages} onAddNewMessage={this.sendNewMessage} />
         );
@@ -181,7 +208,7 @@ query getAllGroupsByManagerId($managerId:String!){
 
 const allGroupMessages = `
 query getAllMessagesByGroupId($groupId:Int!){
-    allGroupsMessages(filter:{groupId:{equalTo:$groupId}}){
+    allGroupsMessages(filter:{groupId:{equalTo:$groupId}},orderBy:[DATE_DESC]){
       nodes{
         id
         message
@@ -192,12 +219,11 @@ query getAllMessagesByGroupId($groupId:Int!){
 
 
 const addNewMessage = `
-mutation addNewMessageToGroupFeed($groupId:Int!,$message:String!,$date:Date!){
+mutation addNewMessageToGroupFeed($groupId:Int!,$message:String!){
     createGroupsMessage(input:{
   groupsMessage:{
     groupId:$groupId
     message:$message
-    date:$date
   }
 })   {
   groupsMessage{
@@ -206,5 +232,29 @@ mutation addNewMessageToGroupFeed($groupId:Int!,$message:String!,$date:Date!){
     date
   }
 } 
-}
-`
+}`
+
+
+//async function 
+
+const createFormData = (photo, body) => {
+    const data = new FormData();
+
+    let localUri = photo.uri;
+    let fileName = localUri.split('/').pop();
+
+    let type = `image/jpeg`;
+
+    data.append("photo", {
+        name: fileName,
+        type: type,
+        uri:
+            Platform.OS === "android" ? photo.uri : photo.uri.replace("content://", "")
+    });
+
+    Object.keys(body).forEach(key => {
+        data.append(key, body[key]);
+    });
+
+    return data;
+};
