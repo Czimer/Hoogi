@@ -4,22 +4,21 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 // var face = require('./faceRecognition/faceRecognition-try')
-
+const bodyParser = require('body-parser')
 const { postgraphile } = require("postgraphile");
 const ConnectionFilterPlugin = require("postgraphile-plugin-connection-filter");
 const config = require('./appConfig')
 
 var apiRouter = require('./routes/apiRoute');
 var app = express();
-
-// view engine setup
-//app.set('view engine', 'jade');
+app.use(bodyParser.json())
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs')
 
 // Routes
 app.use('/api', apiRouter);
