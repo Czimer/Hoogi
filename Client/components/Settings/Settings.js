@@ -15,6 +15,9 @@ export default class Settings extends React.Component {
     }
 
     handlePress = i => {
+        const settingId = this.state.settings[i].id;
+        const is_active_new = !this.state.settings[i].is_active;
+
         this.setState(state => {
             console.log(state);
 
@@ -34,9 +37,14 @@ export default class Settings extends React.Component {
 
             console.log(newSettings);
             return (newSettings);
-        })
+        });
 
-        // TODO: Save settings
+        axios.post(`${appConfig.ServerApiUrl}/settings/update`, {id: settingId, is_active: is_active_new}).then(response => { 
+            console.log("update succeffuly");   
+        }).catch(error => {
+            console.log(error);
+            alert("Server error - can't update settings")
+        });
     }
 
     async componentWillMount() {
