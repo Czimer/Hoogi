@@ -7,9 +7,9 @@ class childBL {
     static async saveChildPhoto(childId, { path }) {
         const query = `UPDATE public.children
                         SET photo_blob=$1
-                        WHERE id=$2;`
+                        WHERE child_id=$2;`
 
-        const photoBlob = await fs.readFile(path)
+        const photoBlob = fs.readFileSync(path)
 
         const params = [photoBlob, childId]
 
@@ -22,11 +22,17 @@ class childBL {
     }
 
     static async getChildsPhotos(childsIds) {
+        
+        var numberOfParams = [];
+        for (var i = 1; i <= childsIds.length; i++) {
+            numberOfParams.push('$' + i);
+        }
+
         const query = `SELECT child_id ,photo_blob
         FROM public.children
-        where child_id in ($1);`
+        where child_id in (${numberOfParams.join(',')});`
 
-        const params = [childsIds.join(',')]
+        const params = childsIds
         let childsrensPhotos;
 
         try {
@@ -38,11 +44,15 @@ class childBL {
         }
 
         return childsrensPhotos.map((photo, index) => {
-            const fileName = Date.now() + index
-            const filePathOnServer = `${appConfig.photosPath}\\${fileName}.jpg`
-            fs.writeFileSync(filePathOnServer, photo.photo_blob)
+            let filePath = null
+            if (photo.photo_blob !== null) {
+                const fileName = Date.now() + index
+                const filePathOnServer = `${appConfig.photosPath}\\${fileName}.jpg`
+                fs.writeFileSync(filePathOnServer, photo.photo_blob)
+                filePath = `${appConfig.folderOfPhotos}/${fileName}.jpg`
+            }
 
-            return { filePath: `${appConfig.folderOfPhotos}/${fileName}`, childId: photo.child_id }
+            return { filePath, childId: photo.child_id }
         })
     }
 

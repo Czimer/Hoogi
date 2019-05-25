@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, AsyncStorage } from "react-native";
+import { View, StyleSheet, AsyncStorage,Platform } from "react-native";
 import { FAB } from 'react-native-paper';
 import Child from './Child';
 import request from 'graphql-request';
@@ -51,12 +51,14 @@ export default class MyChildrenView extends React.Component {
             const res = await Axios.post(`${appConfig.ServerApiUrl}/child/getChildsPhotos`, params)
             const photos = res.data
             children = children.map(child => {
-                const photoOfChild = photos.find(photo => photo.child_id === child.childId)
-                const photo = undefined
-                if (photoOfChild) {
-                    photo = photoOfChild.filePath
+                const photoOfChild = photos.find(photo => photo.childId === child.childId)
+                console.log(child.childId)
+                let photo = photoOfChild.filePath
+                if(photo){
+                    photo = `${appConfig.baseServerUrl}/${photo}`
                 }
-                return { ...child, photo }
+                
+                return { ...child, photo: { uri: photo } }
             })
             console.log(children)
             this.setState({ children })
@@ -83,19 +85,23 @@ export default class MyChildrenView extends React.Component {
         try {
             const res = await request(appConfig.ServerGraphqlUrl, addChildMutation, params)
             newChildData = res.createChild.child
-            await this.uploadPhotoAsync(photo, newChildData.id)
+            if (photo) {
+                await this.uploadPhotoAsync(photo, newChildData.childId)
+            }
 
         } catch (err) {
             console.log(err.message)
         }
 
         if (newChildData) {
-            newChildData.photo = photo
+            if(photo) newChildData.photo = photo
+            else  newChildData.photo = {uri:null}
             this.setState(prevstate => ({ children: [...prevstate.children, newChildData], isAddChildMode: false }))
         }
     }
 
     uploadPhotoAsync = async (photo, childId) => {
+        console.log('----------------------------------')
         const options = {
             method: 'POST',
             body: undefined,
@@ -106,7 +112,8 @@ export default class MyChildrenView extends React.Component {
         };
 
         options.body = createFormData(photo, { childId })
-        return await fetch(`${appConfig.ServerApiUrl}/child/upload`, options);
+        console.log('----------------------------------')
+        return await fetch(`${appConfig.ServerApiUrl}/general/upload`, options);
     }
 
     onOpenAddMode = () => {
@@ -124,18 +131,46 @@ export default class MyChildrenView extends React.Component {
     }
 
     onEditChild = async (editedChild) => {
+        const { photo } = editedChild
+        let updateWasFinished = false
+        let photoHasChanged = false
+        let childMutation = updateChildMutation
         const params = {
             ...editedChild,
             color: tinycolor(editedChild.color).toRgbString()
         }
 
+        if(photo && Object.keys(photo).length > 1) photoHasChanged = true
+        
+        console.log('photohaschange - ' + photoHasChanged)
+        if (photoHasChanged) {
+            delete params.photo
+        }
+
+        const photoWasDelete = photo == undefined 
+        if (photoWasDelete) {
+            params.photo = null
+            childMutation = updateChildMutationResetPhoto
+        }
+
         try {
-            await request(appConfig.ServerGraphqlUrl, updateChildMutation, params)
-            const childrenList = this.state.children.map(child => child.childId === editedChild.childId ? { ...child, ...editedChild } : child)
+            await request(appConfig.ServerGraphqlUrl, childMutation, params)
+            updateWasFinished = true
+            let photoObj = photo
+            if (photoWasDelete) {
+                photoObj = { uri: null }
+            }
+            const childrenList = this.state.children.map(child => child.childId === editedChild.childId ? { ...child, ...editedChild, photo: photoObj } : child)
+            if(photoHasChanged){
+                await this.uploadPhotoAsync(photo,editedChild.childId)
+             }
             this.setState({ children: childrenList })
         }
         catch (err) {
             console.log(err.message)
+            if(updateWasFinished){
+                console.log("error uploading photo")
+            }
         }
     }
 
@@ -219,6 +254,27 @@ const updateChildMutation = `mutation updateChild($childId:String!,$firstName:St
           phone:$phone
           birthDate:$birthDate
           color:$color
+      }
+    }) 
+      {
+      child{
+        childId
+      }
+    }
+  }`
+
+const updateChildMutationResetPhoto = `mutation updateChild($childId:String!,$firstName:String!,$lastName:String!,$gender:String!,$phone:String!,$birthDate:Date!,$color:String!){
+    updateChildByChildId(input:
+    {
+      childId:$childId
+      childPatch:{
+          firstName:$firstName
+          lastName:$lastName
+          gender:$gender
+          phone:$phone
+          birthDate:$birthDate
+          color:$color
+          photoBlob:null
       }
     }) 
       {

@@ -66,7 +66,6 @@ export default class Feed extends React.Component {
         const { isAddNewMessageMode, isManager, isPhotoMode, photos } = this.state
         return (
             <View style={styles.container}>
-
                 <View style={styles.messageList}>
                     <ScrollView>
                         {feedMessages.map(message => {

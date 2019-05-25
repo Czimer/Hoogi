@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Picker, View, ScrollView } from "react-native";
+import { TouchableHighlight, Picker, View, ScrollView,StyleSheet,Image } from "react-native";
 import { Text, TextInput, Button, HelperText } from "react-native-paper";
 import DatePicker from '../../genericComponents/Pickers/DatePicker';
 import appConfig from '../../appConfig';
 import { HueSlider } from "react-native-color";
 import tinycolor from 'tinycolor2';
+import { ImageBrowser } from 'expo-multiple-imagepicker';
 
 export default class ChildDetailsComponent extends React.Component {
     constructor(props) {
@@ -17,12 +18,13 @@ export default class ChildDetailsComponent extends React.Component {
         }
 
         this.state = {
+            imageBrowserOpen: false,
             ...childObj
         };
     }
 
     saveOrUpdate = async () => {
-        const { childId, firstName, lastName, gender, phone, birthDate, color } = this.state
+        const { childId, firstName, lastName, gender, phone, birthDate, color,photo } = this.state
         const errorObject = {
             childIdError: undefined,
             firstNameError: undefined,
@@ -57,14 +59,29 @@ export default class ChildDetailsComponent extends React.Component {
 
         this.setState({ ...errorObject })
         if (!isError) {
-            const child = { childId, firstName, lastName, gender, phone, birthDate, color: tinycolor(color).toRgbString() }
+            const child = { childId, firstName, lastName, gender, phone, birthDate, color: tinycolor(color).toRgbString(),photo }
             await this.props.navigation.state.params.onAction(child)
             this.props.navigation.goBack()
         }
     }
 
+    openImageBrowser = () => this.setState({ imageBrowserOpen: true })
+
+    imageBrowserCallback = (callback) => {
+        callback.then((photo) => {
+            console.log(photo)
+            this.setState({
+                imageBrowserOpen: false,
+                photo:photo[0]
+            })
+        }).catch((e) => console.log(e))
+    }
+
     render() {
-        const { id, childId, firstName, lastName, gender, phone, birthDate, color } = this.state
+        const { id, childId, firstName, lastName, gender, phone, birthDate, color, photo, imageBrowserOpen } = this.state
+
+        if (imageBrowserOpen) return <ImageBrowser max={1} callback={this.imageBrowserCallback} />
+        console.log(photo)
         return (
             <ScrollView>
                 <View style={{ flex: 1, padding: 15 }}>
@@ -98,6 +115,14 @@ export default class ChildDetailsComponent extends React.Component {
                         value={color.h}
                         onValueChange={h => this.setState({ color: { ...this.state.color, h } })}
                     />
+
+                    <View style={{ flexDirection: 'row',alignItems:'center',margin:20 }}>
+                        <Text>התמונה של הילד</Text>
+                        <TouchableHighlight onPress={this.openImageBrowser}>
+                            {photo && photo.uri ? <Image style={{ width: 150, height: 150 }} source={{ uri: photo.uri }} /> :
+                                <Image style={{ height: 150, width: 150 }} source={require('../../assets/empty-man.png')} />}
+                        </TouchableHighlight>
+                    </View>
                     <Button mode="contained" onPress={this.saveOrUpdate}>{id ? 'ערוך' : 'הוסף'}</Button>
                 </View>
             </ScrollView>
@@ -105,10 +130,9 @@ export default class ChildDetailsComponent extends React.Component {
     }
 }
 
+//gender === 'male' ? '../../assets/empty-man.png' :
+
 const styles = StyleSheet.create({
-    modal: {
-        backgroundColor: '#fff',
-    },
     sliderRow: {
         alignSelf: 'stretch',
         marginLeft: 12,

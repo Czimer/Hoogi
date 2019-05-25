@@ -3,7 +3,7 @@ var router = express.Router();
 var childBL = require('../bl/childBL')
 var upload = require('../utils/fileUploader')
 
-router.post('/upload', upload.single('photo'), async (req, res, next) => {
+router.post('/uploadChildPhoto', upload.single('photo'), async (req, res, next) => {
     try {
         await childBL.saveChildPhoto(req.body.childId, req.file)
         res.end()
