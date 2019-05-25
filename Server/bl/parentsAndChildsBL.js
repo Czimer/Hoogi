@@ -135,6 +135,19 @@ class parentAndChildBL {
         }
 
     }
+
+    static async GetChildrenOfParentId(req, res, next){ //TODO: check
+        const parentId = req.body.parentId;
+        const query = `SELECT CHILD_ID, FIRST_NAME FROM CHILDREN WHERE PARENT_ID = '` + parentId + `'`;
+
+        try{
+            const results = await DataAccess.executeQuery(query);
+            return results
+        }
+        catch(err){
+            throw err;
+        }
+    }
 }
 
 // module.exports = parentBL;

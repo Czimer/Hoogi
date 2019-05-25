@@ -1,5 +1,6 @@
 var express = require('express');
 var groupBL = require("../bl/groupBL")
+var upload = require('../utils/fileUploader')
 var router = express.Router();
 
 /* GET groups listing. */
@@ -18,12 +19,6 @@ router.post('/', async function(req, res, next){
 router.post('/:params', async function(req, res, next){
     const filteredGroupsByManager = await groupBL.GetAllGroupsOfSpecificManager(req, res, next);
     res.send(filteredGroupsByManager)
-});
-
-
-
-router.get('/all', function(req, res, next) {
-    res.send('respond with a resource 2'); //todo ?
 });
 
 router.post('/addNewGroup/:params', async function(req, res, next){
@@ -53,6 +48,26 @@ router.post('/deleteGroupById/:params', async function(req, res, next){
 router.post('/removeChildFromGroupById/:params', async function(req, res, next){
     const removedChild = await groupBL.removeChildFromGroupById(req, res, next);
     res.send(removedChild);
+})
+
+router.post('/upload', upload.single('photo'), async (req, res, next) => {
+    try {
+        await groupBL.savePhotoByGroupMessageId(req.body.messageId, req.file)
+        res.end()
+    }
+    catch (err) {
+        res.status(500).end()
+    }
+})
+
+router.get('/getPhotosLinks', async (req, res, next) => {
+    try {
+        const photos = await groupBL.getPhotosLinks(Number(req.query.messageId),Number(req.query.entityId),req.query.isManager)
+        res.send(photos)
+    }
+    catch (err) {
+        res.status(500).end()
+    }
 })
 
 module.exports = router;

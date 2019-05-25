@@ -1,5 +1,6 @@
 const userBL = require('./userBL')
-
+const groupBL = require('./groupBL')
+const childBL = require('./childBL')
 const ParentRole = 'הורה'
 
 class generalBL {
@@ -22,6 +23,14 @@ class generalBL {
 
     static async performSignIn(email, password) {
         return await userBL.GetUserData(email, password)
+    }
+
+    static async saveFilAsBlob(bodyParams, file) {
+        if (Object.keys(bodyParams)[0] === "messageId") {
+            await groupBL.savePhotoByGroupMessageId(bodyParams.messageId, file)
+        } else {
+            await childBL.saveChildPhoto(bodyParams.childId, file)
+        }
     }
 }
 
