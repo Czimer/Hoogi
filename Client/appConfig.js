@@ -6,6 +6,7 @@ const regex = {
 const baseServerUrl = 'http://10.0.0.29:3000';
 
 const appConfig = {
+    baseServerUrl:baseServerUrl,
     ServerGraphqlUrl: `${baseServerUrl}/graphql`,
     ServerApiUrl: `${baseServerUrl}/api`,
     regex

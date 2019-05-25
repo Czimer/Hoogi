@@ -32,7 +32,7 @@ export default class FeedContainer extends React.Component {
         super(props);
         this.state = {
             feedMessages: [],
-            currGroupId: undefined
+            currGroupId: undefined,
         };
     }
 
@@ -110,7 +110,12 @@ export default class FeedContainer extends React.Component {
 
         try {
             const data = await request(appConfig.ServerGraphqlUrl, allGroupMessages, params)
-            return data.allGroupsMessages.nodes
+            return data.allGroupsMessages.nodes.map(message => {
+                return {
+                    ...message,
+                    numberOfPhotos: message.totalPhotos.totalCount
+                }
+            })
         } catch (err) {
             console.log(err.message)
         }
@@ -157,6 +162,7 @@ export default class FeedContainer extends React.Component {
         }
 
         if (newMessage) {
+            newMessage.numberOfPhotos = Photos.length
             this.setState(prevState => ({
                 feedMessages: [newMessage, ...prevState.feedMessages]
             }))
@@ -213,6 +219,9 @@ query getAllMessagesByGroupId($groupId:Int!){
         id
         message
         date
+        totalPhotos:groupMessagesPhotosByGroupMessageId{
+          totalCount
+        }
       }
     }
   }`
