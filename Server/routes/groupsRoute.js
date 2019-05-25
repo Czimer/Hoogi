@@ -40,12 +40,17 @@ router.delete('/', async function(req, res, next){
     res.send('respond with a resource 2');
 });
 
-router.delete('/deleteGroupById', async function(req, res, next){
+router.post('/editNewGroup/:params', async function(req, res, next){
+    const editedGroup = await groupBL.editGroupById(req, res, next);
+    res.send(editedGroup);
+});
+
+router.post('/deleteGroupById/:params', async function(req, res, next){
     const deletedGroup = await groupBL.deleteGroupById(req, res, next);
     res.send(deletedGroup);
 });
 
-router.delete('/removeChildFromGroupById:params', async function(req, res, next){
+router.post('/removeChildFromGroupById/:params', async function(req, res, next){
     const removedChild = await groupBL.removeChildFromGroupById(req, res, next);
     res.send(removedChild);
 })
