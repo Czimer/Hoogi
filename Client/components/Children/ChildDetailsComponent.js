@@ -8,6 +8,9 @@ import tinycolor from 'tinycolor2';
 import { ImageBrowser } from 'expo-multiple-imagepicker';
 
 export default class ChildDetailsComponent extends React.Component {
+    static navigationOptions = {
+        title: 'פרטי הילד'
+    }
     constructor(props) {
         super(props);
         let childObj = { ...defaultValue }
