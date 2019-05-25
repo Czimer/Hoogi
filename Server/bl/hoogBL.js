@@ -22,8 +22,9 @@ class hoogBL {
     }
 
     static async GetAllHoogsNames(req, res, next){
-        const manager_id = req.body.manager_id;
-        const query = `SELECT ID, NAME FROM HOOGS WHERE MANAGER_ID = ` + manager_id;
+        const manager_id = req.body.managerId;
+        const query = `SELECT ID, NAME FROM HOOGS WHERE MANAGER_ID = '` + manager_id + `'`;
+        // const query = `SELECT ID, NAME FROM HOOGS`;
 
         try{
             const results = await DataAccess.executeQuery(query);
@@ -35,11 +36,11 @@ class hoogBL {
         }
     }
 
-    static async GetHoogsByParams(req, res, next){
+    static async GetHoogsByParams(req, res, next){//TODO: check
         const params = req.body;
 
-        var query = `select hoogs.name, hoogs.id, grp.id, grp.min_age || '-' || grp.max_age as age_Range,
-        hoogs.address loc, mng.first_name || ' ' || mng.last_name as guid_Name,
+        var query = `select hoogs.name, hoogs.id hoog_id, grp.id group_id, grp.min_age || '-' || grp.max_age as age_Range,
+        hoogs.address loc, grp.group_times, mng.first_name || ' ' || mng.last_name as guid_Name,
         mng.phone guid_Phone, grp.gender, hoogs.tags
         from public.groups grp
         left join public.hoogs hoogs on hoogs.id = grp.hoog_id

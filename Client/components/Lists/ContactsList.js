@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import GenericList from '../../genericComponents/genericList/GenericList'
 import { FAB, Portal, TextInput, Text, Button} from 'react-native-paper';
-import { View, StyleSheet, ScrollView, Picker, Alert} from 'react-native';
+import { View, StyleSheet, ScrollView, AsyncStorage, Alert} from 'react-native';
 import appConfig from '../../appConfig'
 import Modal from 'react-native-modal';
+import { Manager } from '../../consts';
 
 
 
@@ -21,10 +22,16 @@ export default class ContactsList extends Component{
         };    
     };
 
-    componentDidMount = () =>{
-        
+    async componentDidMount() {
+        const loginData = await AsyncStorage.getItem('loginData')
+        const isManager = JSON.parse(loginData).user_type === Manager        
         const groupId = this.props.navigation.getParam('groupId');
-        axios.post(appConfig.ServerApiUrl + '/parentsAndChilds/:params', {groupId:groupId}).then(response =>{
+        this.setState({groupId, managerMode:isManager})
+        this.getAllContactsOfSpecificGroup();
+    }
+
+    getAllContactsOfSpecificGroup = () =>{
+        axios.post(appConfig.ServerApiUrl + '/parentsAndChilds/:params', {groupId:this.state.groupId}).then(response =>{
             this.setState({tableData:response.data});
         }).catch(error => {console.log(error)});
     }
@@ -41,10 +48,11 @@ export default class ContactsList extends Component{
             axios.post(appConfig.ServerApiUrl + '/groups/registerNewParticipantToGroup/:params', 
             {groupId:groupId, childId:childId}).then(response =>{
                 Alert.alert('החניך התווסף בהצלחה!')
-                this.setState({addNewContactModalVisible:false})
+                this.closeModal();
+                this.getAllContactsOfSpecificGroup();
             }).catch(error => {
                 console.log(error)
-                this.setState({addNewContactModalVisible:false})
+                this.closeModal();
                 Alert.alert('הייתה בעיה בהוספת החניך')
             });            
         }
@@ -56,7 +64,7 @@ export default class ContactsList extends Component{
         const groupId = this.props.navigation.getParam('groupId');
         if(contId !== 0){        
 
-            alert.alert(
+            Alert.alert(
                 'שים לב!',
                 'האם אתה בטוח? שאתה רוצה למחוק את משתתף ' + contId + '?',
                 [
@@ -69,31 +77,34 @@ export default class ContactsList extends Component{
                 axios.post(appConfig.ServerApiUrl + '/groups/removeChildFromGroupById/:params', 
                 {groupId:groupId, childId:contId}).then(response =>{
                     Alert.alert('החניך הוסר מהקבוצה בהצלחה!')
-                    this.setState({actionsModalVisible:false})
+                    this.closeModal();
+                    this.getAllContactsOfSpecificGroup();
                 }).catch(error => {
                     console.log(error)
-                    this.setState({actionsModalVisible:false})
+                    this.closeModal();
                     Alert.alert('הייתה בעיה בהסרת החניך מהרשימה ')
                 });
             }           
         }
     }
 
-    handleLongPress = (event) =>{
+    handleLongPress = (event, row) =>{
         // TODO: handle the data from event property - add to state? contactChildId
         // insert a check if the user is manager - only manager is able to insert, edit or delete
-        this.setState({actionsModalVisible: true})
+
+        this.setState({actionsModalVisible: true, contactChildId: row.child_id})
     }
 
     closeModal = () =>{
         this.setState(
             {
-                actionsModalVisible: false
+                actionsModalVisible: false,
+                addNewContactModalVisible: false
             });
     }
 
     render(){
-        const {tableData, tableHead, actionsModalVisible, contactChildId, addNewContactModalVisible} = this.state;
+        const {tableData, tableHead, actionsModalVisible, contactChildId, addNewContactModalVisible, managerMode} = this.state;
         return(
             <View>            
                {
@@ -104,9 +115,9 @@ export default class ContactsList extends Component{
                             role === "manager" &&
                     } */}
                     <Modal key='actionsModal'          
-                        isVisible={actionsModalVisible}>
+                        isVisible={actionsModalVisible && managerMode}>
                             <View style={{marginTop: 22, backgroundColor:'#FFF'}}>                               
-                                <Button onPress={this.removeParticipant(contactChildId)}>
+                                <Button onPress={() => this.removeParticipant(contactChildId)}>
                                     <Text> הסר חניך מספר {contactChildId}</Text>
                                 </Button>  
                                 <Button onPress={this.closeModal}>
@@ -116,7 +127,7 @@ export default class ContactsList extends Component{
                     </Modal>
 
                     <Modal
-                        isVisible={addNewContactModalVisible}>
+                        isVisible={addNewContactModalVisible && managerMode}>
                          <View style={{marginTop: 22, backgroundColor:'#FFF'}}>                                  
                             <Button onPress={() => this.addNewContact(this.state.IdInputNumber)}>
                                 <Text>הוסף חניך חדש</Text>
@@ -127,15 +138,15 @@ export default class ContactsList extends Component{
                             </Button>  
                         </View>
                     </Modal>
-
-                    {/* <Portal> */}
+                    {
+                        managerMode && 
                         <FAB
                             style={styles.fab}
                             small
                             icon="add"
                             onPress={this.openAddNewContactWindow}
                         />
-                    {/* </Portal>       */}
+                    }                    
                    </GenericList>    
                 }        
             </View>

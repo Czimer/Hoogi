@@ -31,14 +31,14 @@ class groupBL {
             grp.max_participants,
             grp.group_times::json->>'time' SHAA,
             grp.group_times::json->>'day' YOM,
-            CASE WHEN grp.gender LIKE 'female' THEN 'נקבה' ELSE 'זכר' END AS gender,
+            CASE WHEN LOWER(grp.gender) LIKE 'female' THEN 'נקבה' ELSE 'זכר' END AS gender,
             grp.max_age,
             grp.min_age, 
-            hoogs.name, 
+            grp.name, 
             grp.id       
         FROM hoogs hoogs
         INNER JOIN (SELECT * FROM GROUPS) grp ON (hoogs.id = grp.hoog_id)
-        WHERE hoogs.manager_id = '` + managerId + `'`; // todo - add null check of groups?
+        WHERE hoogs.manager_id = '` + managerId + `'`;
 
         try{
             const results = await DataAccess.executeQuery(query);
@@ -59,10 +59,47 @@ class groupBL {
         const day = params.day;
         const time = params.selectedHours + `:` + params.selectedMinutes
         const maxParticipants = params.maxParticipants;
+        const groupName = params.groupName;
+        const equipment = params.equipment.split(','); // TODO: check what daniel wants here, how to split it into an array
 
-        if(hoogId && minAge && maxAge && gender && day && time && maxParticipants){
-            const query = `INSERT INTO GROUPS(HOOG_ID, MIN_AGE, MAX_AGE, GENDER, GROUP_TIMES, MAX_PARTICIPANTS) VALUES(` +
-                        hoogId + `, ` + minAge + `, ` + maxAge + `, '` + gender + `', '{"day":"` + day + `", "time":"` + time + `"}', ` + maxParticipants + `)`;
+        if(hoogId != undefined && minAge != undefined && maxAge != undefined &&
+             gender != undefined && day != undefined && time != undefined && maxParticipants != undefined && groupName != undefined && equipment != undefined){
+            const query = `INSERT INTO GROUPS(HOOG_ID, MIN_AGE, MAX_AGE, GENDER, GROUP_TIMES, MAX_PARTICIPANTS, NAME, EQUIPMENT) VALUES(` +
+                        hoogId + `, ` + minAge + `, ` + maxAge + `, '` + gender + `', '{"day":"` + day + `", "time":"` + time + `"}', ` 
+                        + maxParticipants + `, '` + groupName + `'` + equipment + `)`;// TODO: fix the equipment insertion
+
+            try{
+                const results = await DataAccess.executeQuery(query);
+                return results
+            }
+            catch(err){
+                throw err
+            }
+        }
+        else{
+            throw "Could not add a new group. Not all fields are properly formed \n groupsBL:addNewGroup";
+        }
+        
+    }
+
+    static async editGroupById(req, res, next){
+
+        const params = req.body.groupData;
+        const groupId = params.groupId;
+        const minAge = params.minAge;
+        const maxAge = params.maxAge;
+        const gender = params.gender;
+        const day = params.day;
+        const time = params.selectedHours + `:` + params.selectedMinutes
+        const maxParticipants = params.maxParticipants;
+        const groupName = params.groupName;
+
+        if(minAge && maxAge && gender && day && time && maxParticipants){
+            const query = `UPDATE GROUPS SET MIN_AGE = ` + minAge + `, MAX_AGE = ` + maxAge + 
+            `, GENDER =  '` + gender + `', GROUP_TIMES = '{"day":"` + day + `", "time":"` + time + `"}',
+             MAX_PARTICIPANTS = ` + maxParticipants + `, NAME = ` + groupName +
+              + ` WHERE ID = ` + groupId;
+                     
 
             try{
                 const results = await DataAccess.executeQuery(query);
@@ -82,23 +119,70 @@ class groupBL {
     static async RegisterNewParticipantTpGroup(req,res,next){
         const groupId = req.body.groupId;
         const childId = req.body.childId;
+        var groupResult = '';
+        var childResult = '';
+        var groupQuery = `with parts_count as(
+                                select count(*) parts, group_id from participants
+                                group by group_id)		
+                                SELECT MIN_AGE, MAX_AGE, GENDER, MAX_PARTICIPANTS, parts_count.*
+                                FROM GROUPS		
+                                left join parts_count on (parts_count.group_id = id)
+                                WHERE ID = ` + groupId;
+        var childQuery = `SELECT date_part('year',age(birth_date)), gender as age FROM CHILDREN WHERE CHILD_ID = '` + childId + `'`;
+        var insertQuery = '';
 
-        const query = `INSERT INTO PARTICIPANTS(group_id, child_id) values(` + groupId + `, '` + childId + `')`;
+        var minAge;
+        var maxAge;
+        var groupGender;
+        var childGender;
+        var maxParticipants;
+        var childAge;
+        var currentNumberOfParticipants;
 
         try{
-            const results = await DataAccess.executeQuery(query);
-            return results
+            groupResult = await DataAccess.executeQuery(groupQuery);            
         }
         catch(err){
             throw err
         }
+
+        try{
+            childResult = await DataAccess.executeQuery(childQuery);
+        }
+        catch(err){
+            throw(err);
+        }
+
+        minAge = parseInt(groupResult[0].min_age);
+        maxAge = parseInt(groupResult[0].max_age);
+        currentNumberOfParticipants = parseInt(groupResult[0].parts);
+        maxParticipants = parseInt(groupResult[0].max_participants);
+        groupGender = groupResult[0].gender;
+        childGender = childResult[0].gender;
+        childAge = parseInt(childResult[0].age);
+
+        if(currentNumberOfParticipants < maxParticipants && childAge < maxAge && childAge > minAge && childGender.toLowerCase() === groupGender.toLowerCase()){
+            query = `INSERT INTO PARTICIPANTS(group_id, child_id) values(` + groupId + `, '` + childId + `')`;
+
+            try{
+                const results = await DataAccess.executeQuery(query);
+                return results
+            }
+            catch(err){
+                throw err
+            }
+    
+        }else{
+            throw 'The child could not be registered to this group';
+        }
+       
     }
 
     static async removeChildFromGroupById(req, res, next){
         const groupId = req.body.groupId;
         const childId = req.body.childId;
 
-        const query = `DELETE FROM PARTICIPANTS WHERE CHILD_ID = ` + childId + `AND GROUP_ID = ` + groupId;
+        const query = `DELETE FROM PARTICIPANTS WHERE CHILD_ID = '` + childId + `' AND GROUP_ID = '` + groupId + `'`;
         
         try{
             const results = await DataAccess.executeQuery(query);
@@ -117,7 +201,7 @@ class groupBL {
          `DELETE FROM PARTICIPANTS WHERE GROUP_ID = ` + groupId;
 
         try{
-            const results = await DataAccess.executeQuery(deleteGroupQuery);
+            await DataAccess.executeQuery(deleteGroupQuery);
             const results = await DataAccess.executeQuery(deleteAllGroupApperancesInParticipantsTableQuery);
             return results
         }

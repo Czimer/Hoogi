@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import GenericList from '../../genericComponents/genericList/GenericList'
 import axios from 'axios';
-import { View, StyleSheet, Picker, Portal, Alert} from 'react-native';
-import { Text, Button, FAB} from 'react-native-paper';
+import { View, StyleSheet, Picker, AsyncStorage, Alert} from 'react-native';
+import { Text, Button, FAB, TextInput} from 'react-native-paper';
 import NumericInput from 'react-native-numeric-input';
 import Modal from 'react-native-modal';
 import appConfig from '../../appConfig'
 import TimePicker from 'react-native-simple-time-picker';
-
-
-
 
 export default class GroupsList extends Component{
     constructor(props){
@@ -21,25 +18,47 @@ export default class GroupsList extends Component{
             addNewGroupModalVisible:false,
             allHoogsArray: [],
             newGroupData:{
-                selectedMinutes: '00',
-                selectedHours: '12',
+                selectedMinutes: 0,
+                selectedHours: 12,
                 minAge:1,
-                maxAge:20
-            }        
-
-        };
+                maxAge:20,
+                hoogId:1,
+                gender:'male',
+                day:'ראשון',
+                maxParticipants: 10,
+                groupName: ''
+            },
+            add:false,
+            edit:false
+        };       
         
-         axios.post(appConfig.ServerApiUrl + '/hoogs/getAllHoogsNames', {managerId:315315315}).then(response =>{
-            this.setState({allHoogsArray:response.data});
-        }).catch(error => console.log(error));
     };
 
-    componentDidMount = () =>{ 
-        //TODO: change the managerId according to the current signed manager
-        axios.post(appConfig.ServerApiUrl + '/groups/:params', {managerId:315315315}).then(response =>{
+    getAllGroupsOfManager = () =>{
+        axios.post(appConfig.ServerApiUrl + '/groups/:params', {managerId:this.state.managerId}).then(response =>{
             console.log(response.data);
             this.setState({tableData:response.data})
         }).catch(error => {console.log(error)});
+    }
+
+    async componentDidMount() {        
+        const loginData = await AsyncStorage.getItem('loginData')
+        const managerId = JSON.parse(loginData).id;
+        this.setState({managerId});
+        this.getAllGroupsOfManager();
+        this.getAllHoogsNamesOfManager();
+    }
+
+    getAllHoogsNamesOfManager(){            
+        axios.post(appConfig.ServerApiUrl + '/hoogs/getAllHoogsNames', {managerId:this.state.managerId}).then(response =>{
+            this.setState(prevState =>({
+                allHoogsArray:response.data,
+                newGroupData:{
+                    ...prevState.newGroupData,
+                    hoogId: response.data[0].id
+                }
+            }));
+        }).catch(error => console.log(error));
     }
 
     goToContactList = (groupId) =>{
@@ -64,24 +83,14 @@ export default class GroupsList extends Component{
 
                 }
             ]
-        )
-
-        // function deleteGroupFinal(){
-        //     axios.delete(appConfig.ServerApiUrl + '/groups/deleteGroupById', {groupId:groupId}).then(response =>{
-        //         Alert.alert('הקבוצה נמחקה בהצלחה!')
-        //         this.setState({actionsModalVisible:false});
-        //     }).catch(error => {
-        //         console.log(error);
-        //         Alert.alert('הייתה בעיה במחיקת הקבוצה')            
-        //     });
-        // }
-       
+        )       
     }
 
     deleteGroupFinal =(groupId) => {
-        axios.delete(appConfig.ServerApiUrl + '/groups/deleteGroupById', {groupId:groupId}).then(response =>{
+        axios.post(appConfig.ServerApiUrl + '/groups/deleteGroupById/:params', {groupId:groupId}).then(response =>{
             Alert.alert('הקבוצה נמחקה בהצלחה!')
             this.setState({actionsModalVisible:false});
+            this.getAllGroupsOfManager();
         }).catch(error => {
             console.log(error);
             Alert.alert('הייתה בעיה במחיקת הקבוצה')            
@@ -89,7 +98,29 @@ export default class GroupsList extends Component{
     }
 
     openAddNewGroupWindow = () =>{
-        this.setState({addNewGroupModalVisible:true})
+        this.setState({addNewGroupModalVisible:true, add:true})
+    }
+
+    openEditGroupWindow = (event, groupId) =>{
+        
+        const currGroupData = this.state.tableData.find(function(currGroup){
+            return currGroup.id == groupId
+        });       
+        this.setState(prevState => ({addNewGroupModalVisible:true,
+             edit:true,
+            newGroupData:{
+                ...prevState.newGroupData,
+                groupId: currGroupData.id,
+                minAge: currGroupData.min_age,
+                maxAge: currGroupData.max_age,
+                gender: currGroupData.gender,
+                day: currGroupData.yom,
+                selectedHours: parseInt(currGroupData.shaa.split(':')[0]),
+                selectedMinutes: parseInt(currGroupData.shaa.split(':')[1]),
+                maxParticipants: currGroupData.max_participants,
+                groupName: currGroupData.groupName,
+                equipment: currGroupData.equipment       
+        }}))
     }
 
 
@@ -99,37 +130,61 @@ export default class GroupsList extends Component{
         axios.post(appConfig.ServerApiUrl + '/groups/addNewGroup/:params', {groupData:newGroupData}).then(response =>{
             console.log(response.data);
             Alert.alert('הקבוצה התווספה בהצלחה!')
-            this.setState({addNewGroupModalVisible:false});
+            this.closeModal();
+            this.getAllGroupsOfManager();
         }).catch(error => {
             console.log(error);
-            this.setState({addNewGroupModalVisible:true});
+            this.closeModal();
             Alert.alert('הייתה בעיה בהוספת הקבוצה')
         });
 
     }
 
-    handleLongPress = (event, row) =>{
-        // TODO: handle the data from event property - add to state? contactChildId
-       
+    editGroup = () =>{
+        const newGroupData = this.state.newGroupData;
+
+        axios.post(appConfig.ServerApiUrl + '/groups/editNewGroup/:params', {groupData:newGroupData}).then(response =>{
+            console.log(response.data);
+            Alert.alert('הקבוצה התעדכנה בהצלחה!')
+            this.closeModal();
+            this.getAllGroupsOfManager();
+        }).catch(error => {
+            console.log(error);
+            this.closeModal();
+            Alert.alert('הייתה בעיה בעדכון הקבוצה')
+        });
+    }
+
+    handleLongPress = (event, row) =>{       
         // insert a check if the user is manager - only manager is able to insert, edit or delete
         this.setState(
             {
                 actionsModalVisible: true,
                 groupId: row.id
             });
-        console.log(this.state.actionsModalVisible)
+    }
+
+    handleSave = () => {
+        if(this.state.add == true){
+            this.addNewGroup();
+        }
+        else if(this.state.edit == true){
+            this.editGroup();
+        }
     }
 
     closeModal = () =>{
         this.setState(
             {
                 actionsModalVisible: false,
-                addNewGroupModalVisible: false
+                addNewGroupModalVisible: false,
+                add: false,
+                edit:false
             });
     }
 
     render(){
-        const {tableData, tableHead, actionsModalVisible, groupId, addNewGroupModalVisible, selectedHours, selectedMinutes} = this.state;
+        const {tableData, tableHead, actionsModalVisible, groupId, addNewGroupModalVisible, newGroupData} = this.state;
         return(
             <View>
             {
@@ -144,37 +199,48 @@ export default class GroupsList extends Component{
                         <Button onPress={() => this.goToContactList(groupId)}>
                             <Text>עבור לרשימת המשתתפים בקבוצה</Text>
                         </Button>
+                        <Button onPress={(event) => this.openEditGroupWindow(event, groupId)}>
+                            <Text>ערוך את פרטי הקבוצה</Text>
+                        </Button>
                         <Button onPress={this.closeModal}>
                             <Text>X</Text>
                         </Button>                                                 
                     </View>
-                </Modal>  
+            </Modal>  
   
                         <Modal isVisible={addNewGroupModalVisible}>
-                            <View style={{marginTop: 22, backgroundColor:'#FFF'}}>
-                                <Text>קבוצה חדשה</Text>
-                                <Text>סוג חוג</Text>                   
-                                <Picker
-                                    selectedValue={this.state.newGroupData.hoogId}                    
-                                    style={{height: 50, width: 100}}
-                                    onValueChange={(itemValue, itemIndex) =>
-                                        this.setState(prevState => ({newGroupData: {...prevState.newGroupData, hoogId:itemValue}}))}>
-                                        {
-                                            this.state.allHoogsArray.map((currHoog,i) =>
+                            <View style={{marginTop: 22, backgroundColor:'#FFF'}}>   
+                            {
+                                this.state.add && 
+                                <>
+                                    <Text>סוג חוג</Text>                   
+                                    <Picker
+                                        selectedValue={newGroupData.hoogId}                    
+                                        style={{height: 50, width: 100}}
+                                        onValueChange={(itemValue, itemIndex) =>
+                                            this.setState(prevState => ({newGroupData: {...prevState.newGroupData, hoogId:itemValue}}))}>
                                             {
-                                                return <Picker.Item key={currHoog.id} label={currHoog.name} value={currHoog.id}/>}
-                                        )}
-                                 </Picker>
+                                                this.state.allHoogsArray.map((currHoog,i) =>
+                                                {
+                                                    return <Picker.Item key={currHoog.id} label={currHoog.name} value={currHoog.id}/>}
+                                            )}
+                                    </Picker>
+                                 </>
+                            }  
+                            <Text>שם הקבוצה</Text>                          
+                            <TextInput label="groupName" value={newGroupData.groupName} 
+                            onChangeText={groupName => this.setState(prevState =>({newGroupData: {...prevState.newGroupData, groupName:groupName}}))}/>
+                                
                              <Text>גיל מינימלי</Text>
-                                <NumericInput initValue={this.state.newGroupData.minAge}
+                                <NumericInput initValue={newGroupData.minAge} minValue={1}
                                     onChange={value => {this.setState(prevState => ({newGroupData: {...prevState.newGroupData, minAge:value}}));}} />
                                 <Text>גיל מקסימלי</Text>
-                                <NumericInput maxValue={99} initValue={this.state.newGroupData.maxAge}
+                                <NumericInput maxValue={99} initValue={newGroupData.maxAge}
                                     onChange={value => this.setState(prevState => ({newGroupData: {...prevState.newGroupData, maxAge:value}}))} />
                                 
                                 <Text>מין</Text>
                                 <Picker 
-                                    selectedValue={this.state.newGroupData.gender}
+                                    selectedValue={newGroupData.gender}
                                     style={{height: 50, width: 100}}
                                     onValueChange={(itemValue, itemIndex) =>
                                         this.setState(prevState => ({newGroupData: {...prevState.newGroupData, gender:itemValue}}))}>
@@ -183,7 +249,7 @@ export default class GroupsList extends Component{
                                 </Picker>
                                 <Text>יום</Text>
                                 <Picker key="days"
-                                    selectedValue={this.state.newGroupData.day}
+                                    selectedValue={newGroupData.day}
                                     style={{height: 50, width: 100}}
                                     onValueChange={(itemValue, itemIndex) =>
                                         this.setState(prevState => ({newGroupData: {...prevState.newGroupData, day:itemValue}}))}>
@@ -197,9 +263,9 @@ export default class GroupsList extends Component{
                                 </Picker>
                                 <Text>שעה</Text>
                                 <TimePicker
-                                    selectedHours={selectedHours}
+                                    selectedHours={newGroupData.selectedHours}
                                     //initial Hourse value
-                                    selectedMinutes={selectedMinutes}
+                                    selectedMinutes={newGroupData.selectedMinutes}
                                     //initial Minutes value
                                     onChange={(hours, minutes) => this.setState(prevState => ({newGroupData: 
                                     {
@@ -209,25 +275,28 @@ export default class GroupsList extends Component{
                                     }}))}
                                 />  
                                 <Text>מספר משתתפים מקסימלי</Text>
-                                <NumericInput minValue={5} maxValue={20}
+                                <NumericInput minValue={5} maxValue={20} initValue={newGroupData.maxParticipants}
                                     onChange={value => {this.setState(prevState => ({newGroupData: {...prevState.newGroupData, maxParticipants:value}}));}} />                        
-                                <Button onPress={this.addNewGroup}>
-                                    <Text>הוסף קבוצה חדשה</Text>
-                                </Button> 
+                                {/* ציוד */}
+                                <Text>ציוד נלווה</Text>
+                                <TextInput label='equipment' value={newGroupData.equipment} 
+                                onChange={equipment => {this.setState(prevState => ({newGroupData: {...prevState.newGroupData, equipment}}))}}/>
+                                <Button onPress={this.handleSave}>
+                                    <Text>שמור קבוצה</Text>
+                                </Button>
+                                
                                 <Button onPress={this.closeModal}>
                                     <Text>בטל</Text>
                                 </Button>
                             </View>
                         </Modal> 
                                
-                        {/* <Portal> */}
                             <FAB
                                  style={styles.fab}
                                 small
                                 icon="add"
                                 onPress={this.openAddNewGroupWindow}
                             />
-                        {/* </Portal>        */}
             </GenericList>
             
             }
