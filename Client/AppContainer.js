@@ -9,6 +9,7 @@ import HoogSearch from './components/Search/HoogSearch';
 import SearchResults from './components/Search/SearchResults';
 import SignUpView from "./components/SignUp/SignUpView";
 import MyChildrenView from "./components/Children/MyChildrenView";
+import ChildDetailsComponent from "./components/Children/ChildDetailsComponent";
 import EventDetails from "./components/Calendar/EventDetails";
 import ContactsList from './components/Lists/ContactsList';
 import GroupList from './components/Lists/GroupsList';
@@ -25,7 +26,8 @@ const AppStack = createStackNavigator(
         EventDetails: EventDetails,
         ContactsList: ContactsList,
         GroupList: GroupList,
-        Settings: Settings
+        Settings: Settings,
+        ChildDetails:ChildDetailsComponent
     },
     {
         initialRouteName: 'Home',
