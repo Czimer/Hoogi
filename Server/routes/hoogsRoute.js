@@ -24,6 +24,25 @@ router.post('/:params', async function(req, res, next){
     res.send(filteredHoogs)
 });
 
+router.post('/getAllHoogsByManagerId/:params', async function(req, res, next){
+    const hoogsPerManager = await hoogBL.getAllHoogsByManagerId(req, res, next);
+    res.send(hoogsPerManager);
+})
+
+router.post('/deleteHoogById/:params', async function(req, res, next){
+    const deletedHoog  = await hoogBL.deleteHoogById(req, res, next);
+    res.send(deletedHoog);
+})
+
+router.post('/addNewHoog/:params', async function(req, res, next){
+    const addedHoog = await hoogBL.addNewHoog(req, res, next);
+    res.send(addedHoog);
+})
+
+router.post('/editHoog/:params', async function(req, res, next){
+    const editedHoog = await hoogBL.editHoog(req, res, next);
+    res.send(editedHoog);
+})
 
 
 router.get('/all', function(req, res, next) {
