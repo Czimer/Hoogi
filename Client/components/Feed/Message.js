@@ -22,10 +22,12 @@ export default class Message extends React.PureComponent {
     render() {
         const { message } = this.props
 
+        const dateTime = new Date(message.date)
+
         return (
             <React.Fragment>
                 <Card.Title title={message.message}
-                    subtitle={message.date}
+                    subtitle={`${dateTime.toLocaleDateString()}, ${dateTime.toLocaleTimeString()}`}
                     right={() => message.numberOfPhotos ? <IconButton onPress={this.displayPhotos} icon="photo" /> : <View></View>} />
             </React.Fragment>
         );
