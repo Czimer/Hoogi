@@ -36,7 +36,7 @@ class hoogBL {
         }
     }
 
-    static async GetHoogsByParams(req, res, next){//TODO: check
+    static async GetHoogsByParams(req, res, next){
         const params = req.body;
 
         var query = `select hoogs.name, hoogs.id hoog_id, grp.id group_id, grp.min_age || '-' || grp.max_age as age_Range,
@@ -70,6 +70,100 @@ class hoogBL {
         catch(err){
             throw err
         }
+    }
+
+    static async getAllHoogsByManagerId(req, res, next){
+        const params = req.body;
+        const query = `SELECT  DESCRIPTION, TAGS, ADDRESS, NAME, ID FROM HOOGS
+                        WHERE MANAGER_ID = '${params.managerId}'`;       
+        
+        try{
+            const results = await DataAccess.executeQuery(query);
+            return results
+        }
+        catch(err){
+            throw err
+        }        
+    }
+
+    static async deleteHoogById(req, res, next){
+        const params = req.body;
+        const query = `DELETE FROM HOOGS WHERE ID = ${params.hoogId}`;
+
+        try{
+            const results = await DataAccess.executeQuery(query);
+            return results
+        }
+        catch(err){
+            throw err
+        }       
+    }
+
+    static async addNewHoog(req, res, next){
+        const params = req.body.hoogData;
+        const managerId = params.managerId;
+        const name = params.hoogName;
+        const address = params.address;
+        const description = params.description;
+        const latitude = params.location.split(',')[0];
+        const longitude = params.location.split(',')[1];
+
+        let tags = `{`;       
+
+        params.tags.split(',').forEach(function(currEq){
+            tags += `"${currEq}", `
+        })
+        tags = tags.substr(0, tags.length - 2);
+        tags += `}`
+
+
+        const query = `INSERT INTO HOOGS (MANAGER_ID, NAME, ADDRESS, TAGS, DESCRIPTION, LATITUDE, LONGITUDE) 
+                    VALUES('${managerId}', '${name}', '${address}', '${tags}', '${description}', ${latitude}, ${longitude})`;
+        
+        try{
+            const results = await DataAccess.executeQuery(query);
+            return results
+        }
+        catch(err){
+            throw err
+        } 
+    }
+
+    static async editHoog(req, res, next){
+        const params = req.body.hoogData;
+        const hoogId = params.hoogId;
+        const name = params.hoogName;
+        const address = params.address;
+        const description = params.description;
+        const latitude = params.location ? params.location.split(',')[0] : "";
+        const longitude = params.location ? params.location.split(',')[1] : "";        
+
+        let tags = `{`;       
+
+        params.tags.split(',').forEach(function(currEq){
+            tags += `"${currEq}", `
+        })
+        tags = tags.substr(0, tags.length - 2);
+        tags += `}`
+
+
+        var query = `UPDATE HOOGS SET 
+        NAME = '${name}', 
+        ADDRESS = '${address}', 
+        TAGS = '${tags}', 
+        DESCRIPTION = '${description}'`;
+        if(longitude != "" && latitude != ""){
+            query += `LATITUDE = ${latitude}, LONGITUDE =  ${longitude}`;            
+        }        
+        query +=  `WHERE ID = ${hoogId}`;        
+
+        try{
+            const results = await DataAccess.executeQuery(query);
+            return results
+        }
+        catch(err){
+            throw err
+        } 
     }
 }
 module.exports = hoogBL;

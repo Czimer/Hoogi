@@ -40,6 +40,7 @@ export default class Home extends React.Component {
     navigateToContactsList = () => this.props.navigation.navigate('ContactsList')
     navigateToGroupList = () => this.props.navigation.navigate('GroupList')
     navigateToSettings = () => this.props.navigation.navigate('Settings')
+    navigateToHoogList = () => this.props.navigation.navigate('HoogsList')
 
     render() {
         const { showSpin, ManagerMode } = this.state
@@ -51,15 +52,14 @@ export default class Home extends React.Component {
                         <Fragment>
                             <Button mode="contained" onPress={this.navigateToCalendar}>לוח שנה</Button>
                             <Button mode="contained" onPress={this.navigateToFeed}>לוח הודעות</Button>
-                            <Button mode="contained" onPress={this.navigateToContactsList}>רשימת משתתפים</Button>
-                            <Button mode="contained" onPress={this.navigateToGroupList}>רשימת קבוצות</Button>
+                            <Button mode="contained" onPress={this.navigateToGroupList}>הקבוצות שלי</Button>
+                            <Button mode="contained" onPress={this.navigateToHoogList}>החוגים שלי</Button>
                         </Fragment> :
                         <Fragment>
                             <Button mode="contained" onPress={this.navigateToCalendar}>לוח שנה</Button>
                             <Button mode="contained" onPress={this.navigateToFeed}>לוח הודעות</Button>
                             <Button mode="contained" onPress={this.navigateToSearch}>חיפוש</Button>
                             <Button mode="contained" onPress={this.navigateToChildren}>הילדים שלי</Button>
-                            <Button mode="contained" onPress={this.navigateToContactsList}>רשימת משתתפים</Button>
                             <Button mode="contained" onPress={this.navigateToSettings}>הגדרות</Button>
                         </Fragment>
                 }

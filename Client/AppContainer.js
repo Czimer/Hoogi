@@ -13,6 +13,7 @@ import ChildDetailsComponent from "./components/Children/ChildDetailsComponent";
 import EventDetails from "./components/Calendar/EventDetails";
 import ContactsList from './components/Lists/ContactsList';
 import GroupList from './components/Lists/GroupsList';
+import HoogsList from './components/Lists/HoogsList';
 import Settings from './components/Settings/Settings';
 
 const AppStack = createStackNavigator(
@@ -26,6 +27,7 @@ const AppStack = createStackNavigator(
         EventDetails: EventDetails,
         ContactsList: ContactsList,
         GroupList: GroupList,
+        HoogsList: HoogsList,
         Settings: Settings,
         ChildDetails:ChildDetailsComponent
     },
