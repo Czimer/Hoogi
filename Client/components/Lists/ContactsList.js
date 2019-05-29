@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import GenericList from '../../genericComponents/genericList/GenericList'
-import { FAB, Portal, TextInput, Text, Button} from 'react-native-paper';
+import { FAB, Card, TextInput, Text, Button, HelperText} from 'react-native-paper';
 import { View, StyleSheet, ScrollView, AsyncStorage, Alert} from 'react-native';
 import appConfig from '../../appConfig'
 import Modal from 'react-native-modal';
@@ -89,9 +89,6 @@ export default class ContactsList extends Component{
     }
 
     handleLongPress = (event, row) =>{
-        // TODO: handle the data from event property - add to state? contactChildId
-        // insert a check if the user is manager - only manager is able to insert, edit or delete
-
         this.setState({actionsModalVisible: true, contactChildId: row.child_id})
     }
 
@@ -103,49 +100,57 @@ export default class ContactsList extends Component{
             });
     }
 
+    // checkIdFieldValidation = () =>{
+    //     const {IdInputNumber} = this.state;
+    //     const childIdError
+    //     if (IdInputNumber.trim() === '' || childIdInputNumberId.trim().length < 2) {           
+    //         childIdError = 'תעודת זהות לא תקינה'            
+    //     }
+    //     this.setState({childIdError});
+    // }
+
     render(){
         const {tableData, tableHead, actionsModalVisible, contactChildId, addNewContactModalVisible, managerMode} = this.state;
         return(
             <View>            
                {
                    (tableData !== undefined) &&  
-                   <GenericList tableHead={tableHead} handleLongPress={this.handleLongPress} tableData={tableData}>
-                    {/* TODO: add an if statement - show only if the user is a manager role */}
-                    {/* {
-                            role === "manager" &&
-                    } */}
+                   <GenericList tableHead={tableHead} handleLongPress={this.handleLongPress} tableData={tableData}>                   
                     <Modal key='actionsModal'          
                         isVisible={actionsModalVisible && managerMode}>
-                            <View style={{marginTop: 22, backgroundColor:'#FFF'}}>                               
-                                <Button onPress={() => this.removeParticipant(contactChildId)}>
-                                    <Text> הסר חניך מספר {contactChildId}</Text>
-                                </Button>  
-                                <Button onPress={this.closeModal}>
-                                    <Text>X</Text>
-                                </Button>                                
-                            </View>
+                            <Card style={{marginTop: 22, backgroundColor:'#FFF'}}>   
+                                <Card.Content>
+                                    <Button mode="contained" onPress={() => this.removeParticipant(contactChildId)}>
+                                        <Text> הסר חניך מספר {contactChildId}</Text>
+                                    </Button>  
+                                </Card.Content>
+                                <Card.Actions>                                   
+                                    <Button mode="outlined" onPress={this.closeModal}>
+                                        <Text>בטל</Text>
+                                    </Button>         
+                                </Card.Actions>                                                   
+                            </Card>
                     </Modal>
 
-                    <Modal
-                        isVisible={addNewContactModalVisible && managerMode}>
-                         <View style={{marginTop: 22, backgroundColor:'#FFF'}}>                                  
-                            <Button onPress={() => this.addNewContact(this.state.IdInputNumber)}>
-                                <Text>הוסף חניך חדש</Text>
-                            </Button>
-                            <TextInput id="newChildId" dataDetectorTypes="phoneNumber" placeholder="הכנס תעודת זהות של החניך" onChangeText={(text) => this.setState({IdInputNumber:text})}></TextInput>
-                            <Button onPress={this.closeModal}>
-                                    <Text>X</Text>
-                            </Button>  
-                        </View>
+                    <Modal isVisible={addNewContactModalVisible && managerMode}>
+                         <Card style={{marginTop: 22, backgroundColor:'#FFF'}}>  
+                            <Card.Content>
+                                <TextInput id="newChildId" dataDetectorTypes="phoneNumber" placeholder="הכנס תעודת זהות של החניך" onChangeText={(text) => this.setState({IdInputNumber:text})}/>
+                                {!!this.state.childIdError && <HelperText type="error">{this.state.childIdError}</HelperText>}
+                            </Card.Content>
+                            <Card.Actions>                               
+                                <Button mode="contained" onPress={() => this.addNewContact(this.state.IdInputNumber)}>
+                                    <Text>הוסף חניך חדש</Text>
+                                </Button>
+                                <Button mode="outlined" onPress={this.closeModal}>
+                                        <Text>בטל</Text>
+                                </Button>  
+                            </Card.Actions>                                
+                        </Card>
                     </Modal>
                     {
                         managerMode && 
-                        <FAB
-                            style={styles.fab}
-                            small
-                            icon="add"
-                            onPress={this.openAddNewContactWindow}
-                        />
+                        <FAB style={styles.fab} icon="add" onPress={this.openAddNewContactWindow}/>
                     }                    
                    </GenericList>    
                 }        

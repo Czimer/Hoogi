@@ -2,17 +2,18 @@ import React, { Component } from 'react';
 import GenericList from '../../genericComponents/genericList/GenericList'
 import axios from 'axios';
 import { View, StyleSheet, Picker, AsyncStorage, Alert} from 'react-native';
-import { Text, Button, FAB, TextInput} from 'react-native-paper';
+import { Text, Button, FAB, TextInput, Card, HelperText} from 'react-native-paper';
 import NumericInput from 'react-native-numeric-input';
 import Modal from 'react-native-modal';
 import appConfig from '../../appConfig'
 import TimePicker from 'react-native-simple-time-picker';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default class GroupsList extends Component{
     constructor(props){
         super(props);
         this.state = {
-            tableHead:['מקסימום משתתפים', 'שעה', 'יום', 'מין', 'גיל מקסימלי', 'גיל מינימלי','שם חוג','מזהה קבוצה'],         
+            tableHead:['ציוד נלווה','מקסימום משתתפים', 'שעה', 'יום', 'מין', 'גיל מקסימלי', 'גיל מינימלי','קבוצה','מזהה'],         
             actionsModalVisible: false, 
             groupId:0,
             addNewGroupModalVisible:false,
@@ -26,7 +27,8 @@ export default class GroupsList extends Component{
                 gender:'male',
                 day:'ראשון',
                 maxParticipants: 10,
-                groupName: ''
+                groupName: '',
+                equipment: ''
             },
             add:false,
             edit:false
@@ -154,6 +156,7 @@ export default class GroupsList extends Component{
             Alert.alert('הייתה בעיה בעדכון הקבוצה')
         });
     }
+    
 
     handleLongPress = (event, row) =>{       
         // insert a check if the user is manager - only manager is able to insert, edit or delete
@@ -191,114 +194,113 @@ export default class GroupsList extends Component{
 
             (tableData !== undefined) &&  
             <GenericList tableHead={tableHead} handleLongPress={this.handleLongPress} tableData={tableData}>
-            <Modal isVisible={actionsModalVisible}>
-                    <View style={{marginTop: 22, backgroundColor:'#FFF'}}>                               
-                        <Button onPress={() => this.removeGroup(groupId)}>
-                            <Text>מחק קבוצה {groupId}</Text>
-                        </Button>
-                        <Button onPress={() => this.goToContactList(groupId)}>
-                            <Text>עבור לרשימת המשתתפים בקבוצה</Text>
-                        </Button>
-                        <Button onPress={(event) => this.openEditGroupWindow(event, groupId)}>
-                            <Text>ערוך את פרטי הקבוצה</Text>
-                        </Button>
-                        <Button onPress={this.closeModal}>
-                            <Text>X</Text>
-                        </Button>                                                 
-                    </View>
-            </Modal>  
-  
-                        <Modal isVisible={addNewGroupModalVisible}>
-                            <View style={{marginTop: 22, backgroundColor:'#FFF'}}>   
-                            {
-                                this.state.add && 
-                                <>
-                                    <Text>סוג חוג</Text>                   
-                                    <Picker
-                                        selectedValue={newGroupData.hoogId}                    
-                                        style={{height: 50, width: 100}}
-                                        onValueChange={(itemValue, itemIndex) =>
-                                            this.setState(prevState => ({newGroupData: {...prevState.newGroupData, hoogId:itemValue}}))}>
-                                            {
-                                                this.state.allHoogsArray.map((currHoog,i) =>
+            {/* modal view for specific group handling */}
+                <Modal isVisible={actionsModalVisible}>
+                        <Card style={{marginTop: 22, backgroundColor:'#FFF'}}>                               
+                            <Button onPress={() => this.removeGroup(groupId)}>
+                                <Text>מחק קבוצה {groupId}</Text>
+                            </Button>
+                            <Button onPress={() => this.goToContactList(groupId)}>
+                                <Text>עבור לרשימת המשתתפים בקבוצה</Text>
+                            </Button>
+                            <Button onPress={(event) => this.openEditGroupWindow(event, groupId)}>
+                                <Text>ערוך את פרטי הקבוצה</Text>
+                            </Button>
+                            <Button mode="outlined" onPress={this.closeModal}>
+                                <Text>בטל</Text>
+                            </Button>                                                 
+                        </Card>
+                </Modal>  
+                {/* modal view for add/edit group */}
+    
+                <Modal isVisible={addNewGroupModalVisible}>
+                    <ScrollView swipeArea={0}>
+                        <Card style={{marginTop: 22, backgroundColor:'#FFF'}}>  
+                            <Card.Content>
+                                {
+                                    this.state.add && 
+                                    <>
+                                        <Text style={styles.propertyText}>סוג חוג</Text>                   
+                                        <Picker
+                                            selectedValue={newGroupData.hoogId}                    
+                                            style={{height: 50, width: '90%'}}
+                                            onValueChange={(itemValue, itemIndex) =>
+                                                this.setState(prevState => ({newGroupData: {...prevState.newGroupData, hoogId:itemValue}}))}>
                                                 {
-                                                    return <Picker.Item key={currHoog.id} label={currHoog.name} value={currHoog.id}/>}
-                                            )}
+                                                    this.state.allHoogsArray.map((currHoog,i) =>
+                                                    {
+                                                        return <Picker.Item key={currHoog.id} label={currHoog.name} value={currHoog.id}/>}
+                                                )}
+                                        </Picker>
+                                    </>
+                                }  
+                                <TextInput label="שם הקבוצה" value={newGroupData.groupName} 
+                                onChangeText={groupName => this.setState(prevState =>({newGroupData: {...prevState.newGroupData, groupName:groupName}}))}/>
+                                    
+                                <Text style={styles.propertyText}>גיל מינימלי</Text>
+                                    <NumericInput initValue={newGroupData.minAge} minValue={1}
+                                        onChange={value => {this.setState(prevState => ({newGroupData: {...prevState.newGroupData, minAge:value}}));}} />
+                                    <Text style={styles.propertyText}>גיל מקסימלי</Text>
+                                    <NumericInput maxValue={99} initValue={newGroupData.maxAge}
+                                        onChange={value => this.setState(prevState => ({newGroupData: {...prevState.newGroupData, maxAge:value}}))} />
+                                    
+                                    <Text style={styles.propertyText}>מין</Text>
+                                    <Picker 
+                                        selectedValue={newGroupData.gender}
+                                        style={{height: 50, width: '90%'}}
+                                        onValueChange={(itemValue, itemIndex) =>
+                                            this.setState(prevState => ({newGroupData: {...prevState.newGroupData, gender:itemValue}}))}>
+                                        <Picker.Item label="זכר" value="Male" />
+                                        <Picker.Item label="נקבה" value="Female" />
                                     </Picker>
-                                 </>
-                            }  
-                            <Text>שם הקבוצה</Text>                          
-                            <TextInput label="groupName" value={newGroupData.groupName} 
-                            onChangeText={groupName => this.setState(prevState =>({newGroupData: {...prevState.newGroupData, groupName:groupName}}))}/>
-                                
-                             <Text>גיל מינימלי</Text>
-                                <NumericInput initValue={newGroupData.minAge} minValue={1}
-                                    onChange={value => {this.setState(prevState => ({newGroupData: {...prevState.newGroupData, minAge:value}}));}} />
-                                <Text>גיל מקסימלי</Text>
-                                <NumericInput maxValue={99} initValue={newGroupData.maxAge}
-                                    onChange={value => this.setState(prevState => ({newGroupData: {...prevState.newGroupData, maxAge:value}}))} />
-                                
-                                <Text>מין</Text>
-                                <Picker 
-                                    selectedValue={newGroupData.gender}
-                                    style={{height: 50, width: 100}}
-                                    onValueChange={(itemValue, itemIndex) =>
-                                        this.setState(prevState => ({newGroupData: {...prevState.newGroupData, gender:itemValue}}))}>
-                                    <Picker.Item label="זכר" value="Male" />
-                                    <Picker.Item label="נקבה" value="Female" />
-                                </Picker>
-                                <Text>יום</Text>
-                                <Picker key="days"
-                                    selectedValue={newGroupData.day}
-                                    style={{height: 50, width: 100}}
-                                    onValueChange={(itemValue, itemIndex) =>
-                                        this.setState(prevState => ({newGroupData: {...prevState.newGroupData, day:itemValue}}))}>
-                                    <Picker.Item label="ראשון" value="ראשון" />
-                                    <Picker.Item label="שני" value="שני" />
-                                    <Picker.Item label="שלישי" value="שלישי" />
-                                    <Picker.Item label="רביעי" value="רביעי" />
-                                    <Picker.Item label="חמישי" value="חמישי" />
-                                    <Picker.Item label="שישי" value="שישי" />
-                                    <Picker.Item label="שבת" value="שבת" />
-                                </Picker>
-                                <Text>שעה</Text>
-                                <TimePicker
-                                    selectedHours={newGroupData.selectedHours}
-                                    //initial Hourse value
-                                    selectedMinutes={newGroupData.selectedMinutes}
-                                    //initial Minutes value
-                                    onChange={(hours, minutes) => this.setState(prevState => ({newGroupData: 
-                                    {
-                                        ...prevState.newGroupData, 
-                                        selectedHours: hours, 
-                                        selectedMinutes: minutes 
-                                    }}))}
-                                />  
-                                <Text>מספר משתתפים מקסימלי</Text>
-                                <NumericInput minValue={5} maxValue={20} initValue={newGroupData.maxParticipants}
-                                    onChange={value => {this.setState(prevState => ({newGroupData: {...prevState.newGroupData, maxParticipants:value}}));}} />                        
-                                {/* ציוד */}
-                                <Text>ציוד נלווה</Text>
-                                <TextInput label='equipment' value={newGroupData.equipment} 
-                                onChange={equipment => {this.setState(prevState => ({newGroupData: {...prevState.newGroupData, equipment}}))}}/>
-                                <Button onPress={this.handleSave}>
+                                    <Text style={styles.propertyText}>יום</Text>
+                                    <Picker key="days"
+                                        selectedValue={newGroupData.day}
+                                        style={{height: 50, width: '90%'}}
+                                        onValueChange={(itemValue, itemIndex) =>
+                                            this.setState(prevState => ({newGroupData: {...prevState.newGroupData, day:itemValue}}))}>
+                                        <Picker.Item label="ראשון" value="ראשון" />
+                                        <Picker.Item label="שני" value="שני" />
+                                        <Picker.Item label="שלישי" value="שלישי" />
+                                        <Picker.Item label="רביעי" value="רביעי" />
+                                        <Picker.Item label="חמישי" value="חמישי" />
+                                        <Picker.Item label="שישי" value="שישי" />
+                                        <Picker.Item label="שבת" value="שבת" />
+                                    </Picker>
+                                    <Text style={styles.propertyText}>שעה</Text>
+                                    <TimePicker
+                                        selectedHours={newGroupData.selectedHours}
+                                        //initial Hourse value
+                                        selectedMinutes={newGroupData.selectedMinutes}
+                                        //initial Minutes value
+                                        onChange={(hours, minutes) => this.setState(prevState => ({newGroupData: 
+                                        {
+                                            ...prevState.newGroupData, 
+                                            selectedHours: hours, 
+                                            selectedMinutes: minutes 
+                                        }}))}
+                                    />  
+                                    <Text style={styles.propertyText}>מספר משתתפים מקסימלי</Text>
+                                    <NumericInput minValue={5} maxValue={20} initValue={newGroupData.maxParticipants}
+                                        onChange={value => {this.setState(prevState => ({newGroupData: {...prevState.newGroupData, maxParticipants:value}}));}} />                        
+                                    {/* ציוד */}                                  
+                                     <TextInput label="ציוד נלווה" value={newGroupData.equipment} 
+                                    onChangeText={value => this.setState(prevState =>({newGroupData: {...prevState.newGroupData, equipment:value}}))}/>                                 
+                            </Card.Content> 
+                            <Card.Actions>
+                                <Button mode="contained" onPress={this.handleSave}>
                                     <Text>שמור קבוצה</Text>
-                                </Button>
-                                
-                                <Button onPress={this.closeModal}>
+                                </Button>                                
+                                <Button mode="outlined" onPress={this.closeModal}>
                                     <Text>בטל</Text>
                                 </Button>
-                            </View>
-                        </Modal> 
-                               
-                            <FAB
-                                 style={styles.fab}
-                                small
-                                icon="add"
-                                onPress={this.openAddNewGroupWindow}
-                            />
-            </GenericList>
-            
+                            </Card.Actions>
+                        </Card>
+                    </ScrollView>
+                </Modal> 
+                                
+                <FAB style={styles.fab} icon="add" onPress={this.openAddNewGroupWindow}/>
+            </GenericList>            
             }
             </View>
         );
@@ -311,4 +313,8 @@ const styles = StyleSheet.create({
       right: 0,
       bottom: 0,
     },
+    propertyText:{
+        fontWeight: 'bold',
+        textAlign:'right'
+    }
   })

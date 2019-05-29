@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, ScrollView, Alert, AsyncStorage, Picker} from 'react-native';
-import { Button } from 'react-native-paper';
+import { Text, View, FlatList, ScrollView, Alert, AsyncStorage, Picker, StyleSheet} from 'react-native';
+import { Button, Card} from 'react-native-paper';
 import Modal from 'react-native-modal';
 import axios from 'axios';
 import appConfig from '../../appConfig'
@@ -34,80 +34,84 @@ export default class SearchResults extends Component{
 
     registerSelectedChild = () =>{
         const {selectedChild, currentWantedGroupId} = this.state;
-        axios.post(appConfig.ServerApiUrl + '/groups/registerNewParticipantToGroup/:params', 
-            {groupId:currentWantedGroupId, childId:selectedChild}).then(response =>{
+        if(selectedChild == undefined || selectedChild == ""){
+            Alert.alert('שים לב!', 'לא בחרת ילד להרשמה')
+        }
+        else{
+            axios.post(appConfig.ServerApiUrl + '/groups/registerNewParticipantToGroup/:params', 
+            {groupId:currentWantedGroupId, childId:selectedChild}).then(response =>{               
                 Alert.alert('החניך התווסף בהצלחה!')
-                this.setState({childPickerVisible:false});
+                this.setState({childPickerVisible:false});                          
             }).catch(error => {
                 console.log(error)
                 this.setState({childPickerVisible:false});
-                Alert.alert('הייתה בעיה בהוספת החניך')
-            });         
-        
+                Alert.alert('לא ניתן להוסיף את החניך לקבוצה')
+            }); 
+        }        
     }
 
     render(){
         const {childPickerVisible, childrenArray} = this.state;
         return(
-            <View>
-                <Text>תוצאות חיפוש</Text>
+            <View style={styles.view}>
+                <Text style={styles.title}>תוצאות חיפוש</Text>
                 <ScrollView>
                     <FlatList
                         data={this.state.hoogsSearchResults}
                         renderItem={({item}) =>
-                        <View key={item.id}>                            
-                            <Text>שם החוג</Text>
-                            <Text>{item.name}</Text>
-                            <Text>שם המדריך</Text>
-                            <Text>{item.guid_name}</Text>
-                            <Text>מספר טלפון של המדריך</Text>
-                            <Text>{item.guid_phone}</Text>
-                            <Text>מיקום</Text>
-                            <Text>{item.loc}</Text>
-                            <Text>מין</Text>
-                            {
-                                item.gender == 'female' &&
-                                <Text>נקבה</Text> 
-                            }
-                            {
-                                item.gender == 'male' &&
-                                <Text>זכר</Text> 
-                            }
-                            <Text>טווח הגילאים</Text>
-                            <Text>{item.age_range}</Text>
-                            <Text>תגיות רלוונטיות</Text>
-                            <Text>{item.tags.toString()}</Text>
-                            <Text>יום</Text>
-                            <Text>{item.group_times.day}</Text>
-                            <Text>שעה</Text>
-                            <Text>{item.group_times.time}</Text>
-                            <Button onPress={() => this.onRegisterPress(item.group_id)}> הרשמה </Button>
-                        </View>
+                        <Card key={item.id}>                            
+                            <Text>שם החוג: {item.name}</Text>
+                            <Text>שם המדריך: {item.guid_name}</Text>
+                            <Text>מספר טלפון של המדריך: {item.guid_phone}</Text>
+                            <Text>מיקום: {item.loc}</Text>
+                            <Text>מין: {item.gender == 'female' ? 'נקבה' : 'זכר'}</Text>                           
+                            <Text>טווח הגילאים: {item.age_range}</Text>
+                            <Text>תגיות רלוונטיות: {item.tags.toString()}</Text>
+                            <Text>יום: {item.group_times.day}</Text>
+                            <Text>שעה: {item.group_times.time}</Text>
+                            <Button mode='contained' onPress={() => this.onRegisterPress(item.group_id)}> הרשמה </Button>
+                            <Text></Text>
+                        </Card>
                         }
                     />
                     <Modal isVisible={childPickerVisible}>
-                        <View style={{marginTop: 22, backgroundColor:'#FFF'}}>
-                            <Text>בחר ילד/ה</Text>
-                            <Picker style={{height: 50, width: 100}}
-                                        selectedValue={this.state.selectedChild}
-                                        onValueChange={(itemValue, itemIndex) =>
-                                            this.setState({selectedChild:itemValue})}>
-                                            {
-                                                childrenArray.map((currChild,i) =>
+                        <Card style={{marginTop: 22, backgroundColor:'#FFF'}}>
+                        <Card.Content>
+                                <Text>בחר ילד/ה</Text>
+                                <Picker style={{height: 50, width: 100}}
+                                            selectedValue={this.state.selectedChild}
+                                            onValueChange={(itemValue, itemIndex) =>
+                                                this.setState({selectedChild:itemValue})}>
+                                                <Picker.Item key={0} label="" value={0}/>
                                                 {
-                                                    return <Picker.Item key={currChild.child_id} label={currChild.first_name} value={currChild.child_id}/>}
-                                            )}
-                            </Picker>
-                            <Button onPress={() => this.registerSelectedChild()}>
-                                <Text>אישור</Text>
-                            </Button>
-                            <Button onPress={() => this.setState({childPickerVisible:false})}>
-                                <Text>X</Text>
-                            </Button>
-                        </View>
+                                                    childrenArray.map((currChild,i) =>
+                                                    {
+                                                        return <Picker.Item key={currChild.child_id} label={currChild.first_name} value={currChild.child_id}/>}
+                                                )}
+                                </Picker>
+                            </Card.Content>
+                            <Card.Actions>
+                                <Button mode="contained" onPress={() => this.registerSelectedChild()}>
+                                    <Text>אישור</Text>
+                                </Button>
+                                <Button mode="outlined" onPress={() => this.setState({childPickerVisible:false})}>
+                                    <Text>בטל</Text>
+                                </Button>
+                            </Card.Actions>
+                        </Card>
                     </Modal> 
                 </ScrollView>
             </View>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    view:{
+        paddingBottom: '5%'
+    }
+  })
