@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableHighlight, Picker, View, ScrollView,StyleSheet,Image } from "react-native";
+import { TouchableHighlight, Picker, View, ScrollView, StyleSheet, Image } from "react-native";
 import { Text, TextInput, Button, HelperText } from "react-native-paper";
 import DatePicker from '../../genericComponents/Pickers/DatePicker';
 import appConfig from '../../appConfig';
@@ -27,7 +27,7 @@ export default class ChildDetailsComponent extends React.Component {
     }
 
     saveOrUpdate = async () => {
-        const { childId, firstName, lastName, gender, phone, birthDate, color,photo } = this.state
+        const { childId, firstName, lastName, gender, phone, birthDate, color, photo } = this.state
         const errorObject = {
             childIdError: undefined,
             firstNameError: undefined,
@@ -62,20 +62,25 @@ export default class ChildDetailsComponent extends React.Component {
 
         this.setState({ ...errorObject })
         if (!isError) {
-            const child = { childId, firstName, lastName, gender, phone, birthDate, color: tinycolor(color).toRgbString(),photo }
+            const child = { childId, firstName, lastName, gender, phone, birthDate, color: tinycolor(color).toRgbString(), photo }
             await this.props.navigation.state.params.onAction(child)
             this.props.navigation.goBack()
         }
     }
 
-    openImageBrowser = () => this.setState({ imageBrowserOpen: true })
+    openImageBrowser = () => {
+        const perm = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        if (perm.status === 'granted') {
+            this.setState({ imageBrowserOpen: true })
+        }
+    }
 
     imageBrowserCallback = (callback) => {
         callback.then((photo) => {
             console.log(photo)
             this.setState({
                 imageBrowserOpen: false,
-                photo:photo[0]
+                photo: photo[0]
             })
         }).catch((e) => console.log(e))
     }
@@ -119,7 +124,7 @@ export default class ChildDetailsComponent extends React.Component {
                         onValueChange={h => this.setState({ color: { ...this.state.color, h } })}
                     />
 
-                    <View style={{ flexDirection: 'row',alignItems:'center',margin:20 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', margin: 20 }}>
                         <Text>התמונה של הילד</Text>
                         <TouchableHighlight onPress={this.openImageBrowser}>
                             {photo && photo.uri ? <Image style={{ width: 150, height: 150 }} source={{ uri: photo.uri }} /> :
