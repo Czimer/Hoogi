@@ -20,6 +20,11 @@ router.post('/:params', async function(req, res, next){
     res.send(filteredHoogs)
 });
 
+router.post('/childrenOfParentId/:params', async function(req, res, next){
+    const filteredHoogs = await parentsAndChildsBL.parentAndChildBL.GetChildrenOfParentId(req, res, next);
+    res.send(filteredHoogs)
+});
+
 // Get children events
 router.post('/child/events', async function(req, res, next) {
     const childGroups = await parentsAndChildsBL.childBL.GetChildrenEvents(req.body.parentId);

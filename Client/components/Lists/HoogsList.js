@@ -208,7 +208,7 @@ export default class HoogsList extends Component{
                                     
                                     query={{
                                         // available options: https://developers.google.com/places/web-service/autocomplete
-                                        key: appConfig.locationApiKey, // TODO: save the key somewhere safer
+                                        key: appConfig.locationApiKey,
                                         language: 'iw', // language of the results                           
                                     }}
                                     

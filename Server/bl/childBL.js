@@ -56,12 +56,19 @@ class childBL {
         })
     }
 
-    static async getChildsByParentId(parentId) {
-        const query = `SELECT child_id ,photo_blob
-        FROM public.children
-        where parent_id = $1;`
+    static async getChildsByParentId(parentId, messageGroupId) {
+        const query = `with
+            group_id_from_group_message_id as(
+                select group_id from groups_messages where id = $1),
+            children_in_groups as (
+                select child_id from participants where group_id in (select group_id from group_id_from_group_message_id)
+            )
+            SELECT ch.child_id ,photo_blob, ch.child_id || '_private_image.jpg' as photo_name
+                FROM public.children ch
+                inner join children_in_groups parts on (parts.child_id = ch.child_id)
+                where parent_id = $2`
 
-        const params = [parent_id]
+        const params = [messageGroupId, parentId]
 
         try {
             return await DataAccess.executeQuery(query, params)

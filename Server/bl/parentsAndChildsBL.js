@@ -136,7 +136,7 @@ class parentAndChildBL {
 
     }
 
-    static async GetChildrenOfParentId(req, res, next){ //TODO: check
+    static async GetChildrenOfParentId(req, res, next){
         const parentId = req.body.parentId;
         const query = `SELECT CHILD_ID, FIRST_NAME FROM CHILDREN WHERE PARENT_ID = '` + parentId + `'`;
 
