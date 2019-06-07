@@ -68,7 +68,7 @@ export default class ChildDetailsComponent extends React.Component {
         }
     }
 
-    openImageBrowser = () => {
+    openImageBrowser = async () => {
         const perm = await Permissions.askAsync(Permissions.CAMERA_ROLL);
         if (perm.status === 'granted') {
             this.setState({ imageBrowserOpen: true })
