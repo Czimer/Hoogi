@@ -14,7 +14,7 @@
   const QUERY_IMAGE = imagesDirectory + 'danaandfriends.jpg'
   const QUERY_IMAGE2 = imagesDirectory + 'imaShilhav.jpg'
   const directory = 'C:\\Users\\Dana\\Documents\\Users\\Dana\\ColmanCS\\FinalProject\\Hoogi\\Hoogi\\Server\\faceRecognition\\weights'
-
+  var detectionResultsRefImg;
  
   async function loadAllNets(){
     try{
@@ -31,6 +31,8 @@
   async function loadReferencePicture(p_referenceImage){
     try{
       referenceImage = await canvas.loadImage(p_referenceImage)
+      detectionResultsRefImg = await faceapi.detectAllFaces(referenceImage, faceDetectionOptions)
+      .withFaceLandmarks().withFaceDescriptors();
     }
     catch(refImageLoadingError){
       console.log(refImageLoadingError);
@@ -42,17 +44,12 @@
 
     try{         
    
-          // const referenceImage = await canvas.loadImage(REFERENCE_IMAGE)
-          const queryImage = await canvas.loadImage(_ImageToRecognize)
-
-          const detectionResultsRefImg = await faceapi.detectAllFaces(referenceImage, faceDetectionOptions)
-            .withFaceLandmarks()
-            .withFaceDescriptors()         
+          const queryImage = await canvas.loadImage(_ImageToRecognize)               
 
           const detectionResultsQueryImg = await faceapi.detectAllFaces(queryImage, faceDetectionOptions)
             .withFaceLandmarks()
             .withFaceDescriptors()
-            if(detectionResultsRefImg.length > 0){
+            if(detectionResultsRefImg.length > 0 && detectionResultsQueryImg.length > 0){
               const faceMatcher = new faceapi.FaceMatcher(detectionResultsRefImg)
 
               const labels = faceMatcher.labeledDescriptors.map(ld => ld.label)

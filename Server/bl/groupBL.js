@@ -250,7 +250,7 @@ class groupBL {
 
         // Dana: after the fetch of the children, you are coming in!
         if(!isManager){
-            const childs = await childBL.getChildsByParentId(parentId)
+            const childs = await childBL.getChildsByParentId(parentId, messageGroupId)
 
             childs.forEach(function(currentChild){
                 if(currentChild.photo_blob !== null){
