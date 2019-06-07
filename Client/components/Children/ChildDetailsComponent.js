@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableHighlight, Picker, View, ScrollView, StyleSheet, Image } from "react-native";
-import { Text, TextInput, Button, HelperText } from "react-native-paper";
+import { Permissions } from 'expo';
+import { Text, TextInput, Button, HelperText, Portal } from "react-native-paper";
 import DatePicker from '../../genericComponents/Pickers/DatePicker';
 import appConfig from '../../appConfig';
 import { HueSlider } from "react-native-color";
@@ -88,7 +89,8 @@ export default class ChildDetailsComponent extends React.Component {
     render() {
         const { id, childId, firstName, lastName, gender, phone, birthDate, color, photo, imageBrowserOpen } = this.state
 
-        if (imageBrowserOpen) return <ImageBrowser max={1} callback={this.imageBrowserCallback} />
+        if (imageBrowserOpen)
+            return (<Portal><ImageBrowser max={1} callback={this.imageBrowserCallback} /></Portal>)
         console.log(photo)
         return (
             <ScrollView>
