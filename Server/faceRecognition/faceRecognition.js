@@ -28,9 +28,9 @@
     }
   }
 
-  async function loadReferencePicture(){
+  async function loadReferencePicture(p_referenceImage){
     try{
-      referenceImage = await canvas.loadImage(REFERENCE_IMAGE)
+      referenceImage = await canvas.loadImage(p_referenceImage)
     }
     catch(refImageLoadingError){
       console.log(refImageLoadingError);
@@ -52,40 +52,25 @@
           const detectionResultsQueryImg = await faceapi.detectAllFaces(queryImage, faceDetectionOptions)
             .withFaceLandmarks()
             .withFaceDescriptors()
+            if(detectionResultsRefImg.length > 0){
+              const faceMatcher = new faceapi.FaceMatcher(detectionResultsRefImg)
 
-          const faceMatcher = new faceapi.FaceMatcher(detectionResultsRefImg)
+              const labels = faceMatcher.labeledDescriptors.map(ld => ld.label)
+              
+              const refBoxesWithText = detectionResultsRefImg.map(res => res.detection.box).map((box, i) => new faceapi.BoxWithText(box, labels[i]))
 
-          const labels = faceMatcher.labeledDescriptors.map(ld => ld.label)
-          
-          const refBoxesWithText = detectionResultsRefImg.map(res => res.detection.box).map((box, i) => new faceapi.BoxWithText(box, labels[i]))
+              const outRef = faceapi.createCanvasFromMedia(referenceImage)
+              // Map the matches in the picture according to the face in the first picture which labeled as 'person 1'
+              const bestMatchingFacesInQueryImagebla = detectionResultsQueryImg.map(currImgRes => {
+                return faceMatcher.findBestMatch(currImgRes.descriptor).label === 'person 1'       
+              })
+            
+              if(bestMatchingFacesInQueryImagebla.indexOf(true) > -1){
+                return true;
+              }
 
-          const outRef = faceapi.createCanvasFromMedia(referenceImage)
-
-          //#region - drawing on ref image
-          // faceapi.drawDetection(outRef, refBoxesWithText)
-          // saveFile('referenceImage.jpg', outRef.toBuffer('image/jpeg'))
-          //#endregion
-
-          // Map the matches in the picture according to the face in the first picture which labeled as 'person 1'
-          const bestMatchingFacesInQueryImagebla = detectionResultsQueryImg.map(currImgRes => {
-            return faceMatcher.findBestMatch(currImgRes.descriptor).label === 'person 1'       
-          })
-        
-          if(bestMatchingFacesInQueryImagebla.indexOf(true) > -1){
-            return true;
-          }
+            }          
           return false;
-
-          //#region - drawing on query image and saving to directory
-    //       const queryBoxesWithText = detectionResultsQueryImg.map(res => {
-    //         const bestMatch = faceMatcher.findBestMatch(res.descriptor)
-    //         return new faceapi.BoxWithText(res.detection.box, bestMatch.toString())
-    //       })
-    //       const outQuery = faceapi.createCanvasFromMedia(queryImage)
-    //       faceapi.drawDetection(outQuery, queryBoxesWithText)
-    //       saveFile('queryImage.jpg', outQuery.toBuffer('image/jpeg'))
-    //       console.log('done, saved results to out/queryImage.jpg')
-      //#endregion
     }    
     catch(err2){
       console.log(err2)
@@ -94,12 +79,14 @@
 
   module.exports = {
     recognizeFaces: recognizeFaces,
-    runLoaders:runLoaders
+    runLoaders:runLoaders,
+    loadAllNets:loadAllNets,
+    loadReferencePicture:loadReferencePicture
   };
 
-  async function runLoaders(){
+  async function runLoaders(p_referenceImage){
     await loadAllNets();
-    await loadReferencePicture();
+    await loadReferencePicture(p_referenceImage);
   }
 
 //   async function dana(){

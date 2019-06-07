@@ -57,11 +57,11 @@ class childBL {
     }
 
     static async getChildsByParentId(parentId) {
-        const query = `SELECT child_id ,photo_blob
+        const query = `SELECT child_id ,photo_blob, child_id || '_private_image.jpg' as photo_name
         FROM public.children
         where parent_id = $1;`
 
-        const params = [parent_id]
+        const params = [parentId]
 
         try {
             return await DataAccess.executeQuery(query, params)

@@ -39,7 +39,7 @@ class hoogBL {
     static async GetHoogsByParams(req, res, next){
         const params = req.body;
 
-        var query = `select hoogs.name, hoogs.id hoog_id, grp.id group_id, grp.min_age || '-' || grp.max_age as age_Range,
+        var query = `select grp.name, hoogs.id hoog_id, grp.id group_id, grp.min_age || '-' || grp.max_age as age_Range,
         hoogs.address loc, grp.group_times, mng.first_name || ' ' || mng.last_name as guid_Name,
         mng.phone guid_Phone, grp.gender, hoogs.tags
         from public.groups grp

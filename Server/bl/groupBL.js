@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const appConfig = require('../appConfig')
 const childBL = require('./childBL')
+const face = require('../faceRecognition/faceRecognition')
 
 class groupBL {
 
@@ -38,7 +39,8 @@ class groupBL {
             grp.max_age,
             grp.min_age, 
             grp.name, 
-            grp.id       
+            grp.id,
+            grp.equipment     
         FROM hoogs hoogs
         INNER JOIN (SELECT * FROM GROUPS) grp ON (hoogs.id = grp.hoog_id)
         WHERE hoogs.manager_id = '` + managerId + `'`;
@@ -63,13 +65,19 @@ class groupBL {
         const time = params.selectedHours + `:` + params.selectedMinutes
         const maxParticipants = params.maxParticipants;
         const groupName = params.groupName;
-        const equipment = params.equipment.split(','); // TODO: check what daniel wants here, how to split it into an array
+        let equipment = `{`;       
+
+        params.equipment.split(',').forEach(function(currEq){
+            equipment += `"${currEq}", `
+        })
+        equipment = equipment.substr(0, equipment.length - 2);
+        equipment += `}`
 
         if(hoogId != undefined && minAge != undefined && maxAge != undefined &&
              gender != undefined && day != undefined && time != undefined && maxParticipants != undefined && groupName != undefined && equipment != undefined){
             const query = `INSERT INTO GROUPS(HOOG_ID, MIN_AGE, MAX_AGE, GENDER, GROUP_TIMES, MAX_PARTICIPANTS, NAME, EQUIPMENT) VALUES(` +
                         hoogId + `, ` + minAge + `, ` + maxAge + `, '` + gender + `', '{"day":"` + day + `", "time":"` + time + `"}', ` 
-                        + maxParticipants + `, '` + groupName + `'` + equipment + `)`;// TODO: fix the equipment insertion
+                        + maxParticipants + `, '` + groupName + `','` + equipment + `')`;
 
             try{
                 const results = await DataAccess.executeQuery(query);
@@ -96,13 +104,18 @@ class groupBL {
         const time = params.selectedHours + `:` + params.selectedMinutes
         const maxParticipants = params.maxParticipants;
         const groupName = params.groupName;
+        let equipment = `{`;       
 
-        //TODO: add equipment
+        params.equipment.split(',').forEach(function(currEq){
+            equipment += `"${currEq}", `
+        })
+        equipment = equipment.substr(0, equipment.length - 2);
+        equipment += `}`
 
         if(minAge && maxAge && gender && day && time && maxParticipants){
             const query = `UPDATE GROUPS SET MIN_AGE = ` + minAge + `, MAX_AGE = ` + maxAge + 
             `, GENDER =  '` + gender + `', GROUP_TIMES = '{"day":"` + day + `", "time":"` + time + `"}',
-             MAX_PARTICIPANTS = ` + maxParticipants + `, NAME = ` + groupName +
+             MAX_PARTICIPANTS = ` + maxParticipants + `, NAME = ` + groupName + `EQUIPMENT = '` + equipment + `'`
               + ` WHERE ID = ` + groupId;
                      
 
@@ -115,7 +128,7 @@ class groupBL {
             }
         }
         else {
-            throw "Could not add a new group. Not all fields are properly formed \n groupsBL:addNewGroup";
+            throw "Could not edit the group. Not all fields are properly formed \n groupsBL:addNewGroup";
         }
 
     }
@@ -133,7 +146,7 @@ class groupBL {
                                 FROM GROUPS		
                                 left join parts_count on (parts_count.group_id = id)
                                 WHERE ID = ` + groupId;
-        var childQuery = `SELECT date_part('year',age(birth_date)), gender as age FROM CHILDREN WHERE CHILD_ID = '` + childId + `'`;
+        var childQuery = `SELECT date_part('year',age(birth_date)) as age, gender  FROM CHILDREN WHERE CHILD_ID = '` + childId + `'`;
         var insertQuery = '';
 
         var minAge;
@@ -160,17 +173,17 @@ class groupBL {
 
         minAge = parseInt(groupResult[0].min_age);
         maxAge = parseInt(groupResult[0].max_age);
-        currentNumberOfParticipants = parseInt(groupResult[0].parts);
+        currentNumberOfParticipants = groupResult[0].parts == null ? 0 : parseInt(groupResult[0].parts);
         maxParticipants = parseInt(groupResult[0].max_participants);
         groupGender = groupResult[0].gender;
         childGender = childResult[0].gender;
         childAge = parseInt(childResult[0].age);
 
         if(currentNumberOfParticipants < maxParticipants && childAge < maxAge && childAge > minAge && childGender.toLowerCase() === groupGender.toLowerCase()){
-            query = `INSERT INTO PARTICIPANTS(group_id, child_id) values(` + groupId + `, '` + childId + `')`;
+            insertQuery = `INSERT INTO PARTICIPANTS(group_id, child_id) values(` + groupId + `, '` + childId + `')`;
 
             try{
-                const results = await DataAccess.executeQuery(query);
+                const results = await DataAccess.executeQuery(insertQuery);
                 return results
             }
             catch(err){
@@ -178,7 +191,7 @@ class groupBL {
             }
     
         }else{
-            throw 'The child could not be registered to this group';
+             throw 'The child could not be registered to this group';
         }
        
     }
@@ -229,27 +242,59 @@ class groupBL {
         }
     }
 
-    static async getPhotosLinks(messageGroupId,entityId,isManager){
+    static async getPhotosLinks(messageGroupId,parentId,isManager){
         const photos = await this.getPhotosByMessageId(messageGroupId)
-        
+        const childrenProfilePhotosUrl = [];
+        await childBL.getChildsByParentId(parentId)
+        isManager = isManager === "false" ? false : isManager === "true" ? true : isManager;
+
         // Dana: after the fetch of the children, you are coming in!
-        //if(!isManager){
-            //const childs = await childBL.getChildsByParentId(parentId)
-            // face recognition logic
-        //}
+        if(!isManager){
+            const childs = await childBL.getChildsByParentId(parentId)
+
+            childs.forEach(function(currentChild){
+                if(currentChild.photo_blob !== null){
+                    const filePath = `${appConfig.photosPath}\\${currentChild.photo_name}`
+                    fs.writeFileSync(filePath, currentChild.photo_blob)
+                    childrenProfilePhotosUrl.push(filePath)                
+                }
+            })
+        }
         
 
         const photosUrl = []
+        const photosUrlForFaceReco = []
         photos.forEach(photo => {
             const filePath = `${appConfig.photosPath}\\${photo.photo_name}`
             // if (!path.existsSync(filePath)) {
                 fs.writeFileSync(filePath, photo.photo_blob)
             // }
             photosUrl.push(`${appConfig.folderOfPhotos}/${photo.photo_name}`)
+            photosUrlForFaceReco.push(filePath)
         })
 
-        
-        return photosUrl
+
+        const photosUrlAfterFaceRecognition = [];
+        if(childrenProfilePhotosUrl.length > 0)
+            await face.loadAllNets();
+            
+        for(var currentChildProfilePhotoIndex in childrenProfilePhotosUrl){
+            await face.loadReferencePicture(childrenProfilePhotosUrl[currentChildProfilePhotoIndex]);
+            
+            for(var currentPhoto in photosUrlForFaceReco){
+                const isRecognized = await face.recognizeFaces(photosUrlForFaceReco[currentPhoto])
+                photosUrlAfterFaceRecognition.push({photoUrl:photosUrl[currentPhoto], isRecognized:isRecognized})
+            }           
+        }
+        if(photosUrlAfterFaceRecognition.length > 0){
+            const photosToSend = photosUrlAfterFaceRecognition.sort(function(a, b){return b.isRecognized - a.isRecognized})
+            .map(function(currPhoto){return currPhoto.photoUrl});
+            const distinctPhotosToSend = [...new Set(photosToSend)]
+            return distinctPhotosToSend;
+        }
+
+
+        return photosUrl;
     }
 
     static async getPhotosByMessageId(messageGroupId) {
