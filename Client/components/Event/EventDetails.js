@@ -6,26 +6,21 @@ import { Manager } from '../../consts';
 export default class EventDetails extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
             hoog: this.props.navigation.state.params,
-            isEditMode: false,
-            isManager:false
+            isManager: this.props.navigation.state.params.isManager
         }        
     }
 
     async componentDidMount(){
-        const loginData = await AsyncStorage.getItem('loginData')
-        const isManager = JSON.parse(loginData).user_type === Manager
-
-        if(isManager) this.setState({isManagerMode:isManager})
     }
 
-    onEdit = () => {this.props.navigation.navigate('Event')};
-    onEditMode = () => this.setState({ isEditMode: true })
+    onEdit = (hoog) => {this.props.navigation.navigate('Event', hoog)};
     onCloseEditMode = () => this.setState({ isEditMode: false })
 
     render() {
-        const { hoog, isEditMode } = this.state
+        const { hoog, isManager } = this.state
         return (
             <View style={styles.container}>
                 <View >
@@ -45,8 +40,7 @@ export default class EventDetails extends React.Component {
                 <Button style={styles.line} icon='description' color='rgb(110, 110, 110)'>
                     <Text>{hoog.notes ? hoog.notes : 'אין תיעוד'}</Text>
                 </Button>
-                { (true && isEditMode) && <FAB icon="edit" onPress={this.onEditMode} style={styles.fab} />}
-                <Button onPress={this.onEdit}>ערוך</Button>
+                { isManager ? <Button icon="edit" onPress={this.onEdit(hoog)}></Button> : null}
             </View>
         );
     }

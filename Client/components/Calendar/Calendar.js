@@ -16,17 +16,22 @@ export default class CalendarView extends React.Component {
             dayAgenda: [],
             dots: {},
             instances: [],
+            selectedDate: "",
             showSpin: true,
             isManager: false
         };
     }
 
     handleDayPress = (day) => {
-        if (this.state.instances != []) {
-            let instancesCopy = JSON.stringify(this.state.instances);
+        const {isManager, instances} = this.state;
+
+        this.setState({ selectedDate: day.dateString})
+
+        if (instances != []) {
+            let instancesCopy = JSON.stringify(instances);
             instancesCopy = JSON.parse(instancesCopy);
             
-            if (this.state.isManager) {
+            if (isManager) {
                 this.setState({dayAgenda: instancesCopy.filter(event => event.date === day.dateString)});
             } else {
                 this.setState({dayAgenda: instancesCopy.map(child => {
@@ -34,8 +39,6 @@ export default class CalendarView extends React.Component {
                     return child;
                 })});
             }
-
-            console.log(this.state.dayAgenda);
         }
     }
 
@@ -72,17 +75,11 @@ export default class CalendarView extends React.Component {
                         };
                     });
 
-                    console.log(eventInstance);
-
                     const uniqueDates = [...new Set([].concat.apply([], modifyEvents.map(event => event.date)))];
-                
-                    console.log(uniqueDates);
 
                     const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : eventInstance.filter(y => y.dates[0] == x)}}));
-                    
-                    console.log(markedDatesArray);
 
-                    const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: d.value, selected: true, marked: true})));
+                    const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: Object.assign(d.value, { selectedColor: 'blue' })})));
 
                     console.log(markedDatesObject);
 
@@ -125,13 +122,11 @@ export default class CalendarView extends React.Component {
         
                 const uniqueDates = [...new Set([].concat.apply([], children.map(child => child.dates)))];
                 
-                console.log(uniqueDates);
-
                 const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : children.filter( y => y.dates.includes(x))}}));
         
-                const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: d.value, selected: true, marked: true}))); 
+                const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: Object.assign(d.value, { selectedColor: 'blue' })}))); 
 
-                console.log("marked: " + JSON.stringify(markedDatesObject));
+                console.log(JSON.stringify(markedDatesObject));
 
                 this.setState({
                     dots: markedDatesObject,
@@ -145,7 +140,7 @@ export default class CalendarView extends React.Component {
     }
   
     render() {
-        const { dots, dayAgenda, showSpin, isManager} = this.state;
+        const { dots, dayAgenda, showSpin, isManager, selectedDate} = this.state;
         return (
             showSpin ? <ActivityIndicator animating={true} size="large" /> : 
             <View>
@@ -153,11 +148,11 @@ export default class CalendarView extends React.Component {
                     horizontal={true}
                     pagingEnabled={true}
                     hideArrows={true}
-                    markedDates={dots}
+                    markedDates={{...dots, [selectedDate] : { selected: true, disableTouchEvent: true, }}}
                     markingType={'multi-dot'}
                     onDayPress={this.handleDayPress}
                     onMonthChange={(month) => console.log('month changed', month)}/>
-                <DayAgenda dayAgenda={dayAgenda} isManager={isManager}/>
+                <DayAgenda style={styles.dayAgenda} dayAgenda={dayAgenda} isManager={isManager}/>
             </View>
         );
     } 
@@ -177,5 +172,8 @@ LocaleConfig.locales['isr'] = {
       calendar: {
           marginTop: 30,
           height: 310
+      },
+      dayAgenda: {
+
       }
   }

@@ -21,7 +21,7 @@ class DayAgenda extends React.Component {
     }
 
     onMoveToEventDetails = (hoog) => {
-        this.props.navigation.navigate('EventDetails', hoog)
+        this.props.navigation.navigate('EventDetails', {...hoog, "isManager": this.state.isManager })
     }
 
     async componentDidMount() {

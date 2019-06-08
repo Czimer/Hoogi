@@ -4,6 +4,7 @@ import { View, StyleSheet,AsyncStorage } from "react-native";
 import DatePicker from '../../genericComponents/Pickers/DatePicker';
 import TimePicker from '../../genericComponents/Pickers/TimePicker';
 import ReactChipsInput from 'react-native-chips';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 
 export default class Event extends React.Component {
@@ -12,12 +13,12 @@ export default class Event extends React.Component {
 
         this.state = {
             event: {
-                name: 'אירוע 1',
-                date: '',
-                start_hour: '',
-                end_hour: '',
-                address: '',
-                equipment: ["מגבת", "כדור"]
+                name: this.props.navigation.state.params.group_name,
+                date: this.props.navigation.state.params.date,
+                start_hour: this.props.navigation.state.params.start_hour,
+                end_hour: this.props.navigation.state.params.end_hour,
+                address: this.props.navigation.state.params.address,
+                equipment: this.props.navigation.state.params.equipment
             }
         }
     }        
