@@ -70,7 +70,7 @@ export default class HoogSearch extends Component{
                         
                         query={{
                             // available options: https://developers.google.com/places/web-service/autocomplete
-                            key: 'AIzaSyCJNmwQWr1gli1Se440KkI14nsFfgqQkAM', // TODO: save the key somewhere safer
+                            key: 'AIzaSyDe2cx9NLqtDipMKZ1J2EeioMAn2W9L_20', // TODO: save the key somewhere safer
                             language: 'iw', // language of the results                           
                         }}
                         

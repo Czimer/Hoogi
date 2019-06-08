@@ -21,14 +21,14 @@ export default class GroupsList extends Component{
             newGroupData:{}
         };
         
-         axios.get('http://192.168.1.10:3000/api/hoogs/getAllHoogsNames').then(response =>{
+         axios.get(`${appConfig.ServerApiUrl}/api/hoogs/getAllHoogsNames`).then(response =>{
             this.setState({allHoogsArray:response.data});
         }).catch(error => console.log(error));
     };
 
     componentDidMount = () =>{ 
         //TODO: change the managerId according to the current signed manager
-        axios.post('http://192.168.1.10:3000/api/groups/:params', {managerId:893032893}).then(response =>{
+        axios.post(`${appConfig.ServerApiUrl}/api/groups/:params`, {managerId:893032893}).then(response =>{
             console.log(response.data);
             this.setState({tableData:response.data})
         }).catch(error => {console.log(error)});
