@@ -10,10 +10,14 @@ import { Manager } from '../../consts';
 
 
 export default class ContactsList extends Component{
+    static navigationOptions = {
+        title: 'רשימת משתתפים'
+    }
     constructor(props){
         super(props);
         this.state = {
-            tableHead:['ת"ז', 'גיל', 'מין', 'מס טלפון החניך', 'מספר טלפון ההורה','שם החניך','שם ההורה'],            
+            // tableHead:['ת"ז', 'גיל', 'מין', 'מס טלפון החניך', 'מספר טלפון ההורה','שם החניך','שם ההורה'],            
+            tableHead:['שם ההורה', 'שם החניך', 'מספר טלפון ההורה', 'מס טלפון החניך', 'מין','גיל','ת"ז'],            
             actionsModalVisible: false,
             addNewContactModalVisible:false,
             contactChildId: 0,
@@ -162,8 +166,8 @@ export default class ContactsList extends Component{
 const styles = StyleSheet.create({
     fab: {
       position: 'absolute',
-      margin: 16,
-      right: 0,
+      margin: 40,
+      right: 250,
       bottom: 0,
     },
   })

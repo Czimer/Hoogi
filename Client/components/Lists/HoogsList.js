@@ -10,10 +10,14 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { ScrollView } from 'react-native-gesture-handler';
 
 export default class HoogsList extends Component{
+    static navigationOptions = {
+        title: 'החוגים שלי'
+    }
     constructor(props){
         super(props);
         this.state = {
-            tableHead:[ 'תיאור', 'תגיות', 'כתובת','שם חוג','מזהה'],         
+            // tableHead:[ 'תיאור', 'תגיות', 'כתובת','שם חוג','מזהה'],         
+            tableHead:[ 'מזהה', 'שם חוג', 'כתובת','תגיות','תיאור'],         
             actionsModalVisible: false, 
             hoogId:0,
             addNewHoogModalVisible:false,
@@ -91,7 +95,7 @@ export default class HoogsList extends Component{
                 hoogId: currHoogData.id,
                 hoogName: currHoogData.name,
                 address: currHoogData.address,
-                tags: currHoogData.tags.join(', '),              
+                tags: currHoogData.tags instanceof Array ? currHoogData.tags.join(', ') : currHoogData.tags,
                 description: currHoogData.description     
         }}))
     }
@@ -273,8 +277,8 @@ export default class HoogsList extends Component{
 const styles = StyleSheet.create({
     fab: {
       position: 'absolute',
-      margin: 40,
-      right: 0,
+      margin: 50,
+      right: 250,
       bottom: 0,
     },
     propertyText:{

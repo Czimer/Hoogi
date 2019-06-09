@@ -74,7 +74,7 @@ class hoogBL {
 
     static async getAllHoogsByManagerId(req, res, next){
         const params = req.body;
-        const query = `SELECT  DESCRIPTION, TAGS, ADDRESS, NAME, ID FROM HOOGS
+        const query = `SELECT ID, NAME, ADDRESS, TAGS, DESCRIPTION  FROM HOOGS
                         WHERE MANAGER_ID = '${params.managerId}'`;       
         
         try{
@@ -108,14 +108,15 @@ class hoogBL {
         const latitude = params.location.split(',')[0];
         const longitude = params.location.split(',')[1];
 
-        let tags = `{`;       
-
-        params.tags.split(',').forEach(function(currEq){
-            tags += `"${currEq}", `
-        })
-        tags = tags.substr(0, tags.length - 2);
+        let tags = `{`;   
+        
+        if(params.tags !== null){
+            params.tags.split(',').forEach(function(currEq){
+                tags += `"${currEq}", `
+            })
+            tags = tags.substr(0, tags.length - 2);
+        }        
         tags += `}`
-
 
         const query = `INSERT INTO HOOGS (MANAGER_ID, NAME, ADDRESS, TAGS, DESCRIPTION, LATITUDE, LONGITUDE) 
                     VALUES('${managerId}', '${name}', '${address}', '${tags}', '${description}', ${latitude}, ${longitude})`;

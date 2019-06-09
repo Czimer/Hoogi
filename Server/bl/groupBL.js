@@ -32,14 +32,14 @@ class groupBL {
     static async GetAllGroupsOfSpecificManager(req, res, next) {
         const managerId = req.body.managerId;
         const query = `SELECT  
-            grp.max_participants,
-            grp.group_times::json->>'time' SHAA,
-            grp.group_times::json->>'day' YOM,
-            CASE WHEN LOWER(grp.gender) LIKE 'female' THEN 'נקבה' ELSE 'זכר' END AS gender,
-            grp.max_age,
-            grp.min_age, 
-            grp.name, 
             grp.id,
+            grp.name,
+            grp.min_age, 
+            grp.max_age,            
+            CASE WHEN LOWER(grp.gender) LIKE 'female' THEN 'נקבה' ELSE 'זכר' END AS gender,
+            grp.group_times::json->>'day' YOM,
+            grp.group_times::json->>'time' SHAA,
+            grp.max_participants,
             grp.equipment     
         FROM hoogs hoogs
         INNER JOIN (SELECT * FROM GROUPS) grp ON (hoogs.id = grp.hoog_id)
@@ -60,17 +60,19 @@ class groupBL {
         const hoogId = params.hoogId;
         const minAge = params.minAge;
         const maxAge = params.maxAge;
-        const gender = params.gender;
+        const gender = params.gender === 'נקבה' ? 'female' : params.gender === 'זכר' ? 'male' : params.gender;
         const day = params.day;
         const time = params.selectedHours + `:` + params.selectedMinutes
         const maxParticipants = params.maxParticipants;
         const groupName = params.groupName;
         let equipment = `{`;       
 
-        params.equipment.split(',').forEach(function(currEq){
-            equipment += `"${currEq}", `
-        })
-        equipment = equipment.substr(0, equipment.length - 2);
+        if(params.equipment !== null){
+            params.equipment.split(',').forEach(function(currEq){
+                equipment += `"${currEq}", `
+            })
+            equipment = equipment.substr(0, equipment.length - 2);
+        }       
         equipment += `}`
 
         if(hoogId != undefined && minAge != undefined && maxAge != undefined &&
@@ -99,23 +101,26 @@ class groupBL {
         const groupId = params.groupId;
         const minAge = params.minAge;
         const maxAge = params.maxAge;
-        const gender = params.gender;
+        const gender = params.gender === 'נקבה' ? 'female' : params.gender === 'זכר' ? 'male' : params.gender;
         const day = params.day;
         const time = params.selectedHours + `:` + params.selectedMinutes
         const maxParticipants = params.maxParticipants;
         const groupName = params.groupName;
         let equipment = `{`;       
 
-        params.equipment.split(',').forEach(function(currEq){
-            equipment += `"${currEq}", `
-        })
-        equipment = equipment.substr(0, equipment.length - 2);
+        if(params.equipment !== null){
+            params.equipment.split(',').forEach(function(currEq){
+                equipment += `"${currEq}", `
+            })
+            equipment = equipment.substr(0, equipment.length - 2);
+        }
+        
         equipment += `}`
 
         if(minAge && maxAge && gender && day && time && maxParticipants){
             const query = `UPDATE GROUPS SET MIN_AGE = ` + minAge + `, MAX_AGE = ` + maxAge + 
             `, GENDER =  '` + gender + `', GROUP_TIMES = '{"day":"` + day + `", "time":"` + time + `"}',
-             MAX_PARTICIPANTS = ` + maxParticipants + `, NAME = ` + groupName + `EQUIPMENT = '` + equipment + `'`
+             MAX_PARTICIPANTS = ` + maxParticipants + `, NAME = '` + groupName + `', EQUIPMENT = '` + equipment + `'`
               + ` WHERE ID = ` + groupId;
                      
 
