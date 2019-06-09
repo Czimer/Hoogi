@@ -11,12 +11,12 @@ router.get('/', async function(req, res, next) {
 
 /* GET groups with id of manager */
 
-router.post('/', async function(req, res, next){
+router.post('/getByManager', async function(req, res, next){
     const filteredGroupsByManager = await groupBL.GetAllGroupsOfSpecificManager(req, res, next);
     res.send(filteredGroupsByManager)
 });
 
-router.post('/:params', async function(req, res, next){
+router.post('/getByManager/:params', async function(req, res, next){
     const filteredGroupsByManager = await groupBL.GetAllGroupsOfSpecificManager(req, res, next);
     res.send(filteredGroupsByManager)
 });

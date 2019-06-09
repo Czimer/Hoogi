@@ -9,8 +9,9 @@ import HoogSearch from './components/Search/HoogSearch';
 import SearchResults from './components/Search/SearchResults';
 import SignUpView from "./components/SignUp/SignUpView";
 import MyChildrenView from "./components/Children/MyChildrenView";
+import EventDetails from "./components/Event/EventDetails";
+import Event from './components/Event/Event';
 import ChildDetailsComponent from "./components/Children/ChildDetailsComponent";
-import EventDetails from "./components/Calendar/EventDetails";
 import ContactsList from './components/Lists/ContactsList';
 import GroupList from './components/Lists/GroupsList';
 import HoogsList from './components/Lists/HoogsList';
@@ -25,6 +26,7 @@ const AppStack = createStackNavigator(
         SearchResults: SearchResults,
         MyChildren: MyChildrenView,
         EventDetails: EventDetails,
+        Event: Event,
         ContactsList: ContactsList,
         GroupList: GroupList,
         HoogsList: HoogsList,

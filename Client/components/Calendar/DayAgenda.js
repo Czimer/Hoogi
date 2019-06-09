@@ -8,37 +8,63 @@ class DayAgenda extends React.Component {
         super(props);
 
         this.state = {
-            dayAgenda: []
+            dayAgenda: [],
+            isManager: false
         }
     }
 
     static getDerivedStateFromProps(props, state) {
         return {
-            dayAgenda: props.dayAgenda
+            dayAgenda: props.dayAgenda,
+            isManager: props.isManager
         };
     }
 
     onMoveToEventDetails = (hoog) => {
-        this.props.navigation.navigate('EventDetails', hoog)
+        this.props.navigation.navigate('EventDetails', {...hoog, "isManager": this.state.isManager })
+    }
+
+    async componentDidMount() {
+        
     }
 
     render() {
-        return (
-            <ScrollView>
-                {this.state.dayAgenda.map(child =>
-                    child.events.map((hoog, i) =>
-                        <TouchableOpacity key={i} onPress={() => this.onMoveToEventDetails(hoog)}>
-                            <Surface style={[styles.surface, { borderRightColor: child.color }]} >
-                                <View style={styles.line}>
-                                    <Text style={styles.groupName}>{hoog.group_name}</Text>
-                                </View>
-                                <View style={styles.line}>
-                                    <Button style={styles.hours} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_time} - {hoog.end_time}</Button>
-                                </View>
-                            </Surface>
-                        </TouchableOpacity >))}
-            </ScrollView>
-        );
+        const { isManager, dayAgenda } = this.state;
+
+        if (isManager) {
+            return (
+                <ScrollView>
+                    {dayAgenda.map((hoog, i) =>
+                            <TouchableOpacity key={i} onPress={() => this.onMoveToEventDetails(hoog)}>
+                                <Surface style={[styles.surface, { borderRightColor: 'red' }]} >
+                                    <View style={styles.line}>
+                                        <Text style={styles.groupName}>{hoog.group_name}</Text>
+                                    </View>
+                                    <View style={styles.line}>
+                                        <Button style={styles.hours} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_time} - {hoog.end_time}</Button>
+                                    </View>
+                                </Surface>
+                            </TouchableOpacity >)}
+                </ScrollView>
+            );
+        } else {
+            return (
+                <ScrollView>
+                    {dayAgenda.map(child =>
+                        child.events.map((hoog, i) =>
+                            <TouchableOpacity key={i} onPress={() => this.onMoveToEventDetails(hoog)}>
+                                <Surface style={[styles.surface, { borderRightColor: child.color }]} >
+                                    <View style={styles.line}>
+                                        <Text style={styles.groupName}>{hoog.group_name}</Text>
+                                    </View>
+                                    <View style={styles.line}>
+                                        <Button style={styles.hours} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_time} - {hoog.end_time}</Button>
+                                    </View>
+                                </Surface>
+                            </TouchableOpacity >))}
+                </ScrollView>
+            );
+        }
     }
 }
 
