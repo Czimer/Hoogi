@@ -32,7 +32,7 @@ export default class Home extends React.Component {
         const loginData = await AsyncStorage.getItem('loginData')
         const isManager = JSON.parse(loginData).user_type === Manager
         this.setState({ showSpin: false, ManagerMode: isManager })
-         const token = await PushNotificationService.registerForPushNotificationsAsync()
+        //const token = await PushNotificationService.registerForPushNotificationsAsync()
         // if (token) {
         //     loginData.token = token
         //     await AsyncStorage.setItem("loginData", JSON.stringify(loginData))

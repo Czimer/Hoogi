@@ -154,7 +154,7 @@ export default class FeedContainer extends React.Component {
             const res = await request(appConfig.ServerGraphqlUrl, addNewMessage, params)
             newMessage = res.createGroupsMessage.groupsMessage
             messageUploaded = true
-            this.sendPushNotifications()
+            //this.sendPushNotifications()
 
             await this.uploadPhotosAsync(Photos, newMessage.id)
         } catch (err) {
