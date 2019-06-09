@@ -10,19 +10,34 @@ router.get('/', async function(req, res, next) {
 });
 
 /* GET hoogs with params */
-router.post('/', async function(req, res, next){
-    const filteredHoogs = await parentsAndChildsBL.parentAndChildBL.GetParentsAndChildrenOfGroup(req, res, next);
-    res.send(filteredHoogs)
+router.post('/', async function(req, res, next){    
+    try{
+        const parentsAndChilds = await parentsAndChildsBL.parentAndChildBL.GetParentsAndChildrenOfGroup(req, res, next);
+        res.send(parentsAndChilds)
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 });
 
 router.post('/:params', async function(req, res, next){
-    const filteredHoogs = await parentsAndChildsBL.parentAndChildBL.GetParentsAndChildrenOfGroup(req, res, next);
-    res.send(filteredHoogs)
+    try{
+        const parentsAndChilds = await parentsAndChildsBL.parentAndChildBL.GetParentsAndChildrenOfGroup(req, res, next);
+        res.send(parentsAndChilds)
+    }
+    catch(err){
+        res.status(500).end()   
+    }    
 });
 
 router.post('/childrenOfParentId/:params', async function(req, res, next){
-    const filteredHoogs = await parentsAndChildsBL.parentAndChildBL.GetChildrenOfParentId(req, res, next);
-    res.send(filteredHoogs)
+    try{
+        const childrenOfParent = await parentsAndChildsBL.parentAndChildBL.GetChildrenOfParentId(req, res, next);
+        res.send(childrenOfParent)
+    }
+    catch(err){
+        res.status(500).end()   
+    }    
 });
 
 // Get children events

@@ -28,6 +28,19 @@ class groupBL {
             throw err
         }
     }
+    
+     static async GetAllGroupOfHoogKind(req, res, next){
+        const groupId = req.body.groupId;
+        const query = `select id, name from groups where hoog_id in (select hoog_id from groups where id = ${groupId})`;
+
+        try {
+            const results = await DataAccess.executeQuery(query);
+            return results
+        }
+        catch (err) {
+            throw err
+        }
+    }
 
     static async GetAllGroupsOfSpecificManager(req, res, next) {
         const managerId = req.body.managerId;

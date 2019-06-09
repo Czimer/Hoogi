@@ -9,39 +9,74 @@ router.get('/', async function(req, res, next) {
 });
 
 router.post('/getAllHoogsNames', async function(req, res, next) {
-    const hoogs = await hoogBL.GetAllHoogsNames(req, res, next);
-    res.send(hoogs)
+    try{
+        const hoogs = await hoogBL.GetAllHoogsNames(req, res, next);
+        res.send(hoogs)
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 });
 
 /* GET hoogs with params */
 router.post('/', async function(req, res, next){
-    const filteredHoogs = await hoogBL.GetHoogsByParams(req, res, next);
-    res.send(filteredHoogs)
+    try{
+        const filteredHoogs = await hoogBL.GetHoogsByParams(req, res, next);
+        res.send(filteredHoogs)
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 });
 
-router.post('/:params', async function(req, res, next){
-    const filteredHoogs = await hoogBL.GetHoogsByParams(req, res, next);
-    res.send(filteredHoogs)
+router.post('/:params', async function(req, res, next){    
+    try{
+        const filteredHoogs = await hoogBL.GetHoogsByParams(req, res, next);
+        res.send(filteredHoogs)
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 });
 
 router.post('/getAllHoogsByManagerId/:params', async function(req, res, next){
-    const hoogsPerManager = await hoogBL.getAllHoogsByManagerId(req, res, next);
-    res.send(hoogsPerManager);
+    try{
+        const hoogsPerManager = await hoogBL.getAllHoogsByManagerId(req, res, next);
+        res.send(hoogsPerManager);
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 })
 
 router.post('/deleteHoogById/:params', async function(req, res, next){
-    const deletedHoog  = await hoogBL.deleteHoogById(req, res, next);
-    res.send(deletedHoog);
+    try{
+        const deletedHoog  = await hoogBL.deleteHoogById(req, res, next);
+        res.send(deletedHoog);
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 })
 
 router.post('/addNewHoog/:params', async function(req, res, next){
-    const addedHoog = await hoogBL.addNewHoog(req, res, next);
-    res.send(addedHoog);
+    try{
+        const addedHoog = await hoogBL.addNewHoog(req, res, next);
+        res.send(addedHoog);
+    }
+    catch(err){
+        res.status(500).end()   
+    }    
 })
 
 router.post('/editHoog/:params', async function(req, res, next){
-    const editedHoog = await hoogBL.editHoog(req, res, next);
-    res.send(editedHoog);
+    try{
+        const editedHoog = await hoogBL.editHoog(req, res, next);
+        res.send(editedHoog);
+    }
+    catch(err){
+        res.status(500).end()   
+    }    
 })
 
 
