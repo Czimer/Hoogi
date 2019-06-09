@@ -38,7 +38,7 @@ export default class GroupsList extends Component{
             edit:false
         };       
         
-         axios.get('http://192.168.1.10:3000/api/hoogs/getAllHoogsNames').then(response =>{
+         axios.get(`${appConfig.ServerApiUrl}/hoogs/getAllHoogsNames`).then(response =>{
             this.setState({allHoogsArray:response.data});
         }).catch(error => console.log(error));
     };
