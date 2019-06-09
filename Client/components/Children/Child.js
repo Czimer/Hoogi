@@ -1,135 +1,73 @@
 import React from 'react';
-import { List, Avatar, Text, Button, TextInput, HelperText } from "react-native-paper";
-import { View, Picker, StyleSheet } from "react-native";
-import DatePicker from "../../genericComponents/Pickers/DatePicker";
-import appConfig from '../../appConfig';
-import { HueSlider } from "react-native-color";
+import { List, Avatar, Text, IconButton } from "react-native-paper";
+import { View, StyleSheet, Image } from "react-native";
 import tinycolor from 'tinycolor2';
 
 export default class Child extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isExpanded: false,
-            isEditMode: false,
-            child: { ...this.props.child, color: tinycolor(this.props.child.color).toHsl() }
-        };
-    }
-
-    _handlePress = () =>
-        this.setState({
-            isExpanded: !this.state.isExpanded
-        });
-
-
-    // TODO: when i can show photo, show it!
-    renderAvatar = () => {
+   
+    renderImage = () => {
         const { child } = this.props
-        return <Avatar.Text size={36} label={`${child.firstName[0]}${child.lastName[0]}`} />
+        if (child.photo && child.photo.uri) {
+            return <Image style={styles.image} source={{ uri: child.photo.uri }} />
+        }
+
+        if (child.gender === 'male')
+            return <Image style={styles.image} source={require('../../assets/empty-man.png')} />
+
+        return <Image style={styles.image} source={require('../../assets/empty-woman.png')} />
     }
 
-    onSaveChildNewData = () => {
-        const { firstName, lastName, phone } = this.state.child
-        const errorObject = {
-            firstNameError: undefined,
-            lastNameError: undefined,
-            phoneError: undefined,
-        }
-        let isError = false
-
-        if (firstName.trim() === '' || firstName.trim().length < 2) {
-            isError = true
-            errorObject.firstNameError = 'שם פרטי לא יכול להיות ריק או קטן מ2 אותיות'
-        }
-
-        if (lastName.trim() === '' || lastName.trim().length < 2) {
-            isError = true
-            errorObject.lastNameError = 'שם משפחה לא יכול להיות ריק או קטן מ2 אותיות'
-        }
-
-        if (!appConfig.regex.phone.test(phone)) {
-            isError = true
-            errorObject.phoneError = 'טלפון לא חוקי'
-        }
-
-        if (isError) {
-            this.setState({ ...errorObject })
-        } else {
-            // some api call
-            this.props.onEditChild(this.state.child)
-            this.setState({ isEditMode: false })
-        }
-
-    }
-
-    cancelEdit = () => {
-        this.setState({ child: this.props.child, isEditMode: false })
-    }
-
-    onChangeHue = (h) => {
-        const { child } = this.state
-        child.color.h = h
-        this.setState({ child: { ...child } })
+    moveToEdit = () => {
+        const { child, onEditChild } = this.props
+        onEditChild(child)
     }
 
     render() {
-        const { isExpanded, isEditMode, child } = this.state
+        const { child } = this.props
         return (
-            <List.Accordion
-                title={`${child.firstName} ${child.lastName}`}
-                left={() => this.renderAvatar()}
-                expanded={isExpanded}
-                onPress={this._handlePress}>
-                {isEditMode ?
-                    <View style={{ marginRight: 20 }}>
-                        <TextInput label='שם פרטי'
-                            value={child.firstName} onChangeText={firstName => this.setState(prevState => ({ child: { ...prevState.child, firstName } }))} />
-                        {!!this.state.firstNameError && <HelperText type="error">{this.state.firstNameError}</HelperText>}
-                        <TextInput label='שם משפחה'
-                            value={child.lastName} onChangeText={lastName => this.setState(prevState => ({ child: { ...prevState.child, lastName } }))} />
-                        {!!this.state.lastNameError && <HelperText type="error">{this.state.lastNameError}</HelperText>}
-                        <Text>מין</Text>
-                        <Picker
-                            selectedValue={child.gender}
-                            style={{ height: 50, width: 100 }}
-                            onValueChange={(gender) =>
-                                this.setState(prevState => ({ child: { ...prevState.child, gender } }))
-                            }>
-                            <Picker.Item label="זכר" value="זכר" />
-                            <Picker.Item label="נקבה" value="נקבה" />
-                        </Picker>
-                        <TextInput label='טלפון'
-                            value={child.phone} onChangeText={phone => this.setState(prevState => ({ child: { ...prevState.child, phone } }))} />
-                        {!!this.state.phoneError && <HelperText type="error">{this.state.phoneError}</HelperText>}
-                        <DatePicker title={'הזן תאריך לידה'} date={child.birthDate} isLimited onChange={birthDate => this.setState(prevState => ({ child: { ...prevState.child, birthDate } }))}></DatePicker>
-                        <HueSlider
-                            style={styles.sliderRow}
-                            gradientSteps={40}
-                            value={child.color.h}
-                            onValueChange={this.onChangeHue}
-                        />
-                        <Button onPress={this.onSaveChildNewData}>שמור</Button>
-                        <Button onPress={this.cancelEdit}>ביטול</Button>
-                    </View> :
-                    <View>
-                        <Text>שם - {`${child.firstName} ${child.lastName}`}</Text>
-                        <Text>מין - {child.gender}</Text>
-                        <Text>טלפון - {child.phone}</Text>
-                        <Text>תאריך לידה - {child.birthDate}</Text>
-                        <Text style={{ color: tinycolor(child.color).toRgbString() }}>הצבע של הילד</Text>
-                        <Button onPress={() => this.setState({ isEditMode: true })}>ערוך</Button>
-                    </View>
-                }
-            </List.Accordion>
+            <View style={styles.container}>
+                <View style={{ flex: 2 }}>
+                    {this.renderImage()}
+                </View>
+                <View style={{ flex: 3 }}>
+                    <Text>שם - {`${child.firstName} ${child.lastName}`}</Text>
+                    <Text>מין - {child.gender}</Text>
+                    <Text>טלפון - {child.phone}</Text>
+                    <Text>תאריך לידה - {child.birthDate}</Text>
+                    <Text style={{ color: tinycolor(child.color).toRgbString() }}>הצבע של הילד</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                    <IconButton
+                        icon="update"
+                        size={20}
+                        onPress={this.moveToEdit}
+                    />
+                </View>
+                {/* <View style={{ flex: 1 }}>
+                    <IconButton
+                        icon="delete"
+                        size={20}
+                        onPress={this.moveToEdit}
+                    />
+                </View> */}
+            </View>
         );
     }
 }
 
 
 const styles = StyleSheet.create({
-    sliderRow: {
-        alignSelf: 'stretch',
+    container: {
+        flexDirection: 'row',
         marginLeft: 12,
-        marginTop: 12
+        marginTop: 12,
+        alignItems:'center',
+        // marginBottom: 12,
+        // borderBottomColor: 'grey',
+        // borderBottomWidth: 1,
     },
+    image: {
+        height: 75,
+        width: 75
+    }
 });

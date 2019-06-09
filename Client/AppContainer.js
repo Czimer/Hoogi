@@ -11,8 +11,10 @@ import SignUpView from "./components/SignUp/SignUpView";
 import MyChildrenView from "./components/Children/MyChildrenView";
 import EventDetails from "./components/Event/EventDetails";
 import Event from './components/Event/Event';
+import ChildDetailsComponent from "./components/Children/ChildDetailsComponent";
 import ContactsList from './components/Lists/ContactsList';
 import GroupList from './components/Lists/GroupsList';
+import HoogsList from './components/Lists/HoogsList';
 import Settings from './components/Settings/Settings';
 
 const AppStack = createStackNavigator(
@@ -27,7 +29,9 @@ const AppStack = createStackNavigator(
         Event: Event,
         ContactsList: ContactsList,
         GroupList: GroupList,
-        Settings: Settings
+        HoogsList: HoogsList,
+        Settings: Settings,
+        ChildDetails:ChildDetailsComponent
     },
     {
         initialRouteName: 'Home',

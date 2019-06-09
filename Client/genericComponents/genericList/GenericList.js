@@ -16,7 +16,7 @@ export default class GenericList extends Component{
         return(
             <>
                 <DataTable>
-                    <DataTable.Header>
+                    <DataTable.Header style={styles.header}>
                     {
                         tableHead.map(cell => {
                             return <DataTable.Title key={cell}>{cell}</DataTable.Title>
@@ -28,10 +28,10 @@ export default class GenericList extends Component{
                         (tableData !== undefined) && tableData.map((row, rowIndex) =>{
                             return (
                                 <TouchableHighlight  key={rowIndex} onLongPress={(eventic) => handleLongPress(eventic, row)}>
-                                     <DataTable.Row key={rowIndex}>
+                                     <DataTable.Row key={row.id}>
                                     { 
-                                        Object.keys(row).map((keyName) =>{
-                                            return (<DataTable.Cell key={row[keyName]}>{row[keyName]}</DataTable.Cell>)
+                                        Object.keys(row).map((keyName, cellRowIndex) =>{
+                                            return (<DataTable.Cell key={cellRowIndex}>{row[keyName]}</DataTable.Cell>)
                                         })
                                     }
                                     </DataTable.Row>
@@ -54,9 +54,10 @@ export default class GenericList extends Component{
 }
 
 const styles = StyleSheet.create({
-    container: {marginTop:30, flex: 1, padding: 30, paddingTop: 30, backgroundColor: '#fff' },
+    container: {marginTop:30, flex: 1, padding: 30, backgroundColor: '#fff' },
     head: {marginTop:30,  height: 40, backgroundColor: '#fff' },
-    text: { width:30, margin: 7 }
+    text: { width:30, margin: 7 },
+    header:{}
   });
 
 

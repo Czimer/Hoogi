@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import GenericList from '../../genericComponents/genericList/GenericList'
-import { FAB, Portal, TextInput, Text, Button} from 'react-native-paper';
-import { View, StyleSheet, ScrollView, Modal, Picker} from 'react-native';
+import { FAB, Card, TextInput, Text, Button, HelperText} from 'react-native-paper';
+import { View, StyleSheet, ScrollView, AsyncStorage, Alert} from 'react-native';
+import appConfig from '../../appConfig'
+import Modal from 'react-native-modal';
+import { Manager } from '../../consts';
 
 
 
@@ -19,100 +22,136 @@ export default class ContactsList extends Component{
         };    
     };
 
-    componentDidMount = () =>{ // TODO: change to the wanted group id
-        const { groupId } = props.navigation.getParam('groupId');
-        axios.post('http://192.168.1.10:3000/api/parentsAndChilds/:params', {groupId:groupId}).then(response =>{
+    async componentDidMount() {
+        const loginData = await AsyncStorage.getItem('loginData')
+        const isManager = JSON.parse(loginData).user_type === Manager        
+        const groupId = this.props.navigation.getParam('groupId');
+        this.setState({groupId, managerMode:isManager})
+        this.getAllContactsOfSpecificGroup();
+    }
+
+    getAllContactsOfSpecificGroup = () =>{
+        axios.post(appConfig.ServerApiUrl + '/parentsAndChilds/:params', {groupId:this.state.groupId}).then(response =>{
             this.setState({tableData:response.data});
         }).catch(error => {console.log(error)});
     }
 
     openAddNewContactWindow = () =>{
-        console.log(" entered openAddNewContactWindow")
         this.setState({addNewContactModalVisible:true})
     }
 
     addNewContact = (childId) =>{
-        console.log(" entered addNewContact")
+        const groupId = this.props.navigation.getParam('groupId');
         /// TODO: validate the id
         if(childId !== 0){
             // send to server
-            axios.post('http://192.168.1.10:3000/api/groups/registerNewParticipantToGroup/:params', 
-            {groupId:this.props.groupId, childId:childId}).then(response =>{
-                console.log(response.data);
-                // TODO: alert a message relevant to the response
-                this.setState({addNewContactModalVisible:false})
+            axios.post(appConfig.ServerApiUrl + '/groups/registerNewParticipantToGroup/:params', 
+            {groupId:groupId, childId:childId}).then(response =>{
+                Alert.alert('החניך התווסף בהצלחה!')
+                this.closeModal();
+                this.getAllContactsOfSpecificGroup();
             }).catch(error => {
                 console.log(error)
-                this.setState({addNewContactModalVisible:false})
+                this.closeModal();
+                Alert.alert('הייתה בעיה בהוספת החניך')
             });            
         }
-    }    
+    }   
+    
+    
 
     removeParticipant = (contId) =>{
-        console.log("entered removeParticipant")
+        const groupId = this.props.navigation.getParam('groupId');
         if(contId !== 0){        
-            // popup - are you sure? TODO: needed?
-            // else - send to the server
-            axios.post('http://192.168.1.10:3000/api/groups/removeChildFromGroupById/:params', 
-            {groupId:this.props.groupId, childId:childId}).then(response =>{
-                console.log(response.data);
-                // TODO: alert a message relevant to the response
-                this.setState({actionsModalVisible:false})
-            }).catch(error => {
-                console.log(error)
-                this.setState({actionsModalVisible:false})
-            });
+
+            Alert.alert(
+                'שים לב!',
+                'האם אתה בטוח? שאתה רוצה למחוק את משתתף ' + contId + '?',
+                [
+                    {text: 'כן', onPress: () => remove()},
+                    {text: 'לא', onPress: () => console.log('')}
+                ]
+            )
+
+            remove = () =>{
+                axios.post(appConfig.ServerApiUrl + '/groups/removeChildFromGroupById/:params', 
+                {groupId:groupId, childId:contId}).then(response =>{
+                    Alert.alert('החניך הוסר מהקבוצה בהצלחה!')
+                    this.closeModal();
+                    this.getAllContactsOfSpecificGroup();
+                }).catch(error => {
+                    console.log(error)
+                    this.closeModal();
+                    Alert.alert('הייתה בעיה בהסרת החניך מהרשימה ')
+                });
+            }           
         }
     }
 
-    handleLongPress = (event) =>{
-        // TODO: handle the data from event property - add to state? contactChildId
-        console.log("entered handle long press")
-        console.log(this.state.actionsModalVisible)
-        // insert a check if the user is manager - only manager is able to insert, edit or delete
-        this.setState({actionsModalVisible: true})
-        console.log(this.state.actionsModalVisible)
+    handleLongPress = (event, row) =>{
+        this.setState({actionsModalVisible: true, contactChildId: row.child_id})
     }
 
+    closeModal = () =>{
+        this.setState(
+            {
+                actionsModalVisible: false,
+                addNewContactModalVisible: false
+            });
+    }
+
+    // checkIdFieldValidation = () =>{
+    //     const {IdInputNumber} = this.state;
+    //     const childIdError
+    //     if (IdInputNumber.trim() === '' || childIdInputNumberId.trim().length < 2) {           
+    //         childIdError = 'תעודת זהות לא תקינה'            
+    //     }
+    //     this.setState({childIdError});
+    // }
+
     render(){
-        const {tableData, tableHead, actionsModalVisible, contactChildId, addNewContactModalVisible} = this.state;
+        const {tableData, tableHead, actionsModalVisible, contactChildId, addNewContactModalVisible, managerMode} = this.state;
         return(
             <View>            
                {
                    (tableData !== undefined) &&  
-                   <GenericList tableHead={tableHead} handleLongPress={this.handleLongPress} tableData={tableData}>
-                    {/* add an if statement - show only if the user is a manager role */}
-                    {/* {
-                            role === "manager" &&
-                    } */}
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={actionsModalVisible}>
-                            <View style={{marginTop: 22}}>                               
-                                <Button onPress={this.removeParticipant(contactChildId)}>
-                                    <Text> הסר חניך מספר {contactChildId}</Text>
-                                </Button>                            
-                            </View>
+                   <GenericList tableHead={tableHead} handleLongPress={this.handleLongPress} tableData={tableData}>                   
+                    <Modal key='actionsModal'          
+                        isVisible={actionsModalVisible && managerMode}>
+                            <Card style={{marginTop: 22, backgroundColor:'#FFF'}}>   
+                                <Card.Content>
+                                    <Button mode="contained" onPress={() => this.removeParticipant(contactChildId)}>
+                                        <Text> הסר חניך מספר {contactChildId}</Text>
+                                    </Button>  
+                                </Card.Content>
+                                <Card.Actions>                                   
+                                    <Button mode="outlined" onPress={this.closeModal}>
+                                        <Text>בטל</Text>
+                                    </Button>         
+                                </Card.Actions>                                                   
+                            </Card>
                     </Modal>
 
-                    {/* <Modal animationType="slide"
-                        transparent={true}
-                        visible={addNewContactModalVisible}>
-                        <TextInput id="newChildId" dataDetectorTypes="phoneNumber" onChangeText={(text) => this.setState({IdInputNumber:text})}></TextInput>
-                        <Button onPress={this.addNewContact(this.state.IdInputNumber)}>
-                            <Text>הוסף חניך חדש</Text>
-                        </Button>
+                    <Modal isVisible={addNewContactModalVisible && managerMode}>
+                         <Card style={{marginTop: 22, backgroundColor:'#FFF'}}>  
+                            <Card.Content>
+                                <TextInput id="newChildId" dataDetectorTypes="phoneNumber" placeholder="הכנס תעודת זהות של החניך" onChangeText={(text) => this.setState({IdInputNumber:text})}/>
+                                {!!this.state.childIdError && <HelperText type="error">{this.state.childIdError}</HelperText>}
+                            </Card.Content>
+                            <Card.Actions>                               
+                                <Button mode="contained" onPress={() => this.addNewContact(this.state.IdInputNumber)}>
+                                    <Text>הוסף חניך חדש</Text>
+                                </Button>
+                                <Button mode="outlined" onPress={this.closeModal}>
+                                        <Text>בטל</Text>
+                                </Button>  
+                            </Card.Actions>                                
+                        </Card>
                     </Modal>
-
-                    <Portal>
-                        <FAB
-                            style={styles.fab}
-                            small
-                            icon="add"
-                            onPress={this.openAddNewContactWindow}
-                        />
-                    </Portal>       */}
+                    {
+                        managerMode && 
+                        <FAB style={styles.fab} icon="add" onPress={this.openAddNewContactWindow}/>
+                    }                    
                    </GenericList>    
                 }        
             </View>

@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, ScrollView, Picker } from 'react-native';
-import { DataTable, FAB, Portal, Checkbox, TextInput, Button } from 'react-native-paper';
+import { Text, View, StyleSheet, ScrollView, Picker , Alert} from 'react-native';
+import { DataTable, FAB, Portal, TextInput, Button, Card } from 'react-native-paper';
 import NumericInput from 'react-native-numeric-input'
-import {CheckBox} from 'react-native-elements'
+// import {CheckBox} from 'react-native-elements'
 import axios from 'axios';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import AnimatedLoader from "react-native-animated-loader";
+import appConfig from '../../appConfig'
+import CheckBox from 'react-native-check-box'
 
 export default class HoogSearch extends Component{
     constructor(props){
@@ -20,7 +22,6 @@ export default class HoogSearch extends Component{
             minAge:1,
             maxAge:20,
             location: "",
-            // visible:false
         };    
     };
       
@@ -34,10 +35,7 @@ export default class HoogSearch extends Component{
         this.state.ageRangeChkB ? searchParams.maxAge = this.state.maxAge : '';
         this.state.locationChkB ? searchParams.location = this.state.location : '';
 
-        console.log("in the button")
-       // GOAL - navigate to another screen (search results) and do the request in there       
-        axios.post('http://192.168.1.10:3000/api/hoogs/:params', searchParams).then(response =>{
-            console.log(response.data); // TODO: remove it after it works
+        axios.post(appConfig.ServerApiUrl + '/hoogs/:params', searchParams).then(response =>{
             this.props.navigation.navigate('SearchResults', {hoogsSearchResults:response.data});
         }).catch(error => {console.log(error)});     
         
@@ -46,13 +44,15 @@ export default class HoogSearch extends Component{
     
     render(){
         return(
-            <>             
-                <Text style={styles.head}>חיפוש חוגים</Text>
-                    <CheckBox id="Tags" title="תגית" style={styles.checkbox} checked={this.state.tagSearchChkB} onPress={() => this.setState(prevState => ({tagSearchChkB : !prevState.tagSearchChkB}))}/>
-                        <TextInput id="tagSearch" onChangeText={(text) => this.setState({tagSearch:text})}/>
-                    <CheckBox id="location" title="מיקום" checked={this.state.locationChkB} onPress={() => this.setState(prevState => ({ locationChkB: !prevState.locationChkB}))}/>
+            <ScrollView>
+            <Card>  
+                <Card.Title title="חיפוש חוגים"/>
+                <Card.Content>
+                    <CheckBox id="Tags" leftText={"תגית"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({tagSearchChkB : !prevState.tagSearchChkB}))} isChecked={this.state.tagSearchChkB}/>
+                    <TextInput id="tagSearch" label="רשום תגיות חיפוש עם פסיקים ביניהן" onChangeText={(text) => this.setState({tagSearch:text})}/>
+                    <CheckBox id="location" leftText={"מיקום"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({locationChkB : !prevState.locationChkB}))} isChecked={this.state.locationChkB}/>
                       {/*  beginning of google search */}
-                      <GooglePlacesAutocomplete
+                    <GooglePlacesAutocomplete
                         placeholder='Search'
                         minLength={3} // minimum length of text to search
                         autoFocus={false}
@@ -70,7 +70,7 @@ export default class HoogSearch extends Component{
                         
                         query={{
                             // available options: https://developers.google.com/places/web-service/autocomplete
-                            key: 'AIzaSyDe2cx9NLqtDipMKZ1J2EeioMAn2W9L_20', // TODO: save the key somewhere safer
+                            key: appConfig.locationApiKey, 
                             language: 'iw', // language of the results                           
                         }}
                         
@@ -110,34 +110,35 @@ export default class HoogSearch extends Component{
                     {/* end of google search */}
 
 
-                    <CheckBox id="Gender" title="מין" style={styles.checkbox} checked={this.state.genderChkB} onPress={() => this.setState(prevState => ({genderChkB: !prevState.genderChkB}))}/>
-                        <Picker
-                            selectedValue={this.state.gender}
-                            style={{height: 50, width: 100}}
-                            onValueChange={(itemValue, itemIndex) =>
-                                this.setState({gender: itemValue})}>
-                            <Picker.Item label="זכר" value="Male" />
-                            <Picker.Item label="נקבה" value="Female" />
-                        </Picker>
-                    <CheckBox id="Ages" title="טווח גילאים" style={styles.checkbox} checked={this.state.ageRangeChkB} onPress={() => this.setState(prevState => ({ageRangeChkB: !prevState.ageRangeChkB}))}/>
-                        <NumericInput initValue={this.state.maxAge} maxValue={99}
-                            onChange={value => this.setState({maxAge:value})} />
-                        <NumericInput initValue={this.state.minAge} minValue={1}
-                            onChange={value => {this.setState({minAge:value});}} />                 
-
+                    <CheckBox id="Gender" leftText={"מין"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({genderChkB : !prevState.genderChkB}))} isChecked={this.state.genderChkB}/>
+                    <Picker
+                        selectedValue={this.state.gender}
+                        style={{height: 50, width: 100}}
+                        onValueChange={(itemValue, itemIndex) =>
+                            this.setState({gender: itemValue})}>
+                        <Picker.Item label="זכר" value="Male" />
+                        <Picker.Item label="נקבה" value="Female" />
+                    </Picker>
+                    <CheckBox id="Ages" leftText={"טווח גילאים"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({ageRangeChkB : !prevState.ageRangeChkB}))} isChecked={this.state.ageRangeChkB}/>
+                    <NumericInput initValue={this.state.maxAge} maxValue={99}
+                        onChange={value => this.setState({maxAge:value})} />
+                    <NumericInput initValue={this.state.minAge} minValue={1}
+                        onChange={value => {this.setState({minAge:value});}} />  
+                </Card.Content>
+                <Card.Actions>
                     <Button mode='contained' onPress={this.onSearchButtonPress}>חפש</Button>
-            
-            </>
+                </Card.Actions> 
+            </Card>
+            </ScrollView>
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: { 
-        flex: 1, 
-        padding: 30, 
         paddingTop: 30, 
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        flexDirection: 'row'
      },
     head: { 
         height: 40, 
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     Portal: {marginBottom:30},
     checkbox:{
         position: 'absolute', 
-        right: 0
+        right: 0,
     },
     lottie: {
         width: 100,

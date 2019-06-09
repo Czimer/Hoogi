@@ -116,7 +116,7 @@ class parentAndChildBL {
         const query = `SELECT 
         CHILD.CHILD_ID,
         DATE_PART('YEAR',AGE(CHILD.BIRTH_DATE)) AGE,
-        CHILD.GENDER AS CHILD_GENDER,
+        CASE WHEN CHILD.GENDER LIKE 'female' THEN 'נקבה' ELSE 'זכר' END AS CHILD_GENDER,
         CHILD.PHONE CHILD_PHONE, 
         PARENT.PHONE PARENT_PHONE, 
         CHILD.FIRST_NAME || ' ' || CHILD.LAST_NAME AS CHILD_FULL_NAME,
@@ -134,6 +134,19 @@ class parentAndChildBL {
             throw err;
         }
 
+    }
+
+    static async GetChildrenOfParentId(req, res, next){
+        const parentId = req.body.parentId;
+        const query = `SELECT CHILD_ID, FIRST_NAME FROM CHILDREN WHERE PARENT_ID = '` + parentId + `'`;
+
+        try{
+            const results = await DataAccess.executeQuery(query);
+            return results
+        }
+        catch(err){
+            throw err;
+        }
     }
 }
 
