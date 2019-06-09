@@ -38,13 +38,13 @@ export default class GroupsList extends Component{
             edit:false
         };       
         
-         axios.get('http://192.168.1.10:3000/api/hoogs/getAllHoogsNames').then(response =>{
-            this.setState({allHoogsArray:response.data});
-        }).catch(error => console.log(error));
+        //  axios.get(appConfig.ServerApiUrl + '/hoogs/getAllHoogsNames').then(response =>{
+        //     this.setState({allHoogsArray:response.data});
+        // }).catch(error => console.log(error));
     };
 
     getAllGroupsOfManager = () =>{
-        axios.post(appConfig.ServerApiUrl + '/groups/:params', {managerId:this.state.managerId}).then(response =>{
+        axios.post(appConfig.ServerApiUrl + '/groups/getByManager/:params', {managerId:this.state.managerId}).then(response =>{
             console.log(response.data);
             this.setState({tableData:response.data})
         }).catch(error => {console.log(error)});
