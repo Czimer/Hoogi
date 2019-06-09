@@ -7,6 +7,9 @@ import appConfig from '../../appConfig'
 
 
 export default class SearchResults extends Component{
+    static navigationOptions = {
+        title: 'תוצאות חיפוש'
+    }
     constructor(props){
         super(props);
         this.state = {           
@@ -53,13 +56,12 @@ export default class SearchResults extends Component{
     render(){
         const {childPickerVisible, childrenArray} = this.state;
         return(
-            <View style={styles.view}>
-                <Text style={styles.title}>תוצאות חיפוש</Text>
+            <View>
                 <ScrollView>
                     <FlatList
                         data={this.state.hoogsSearchResults}
                         renderItem={({item}) =>
-                        <Card key={item.id}>                            
+                        <Card key={item.id} style={styles.singleCard}>                            
                             <Text>שם החוג: {item.name}</Text>
                             <Text>שם המדריך: {item.guid_name}</Text>
                             <Text>מספר טלפון של המדריך: {item.guid_phone}</Text>
@@ -69,7 +71,7 @@ export default class SearchResults extends Component{
                             <Text>תגיות רלוונטיות: {item.tags.toString()}</Text>
                             <Text>יום: {item.group_times.day}</Text>
                             <Text>שעה: {item.group_times.time}</Text>
-                            <Button mode='contained' onPress={() => this.onRegisterPress(item.group_id)}> הרשמה </Button>
+                            <Button mode='contained' onPress={() => this.onRegisterPress(item.group_id)} style={styles.registerBtn}> הרשמה </Button>
                             <Text></Text>
                         </Card>
                         }
@@ -107,11 +109,13 @@ export default class SearchResults extends Component{
 }
 
 const styles = StyleSheet.create({
+    singleCard: {borderRadius: 3,borderColor: '#9ED3F7', borderWidth: 1, backgroundColor: '#EEF8FF', margin: 8, marginBottom: 0, padding: 10},
     title: {
         fontSize: 20,
         fontWeight: 'bold'
     },
-    view:{
-        paddingBottom: '5%'
+    registerBtn: {
+        marginTop: 10
     }
+   
   })

@@ -28,9 +28,11 @@ export default class GenericList extends Component{
                                                 row[keyName] = row[keyName].join(', ')
                                             }
                                             return (
-                                                <Text key={`${rowIndex} - ${cellRowIndex}`}>
-                                                    {tableHead[cellRowIndex]} : {row[keyName]}
-                                                </Text>
+                                                <>
+                                                    <Text key={`${rowIndex} - ${cellRowIndex}`}>
+                                                        {tableHead[cellRowIndex]} :  {row[keyName]}
+                                                    </Text>
+                                                </>
                                             )
                                         })
                                     }
@@ -49,7 +51,7 @@ export default class GenericList extends Component{
 }
 
 const styles = StyleSheet.create({
-    container: {borderRadius:1, borderColor:'black', backgroundColor: '#fff' },
+    container: {borderRadius: 3,borderColor: '#9ED3F7', borderWidth: 1, backgroundColor: '#EEF8FF', margin: 8, marginBottom: 0},
   });
 
 
