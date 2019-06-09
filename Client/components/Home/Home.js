@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { StyleSheet, View, AsyncStorage } from "react-native";
 import { Button, ActivityIndicator, IconButton } from "react-native-paper";
 import { Manager } from '../../consts';
+import PushNotificationService from '../../helpers/PushNotificationService';
 
 export default class Home extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -31,6 +32,11 @@ export default class Home extends React.Component {
         const loginData = await AsyncStorage.getItem('loginData')
         const isManager = JSON.parse(loginData).user_type === Manager
         this.setState({ showSpin: false, ManagerMode: isManager })
+         const token = await PushNotificationService.registerForPushNotificationsAsync()
+        // if (token) {
+        //     loginData.token = token
+        //     await AsyncStorage.setItem("loginData", JSON.stringify(loginData))
+        // }
     }
 
     navigateToFeed = () => this.props.navigation.navigate('Feed')

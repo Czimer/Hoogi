@@ -5,7 +5,8 @@ import { flatten, uniqBy } from "lodash";
 import request from 'graphql-request';
 import appConfig from '../../appConfig';
 import { Manager } from '../../consts';
-import Axios from 'axios';
+import PushNotificationService from '../../helpers/PushNotificationService';
+import { pushNotificationTypes } from "../../enums";
 
 export default class FeedContainer extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -153,6 +154,8 @@ export default class FeedContainer extends React.Component {
             const res = await request(appConfig.ServerGraphqlUrl, addNewMessage, params)
             newMessage = res.createGroupsMessage.groupsMessage
             messageUploaded = true
+            this.sendPushNotifications()
+
             await this.uploadPhotosAsync(Photos, newMessage.id)
         } catch (err) {
             console.log(err)
@@ -167,6 +170,12 @@ export default class FeedContainer extends React.Component {
                 feedMessages: [newMessage, ...prevState.feedMessages]
             }))
         }
+    }
+
+    sendPushNotifications = () => {
+        const { currGroupId, groups } = this.state
+        const group = groups.find(group => group.id === currGroupId)
+        PushNotificationService.sendPushNotification(pushNotificationTypes.NEW_MESSAGE_TO_FEED, group)
     }
 
     render() {

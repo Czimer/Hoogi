@@ -49,7 +49,7 @@ class userBL {
         throw Error('יוזר לא קיים')
     }
 
-    static async getManagerIdBySequenceId(id){
+    static async getManagerIdBySequenceId(id) {
         const query = `select manager_id as id from public.managers where id = $1`;
 
         const params = [id]
@@ -62,7 +62,7 @@ class userBL {
         }
     }
 
-    static async getParentIdBySequenceId(id){
+    static async getParentIdBySequenceId(id) {
         const query = `select parent_id as id from public.parents where id = $1`;
 
         const params = [id]
@@ -114,6 +114,22 @@ class userBL {
         const params = [userId, personalId, first_name, last_name, gender, phone]
         try {
             await DataAccess.executeQuery(query, params);
+        }
+        catch (err) {
+            throw err
+        }
+    }
+
+    static async getParentIdsByGroupId(groupId, settingId) {
+        const query = `SELECT distinct(chl.parent_id)
+        FROM public.participants prt,public.children chl,public.parent_settings pst
+        where prt.child_id=chl.child_id and chl.parent_id = pst.parent_id and
+            prt.group_id = $1 and pst.setting_id = $2 and pst.is_active=true;`
+
+        const params = [groupId, settingId]
+        try {
+            const results = await DataAccess.executeQuery(query, params);
+            return results[0]
         }
         catch (err) {
             throw err
