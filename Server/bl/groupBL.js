@@ -78,15 +78,7 @@ class groupBL {
         const time = params.selectedHours + `:` + params.selectedMinutes
         const maxParticipants = params.maxParticipants;
         const groupName = params.groupName;
-        let equipment = `{`;       
-
-        if(params.equipment !== null){
-            params.equipment.split(',').forEach(function(currEq){
-                equipment += `"${currEq}", `
-            })
-            equipment = equipment.substr(0, equipment.length - 2);
-        }       
-        equipment += `}`
+        let equipment = this.equipmentHandling(params.equipment);
 
         if(hoogId != undefined && minAge != undefined && maxAge != undefined &&
              gender != undefined && day != undefined && time != undefined && maxParticipants != undefined && groupName != undefined && equipment != undefined){
@@ -108,6 +100,27 @@ class groupBL {
         
     }
 
+    static equipmentHandling(p_equipment){
+        let equipment = `{`;   
+        if(p_equipment !== null){
+            if(p_equipment.indexOf(',') >-1){
+                p_equipment.split(',').forEach(function(currEq){
+                    equipment += `"${currEq}", `
+                })
+            }
+            else if(p_equipment.indexOf(' ') >-1){
+                p_equipment.split(' ').forEach(function(currEq){
+                    equipment += `"${currEq}", `
+                })
+            }else{
+                equipment += `"${p_equipment}", `
+            }
+            equipment = equipment.substr(0, equipment.length - 2);
+            equipment += `}`
+            return equipment;
+        }    
+    }
+
     static async editGroupById(req, res, next){
 
         const params = req.body.groupData;
@@ -119,16 +132,7 @@ class groupBL {
         const time = params.selectedHours + `:` + params.selectedMinutes
         const maxParticipants = params.maxParticipants;
         const groupName = params.groupName;
-        let equipment = `{`;       
-
-        if(params.equipment !== null){
-            params.equipment.split(',').forEach(function(currEq){
-                equipment += `"${currEq}", `
-            })
-            equipment = equipment.substr(0, equipment.length - 2);
-        }
-        
-        equipment += `}`
+        let equipment = this.equipmentHandling(params.equipment);
 
         if(minAge && maxAge && gender && day && time && maxParticipants){
             const query = `UPDATE GROUPS SET MIN_AGE = ` + minAge + `, MAX_AGE = ` + maxAge + 
