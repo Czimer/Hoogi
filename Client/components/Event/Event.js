@@ -5,7 +5,7 @@ import DatePicker from '../../genericComponents/Pickers/DatePicker';
 import TimePicker from '../../genericComponents/Pickers/TimePicker';
 import ReactChipsInput from 'react-native-chips';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-
+import appConfig from "../../appConfig";
 
 export default class Event extends React.Component {
     constructor(props) {
@@ -56,8 +56,7 @@ export default class Event extends React.Component {
                         getDefaultValue={() => ''}
                         
                         query={{
-                            
-                            key: 'AIzaSyDe2cx9NLqtDipMKZ1J2EeioMAn2W9L_20', // TODO: save the key somewhere safer
+                            key: appConfig.locationApiKey,
                             language: 'iw',
                         }}
                         
