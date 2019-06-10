@@ -70,7 +70,7 @@ export default class CalendarView extends React.Component {
                     let eventInstance = modifyEvents.map(modEvent => {
                         return {
                             key: modEvent.group_name,
-                            color: "red",
+                            color: "rgb(167, 176, 188)",
                             dates: [modEvent.date]
                         };
                     });
@@ -159,14 +159,9 @@ export default class CalendarView extends React.Component {
 }
 
 // Hebrew Days & Monthes
-LocaleConfig.locales['isr'] = {
-    monthNames: ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'],
-    monthNamesShort: ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'],
-    dayNames: ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'],
-    dayNamesShort: [`א'`,`ב'`,`ג'`,`ד'`,`ה'`,`ו'`,`ש'`]
-  };
+LocaleConfig.locales['isr'] = appConfig.hebCalendar;
   
-  LocaleConfig.defaultLocale = 'isr';
+LocaleConfig.defaultLocale = 'isr';
 
   const styles = {
       calendar: {

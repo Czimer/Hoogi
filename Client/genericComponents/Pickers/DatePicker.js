@@ -22,6 +22,9 @@ export default class DatePicker extends Component {
     render() {
         const { title, date, isLimited } = this.props
 
+        console.log(date);
+
+
         const dateTimePickerProps = {
             date: new Date(date),
             isVisible: this.state.isDateTimePickerVisible,

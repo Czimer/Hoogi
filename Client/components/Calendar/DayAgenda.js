@@ -36,7 +36,7 @@ class DayAgenda extends React.Component {
                 <ScrollView>
                     {dayAgenda.map((hoog, i) =>
                             <TouchableOpacity key={i} onPress={() => this.onMoveToEventDetails(hoog)}>
-                                <Surface style={[styles.surface, { borderRightColor: 'red' }]} >
+                                <Surface style={[styles.surface, { borderRightColor: 'rgb(167, 176, 188)' }]} >
                                     <View style={styles.line}>
                                         <Text style={styles.groupName}>{hoog.group_name}</Text>
                                     </View>

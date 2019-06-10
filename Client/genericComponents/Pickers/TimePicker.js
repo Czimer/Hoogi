@@ -5,7 +5,7 @@ import { IconButton, TextInput } from 'react-native-paper';
 
 const DateBeforeThreeYears = new Date(new Date().setFullYear(new Date().getFullYear() - 3))
 
-export default class DatePicker extends Component {
+export default class TimePicker extends Component {
     state = {
         isDateTimePickerVisible: false,
     };
@@ -20,9 +20,9 @@ export default class DatePicker extends Component {
     };
 
     render() {
-        const { title, time, isLimited } = this.props
+        const { title, time, isLimited } = this.props;
 
-        const brokenHour = time.split(':')
+        const brokenHour = time.split(':');
         const pickerTime = new Date().setHours(brokenHour[0], brokenHour[1])
 
         return (
@@ -30,7 +30,7 @@ export default class DatePicker extends Component {
                 <View style={styles.container}>
                     <IconButton style={styles.Icon} icon="add-box" onPress={this._showDateTimePicker}>
                     </IconButton>
-                    <TextInput style={styles.input} label={title} value={date} disabled />
+                    <TextInput style={styles.input} label={title} value={pickerTime} disabled />
                 </View>
                 <DateTimePicker
                     date={pickerTime}

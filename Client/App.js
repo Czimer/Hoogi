@@ -6,7 +6,14 @@ const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#284bc7',
+    primary: '#3498db',
+    accent: '#f1c40f',
+  },
+  fonts: {
+    regular: 'Roboto',
+    medium: 'Roboto',
+    light: 'Roboto Light',
+    thin: 'Roboto Thin',
   }
 };
 

@@ -8,7 +8,8 @@ router.post('/create', async function(req, res, next) {
 });
 
 router.post('/update', async function(req, res, next) {
-    const event = await eventBL.UpdateEvent();
+    console.log(req.body.event);
+    const event = await eventBL.UpdateEvent(req.body.event);
     res.send(event)
 });
 

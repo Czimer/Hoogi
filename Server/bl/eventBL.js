@@ -1,9 +1,18 @@
 const DataAccess = require('../dal/DataAccess');
 
 class eventBL {
-    static async UpdateEvent() {
-        const query = ``;
+    static async UpdateEvent(event) {
+        const start_time = new Date(`${event.date} ${event.start_time}`);
+        const end_time = new Date(`${event.date} ${event.end_time}`);
+        console.log(start_time.toISOString().replace('T', ' ').slice(0, 16));
+
+        const query = `UPDATE events 
+                       SET start_time = '${start_time.toISOString().replace('T', ' ').slice(0, 16)}', end_time = '${end_time.toISOString().replace('T', ' ').slice(0, 16)}', location = '${event.location}', 
+                           equipment = '{${event.equipment}}', description = '${event.description}' 
+                       WHERE id = ${event.id}`;
         
+        console.log(query);
+
         try {
             const results = await DataAccess.executeQuery(query);
             return results

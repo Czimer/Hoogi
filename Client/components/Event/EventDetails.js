@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, Chip, FAB, Button } from 'react-native-paper';
 import { View, StyleSheet,AsyncStorage } from "react-native";
 import { Manager } from '../../consts';
+import appConfig from '../../appConfig';
 
 export default class EventDetails extends React.Component {
     constructor(props) {
@@ -13,19 +14,23 @@ export default class EventDetails extends React.Component {
         }        
     }
 
-    async componentDidMount(){
+    async componentDidMount() {
     }
 
-    onEdit = (hoog) => {this.props.navigation.navigate('Event', hoog)};
+    onEdit = (hoog) => {
+        this.props.navigation.navigate('Event', hoog);
+    };
     onCloseEditMode = () => this.setState({ isEditMode: false })
 
     render() {
         const { hoog, isManager } = this.state
+        const hoogDate = new Date(hoog.date);
+
         return (
             <View style={styles.container}>
                 <View >
                     <Text>{hoog.group_name}</Text>
-                    <Button style={styles.line} icon='event' color='rgb(110, 110, 110)'>{hoog.date}</Button>
+                    <Button style={styles.line} icon='event' color='rgb(110, 110, 110)'>{`יום ${appConfig.hebCalendar.dayNamesShort[hoogDate.getDay()]}, ${hoogDate.getDate()} ב${appConfig.hebCalendar.monthNames[hoogDate.getMonth()]}`}</Button>
                     <Button style={styles.line} icon='access-time' color='rgb(110, 110, 110)'>{hoog.start_time} - {hoog.end_time}</Button>
                     <Button style={styles.line} icon='location-on' color='rgb(110, 110, 110)'>{hoog.location}</Button>
                 </View>
@@ -37,10 +42,9 @@ export default class EventDetails extends React.Component {
                         }) : `ללא ציוד מיוחד`}
                     </View>
                 </View>
-                <Button style={styles.line} icon='description' color='rgb(110, 110, 110)'>
-                    <Text>{hoog.notes ? hoog.notes : 'אין תיעוד'}</Text>
-                </Button>
-                { isManager ? <Button icon="edit" onPress={this.onEdit(hoog)}></Button> : null}
+                <Button style={styles.line} icon='description' color='rgb(110, 110, 110)'></Button>
+                <Text>{hoog.description ? hoog.description : 'אין תיעוד'}</Text>
+                { isManager ? <Button icon="edit" onPress={() => this.onEdit(hoog)}></Button> : null}
             </View>
         );
     }
