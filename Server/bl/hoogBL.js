@@ -47,14 +47,15 @@ class hoogBL {
 		left join public.managers mng on mng.manager_id = hoogs.manager_id`;
 
         var whereConditions = ` where `;
-            whereConditions += params.gender ? `gender like ` + params.gender + ' or ' : ``;
+            whereConditions += params.gender ? `grp.gender like '` + params.gender + `' or ` : ``;
             whereConditions += params.minAge ? `min_age >= ` + params.minAge  + ' or ' : ``;
             whereConditions += params.maxAge ? `max_age <= ` + params.maxAge  + ' or ' : ``;
             whereConditions += params.location ? `(select * from distance(hoogs.latitude, ` 
                                 + params.location.split(',')[0] + `, hoogs.longitude, ` + params.location.split(',')[1] + `)) < 8 ` // TODO: make the distance a global const
                                 + ' or ' : ``;
             if(params.tags){
-                _.forEach(params.tags.split(' '), function(currTag){
+                const tagsArray = params.tags.split(' ');
+                tagsArray.forEach(function(currTag){
                     whereConditions += `array_to_string(tags, ' ') like  '%` + currTag + `%' or `
                 });
             }                                            
