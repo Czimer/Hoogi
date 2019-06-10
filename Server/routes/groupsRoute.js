@@ -12,14 +12,29 @@ router.get('/', async function(req, res, next) {
 /* GET groups with id of manager */
 
 router.post('/getByManager', async function(req, res, next){
-    const filteredGroupsByManager = await groupBL.GetAllGroupsOfSpecificManager(req, res, next);
-    res.send(filteredGroupsByManager)
+    try{
+        const filteredGroupsByManager = await groupBL.GetAllGroupsOfSpecificManager(req, res, next);
+        res.send(filteredGroupsByManager)
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 });
 
 router.post('/getByManager/:params', async function(req, res, next){
-    const filteredGroupsByManager = await groupBL.GetAllGroupsOfSpecificManager(req, res, next);
-    res.send(filteredGroupsByManager)
+    try{
+        const filteredGroupsByManager = await groupBL.GetAllGroupsOfSpecificManager(req, res, next);
+        res.send(filteredGroupsByManager)
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 });
+
+router.post('/getAllGroupsOfHoogKind/:params', async function(req, res, next){
+    const allOtherGroups = await groupBL.GetAllGroupOfHoogKind(req, res, next);
+    res.send(allOtherGroups);
+})
 
 router.post('/addNewGroup/:params', async function(req, res, next){
     const newGroup = await groupBL.addNewGroup(req, res, next);
@@ -27,8 +42,13 @@ router.post('/addNewGroup/:params', async function(req, res, next){
 });
 
 router.post('/registerNewParticipantToGroup/:params', async function(req, res, next){
-    const registerNewParticipant = await groupBL.RegisterNewParticipantTpGroup(req, res, next);
-    res.send(registerNewParticipant);
+    try{
+        const registerNewParticipant = await groupBL.RegisterNewParticipantTpGroup(req, res, next);
+        res.send(registerNewParticipant);
+    }
+    catch(err){
+        res.status(500).end()   
+    }    
 });
 
 router.delete('/', async function(req, res, next){
@@ -36,18 +56,33 @@ router.delete('/', async function(req, res, next){
 });
 
 router.post('/editNewGroup/:params', async function(req, res, next){
-    const editedGroup = await groupBL.editGroupById(req, res, next);
-    res.send(editedGroup);
+    try{
+        const editedGroup = await groupBL.editGroupById(req, res, next);
+        res.send(editedGroup);
+    }
+    catch(err){
+        res.status(500).end()   
+    }    
 });
 
 router.post('/deleteGroupById/:params', async function(req, res, next){
-    const deletedGroup = await groupBL.deleteGroupById(req, res, next);
-    res.send(deletedGroup);
+    try{
+        const deletedGroup = await groupBL.deleteGroupById(req, res, next);
+        res.send(deletedGroup);
+    }
+    catch(err){
+        res.status(500).end()   
+    }   
 });
 
 router.post('/removeChildFromGroupById/:params', async function(req, res, next){
-    const removedChild = await groupBL.removeChildFromGroupById(req, res, next);
-    res.send(removedChild);
+    try{
+        const removedChild = await groupBL.removeChildFromGroupById(req, res, next);
+        res.send(removedChild);
+    }
+    catch(err){
+        res.status(500).end()   
+    }
 })
 
 router.post('/upload', upload.single('photo'), async (req, res, next) => {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, ScrollView, TouchableHighlight } from 'react-native';
-import { DataTable, FAB, Portal } from 'react-native-paper';
+import { Card, HelperText } from 'react-native-paper';
 
 
 export default class GenericList extends Component{
@@ -15,38 +15,35 @@ export default class GenericList extends Component{
         const {tableHead, tableData, handleLongPress, children} = this.props;       
         return(
             <>
-                <DataTable>
-                    <DataTable.Header style={styles.header}>
-                    {
-                        tableHead.map(cell => {
-                            return <DataTable.Title key={cell}>{cell}</DataTable.Title>
-                        })                        
-                    }
-                    </DataTable.Header>
-                    
-                    {
-                        (tableData !== undefined) && tableData.map((row, rowIndex) =>{
-                            return (
-                                <TouchableHighlight  key={rowIndex} onLongPress={(eventic) => handleLongPress(eventic, row)}>
-                                     <DataTable.Row key={row.id}>
+                <ScrollView>
+                {(tableData !== undefined) && tableData.map((row, rowIndex) =>{
+                    return(
+                        <Card style={styles.container}>
+                            <Card.Content>
+                                <TouchableHighlight key={rowIndex} onLongPress={(event) => handleLongPress(event, row)}>
+                                    <View>
                                     { 
                                         Object.keys(row).map((keyName, cellRowIndex) =>{
-                                            return (<DataTable.Cell key={cellRowIndex}>{row[keyName]}</DataTable.Cell>)
+                                            if(row[keyName] instanceof Array){
+                                                row[keyName] = row[keyName].join(', ')
+                                            }
+                                            return (
+                                                <>
+                                                    <Text key={`${rowIndex} - ${cellRowIndex}`}>
+                                                        {tableHead[cellRowIndex]} :  {row[keyName]}
+                                                    </Text>
+                                                </>
+                                            )
                                         })
                                     }
-                                    </DataTable.Row>
-                                </TouchableHighlight>)
-                        })
-                    }   
+                                    </View>
+                                </TouchableHighlight>
+                            </Card.Content>
+                        </Card>
+                    );
+                })}
+                </ScrollView>
 
-                    {/* <DataTable.Pagination
-                        page={1}
-                        numberOfPages={3}
-                        onPageChange={(page) => { console.log(page); }}
-                        label="1-2 of 6"
-                    />           */}
-                
-                </DataTable> 
                 {children}     
         </>
         );
@@ -54,10 +51,7 @@ export default class GenericList extends Component{
 }
 
 const styles = StyleSheet.create({
-    container: {marginTop:30, flex: 1, padding: 30, backgroundColor: '#fff' },
-    head: {marginTop:30,  height: 40, backgroundColor: '#fff' },
-    text: { width:30, margin: 7 },
-    header:{}
+    container: {borderRadius: 3,borderColor: '#9ED3F7', borderWidth: 1, backgroundColor: '#EEF8FF', margin: 8, marginBottom: 0},
   });
 
 

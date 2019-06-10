@@ -10,10 +10,14 @@ import TimePicker from 'react-native-simple-time-picker';
 import { ScrollView } from 'react-native-gesture-handler';
 
 export default class GroupsList extends Component{
+    static navigationOptions = {
+        title: 'הקבוצות שלי'
+    }
     constructor(props){
         super(props);
         this.state = {
-            tableHead:['ציוד נלווה','מקסימום משתתפים', 'שעה', 'יום', 'מין', 'גיל מקסימלי', 'גיל מינימלי','קבוצה','מזהה'],         
+            // tableHead:['ציוד נלווה','מקסימום משתתפים', 'שעה', 'יום', 'מין', 'גיל מקסימלי', 'גיל מינימלי','קבוצה','מזהה'],         
+            tableHead:['מזהה','קבוצה', 'גיל מינימלי', 'גיל מקסימלי', 'מין', 'יום', 'שעה','מקסימום משתתפים','ציוד נלווה'],         
             actionsModalVisible: false, 
             groupId:0,
             addNewGroupModalVisible:false,
@@ -34,13 +38,13 @@ export default class GroupsList extends Component{
             edit:false
         };       
         
-         axios.get('http://192.168.1.10:3000/api/hoogs/getAllHoogsNames').then(response =>{
-            this.setState({allHoogsArray:response.data});
-        }).catch(error => console.log(error));
+        //  axios.get(`${appConfig.ServerApiUrl}/hoogs/getAllHoogsNames`).then(response =>{
+        //     this.setState({allHoogsArray:response.data});
+        // }).catch(error => console.log(error));
     };
 
     getAllGroupsOfManager = () =>{
-        axios.post(appConfig.ServerApiUrl + '/groups/:params', {managerId:this.state.managerId}).then(response =>{
+        axios.post(appConfig.ServerApiUrl + '/groups/getByManager/:params', {managerId:this.state.managerId}).then(response =>{
             console.log(response.data);
             this.setState({tableData:response.data})
         }).catch(error => {console.log(error)});
@@ -123,7 +127,7 @@ export default class GroupsList extends Component{
                 selectedHours: parseInt(currGroupData.shaa.split(':')[0]),
                 selectedMinutes: parseInt(currGroupData.shaa.split(':')[1]),
                 maxParticipants: currGroupData.max_participants,
-                groupName: currGroupData.groupName,
+                groupName: currGroupData.name,
                 equipment: currGroupData.equipment       
         }}))
     }
@@ -313,7 +317,7 @@ const styles = StyleSheet.create({
     fab: {
       position: 'absolute',
       margin: 40,
-      right: 0,
+      right: 240,
       bottom: 0,
     },
     propertyText:{

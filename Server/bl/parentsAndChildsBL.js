@@ -114,13 +114,13 @@ class parentAndChildBL {
     static async GetParentsAndChildrenOfGroup(req, res, next){
         const groupId = req.body.groupId;
         const query = `SELECT 
-        CHILD.CHILD_ID,
-        DATE_PART('YEAR',AGE(CHILD.BIRTH_DATE)) AGE,
-        CASE WHEN CHILD.GENDER LIKE 'female' THEN 'נקבה' ELSE 'זכר' END AS CHILD_GENDER,
-        CHILD.PHONE CHILD_PHONE, 
-        PARENT.PHONE PARENT_PHONE, 
+        PARENT.FIRST_NAME || ' ' || PARENT.LAST_NAME AS PARENT_FULL_NAME,
         CHILD.FIRST_NAME || ' ' || CHILD.LAST_NAME AS CHILD_FULL_NAME,
-        PARENT.FIRST_NAME || ' ' || PARENT.LAST_NAME AS PARENT_FULL_NAME
+        PARENT.PHONE PARENT_PHONE, 
+        CHILD.PHONE CHILD_PHONE, 
+        CASE WHEN CHILD.GENDER LIKE 'female' THEN 'נקבה' ELSE 'זכר' END AS CHILD_GENDER,
+        DATE_PART('YEAR',AGE(CHILD.BIRTH_DATE)) AGE,
+        CHILD.CHILD_ID
         FROM children CHILD
 		INNER JOIN parents PARENT ON (CHILD.PARENT_ID = PARENT.PARENT_ID)
         INNER JOIN participants PARTS ON (PARTS.CHILD_ID = CHILD.CHILD_ID)

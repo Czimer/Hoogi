@@ -10,6 +10,9 @@ import appConfig from '../../appConfig'
 import CheckBox from 'react-native-check-box'
 
 export default class HoogSearch extends Component{
+    static navigationOptions = {
+        title: 'חיפוש חוגים'
+    }
     constructor(props){
         super(props);
         this.state = {            
@@ -46,84 +49,99 @@ export default class HoogSearch extends Component{
         return(
             <ScrollView>
             <Card>  
-                <Card.Title title="חיפוש חוגים"/>
                 <Card.Content>
-                    <CheckBox id="Tags" leftText={"תגית"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({tagSearchChkB : !prevState.tagSearchChkB}))} isChecked={this.state.tagSearchChkB}/>
-                    <TextInput id="tagSearch" label="רשום תגיות חיפוש עם פסיקים ביניהן" onChangeText={(text) => this.setState({tagSearch:text})}/>
-                    <CheckBox id="location" leftText={"מיקום"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({locationChkB : !prevState.locationChkB}))} isChecked={this.state.locationChkB}/>
-                      {/*  beginning of google search */}
-                    <GooglePlacesAutocomplete
-                        placeholder='Search'
-                        minLength={3} // minimum length of text to search
-                        autoFocus={false}
-                        returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-                        listViewDisplayed='auto'    // true/false/undefined
-                        fetchDetails={true}
-                        renderDescription={row => row.description} // custom description render
-                        onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true                            ;
-                            const lat = details.geometry.location.lat;
-                            const lng = details.geometry.location.lng;
-                            this.setState({location: lat + "," + lng});                               
-                        }}
-                        
-                        getDefaultValue={() => ''}
-                        
-                        query={{
-                            // available options: https://developers.google.com/places/web-service/autocomplete
-                            key: appConfig.locationApiKey, 
-                            language: 'iw', // language of the results                           
-                        }}
-                        
-                        styles={{
-                            textInputContainer: {
-                            width: '100%'
-                            },
-                            description: {
-                            fontWeight: 'bold'
-                            },
-                            predefinedPlacesDescription: {
-                            color: '#1faadb'
-                            }
-                        }}
-                        
-                        currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
-                        currentLocationLabel="מיקום נוכחי"
-                        nearbyPlacesAPI='GooglePlacesSearch' // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-                        GoogleReverseGeocodingQuery={{
-                            // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-                        }}
-                    
-                        GooglePlacesSearchQuery={{
-                            // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                            rankby: 'distance',
-                            types: 'food'
-                        }}
-                    
-                        filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-                        // predefinedPlaces={[homePlace, workPlace]}
-                    
-                        debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-                        // renderLeftButton={()  => <Image source={require('path/custom/left-icon')} />}
-                        // renderRightButton={() => <Text>Custom text after the input</Text>}
-                    />
+                    <>
+                        <View style={styles.searchInput}>
+                            <CheckBox id="Tags" leftText={"תגית"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({tagSearchChkB : !prevState.tagSearchChkB}))} isChecked={this.state.tagSearchChkB}/>
+                            <TextInput id="tagSearch" label="רשום תגיות חיפוש" onChangeText={(text) => this.setState({tagSearch:text})}/>
+                        </View>
+                        <View style={styles.searchInput}>
 
-                    {/* end of google search */}
+                            <CheckBox id="location" leftText={"מיקום"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({locationChkB : !prevState.locationChkB}))} isChecked={this.state.locationChkB}/>
+                            {/*  beginning of google search */}
+                            <GooglePlacesAutocomplete
+                                placeholder='חפש מיקום'
+                                minLength={3} // minimum length of text to search
+                                autoFocus={false}
+                                returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+                                listViewDisplayed='auto'    // true/false/undefined
+                                fetchDetails={true}
+                                renderDescription={row => row.description} // custom description render
+                                onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true                            ;
+                                    const lat = details.geometry.location.lat;
+                                    const lng = details.geometry.location.lng;
+                                    this.setState({location: lat + "," + lng});                               
+                                }}
+                                
+                                getDefaultValue={() => ''}
+                                
+                                query={{
+                                    // available options: https://developers.google.com/places/web-service/autocomplete
+                                    key: appConfig.locationApiKey, 
+                                    language: 'iw', // language of the results                           
+                                }}
+                                
+                                styles={{
+                                    textInputContainer: {
+                                    width: '100%',
+                                    },
+                                    description: {
+                                    fontWeight: 'bold',
+                                    paddingRight: 60,
+                                    overflow: 'hidden'
+                                    },
+                                    predefinedPlacesDescription: {
+                                    color: '#1faadb',
+                                    paddingRight: 60,
+                                    overflow: 'hidden'
+                                    }
+                                }}
+                                
+                                currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
+                                currentLocationLabel="מיקום נוכחי"
+                                nearbyPlacesAPI='GooglePlacesSearch' // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+                                GoogleReverseGeocodingQuery={{
+                                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+                                }}
+                            
+                                GooglePlacesSearchQuery={{
+                                    // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                                    rankby: 'distance',
+                                    types: 'food'
+                                }}
+                            
+                                filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+                                // predefinedPlaces={[homePlace, workPlace]}
+                            
+                                debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+                                // renderLeftButton={()  => <Image source={require('path/custom/left-icon')} />}
+                                // renderRightButton={() => <Text>Custom text after the input</Text>}
+                                
+                            />
 
+                            {/* end of google search */}
+                        </View>
+                        <View style={styles.searchInput}>
+                            <CheckBox id="Gender" leftText={"מין"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({genderChkB : !prevState.genderChkB}))} isChecked={this.state.genderChkB}/>
+                            <Picker
+                                selectedValue={this.state.gender}
+                                style={{height: 50, width: 100}}
+                                onValueChange={(itemValue, itemIndex) =>
+                                    this.setState({gender: itemValue})}>
+                                <Picker.Item label="זכר" value="Male" />
+                                <Picker.Item label="נקבה" value="Female" />
+                            </Picker>
+                        </View>
+                        <View style={styles.searchInput}>
 
-                    <CheckBox id="Gender" leftText={"מין"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({genderChkB : !prevState.genderChkB}))} isChecked={this.state.genderChkB}/>
-                    <Picker
-                        selectedValue={this.state.gender}
-                        style={{height: 50, width: 100}}
-                        onValueChange={(itemValue, itemIndex) =>
-                            this.setState({gender: itemValue})}>
-                        <Picker.Item label="זכר" value="Male" />
-                        <Picker.Item label="נקבה" value="Female" />
-                    </Picker>
-                    <CheckBox id="Ages" leftText={"טווח גילאים"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({ageRangeChkB : !prevState.ageRangeChkB}))} isChecked={this.state.ageRangeChkB}/>
-                    <NumericInput initValue={this.state.maxAge} maxValue={99}
-                        onChange={value => this.setState({maxAge:value})} />
-                    <NumericInput initValue={this.state.minAge} minValue={1}
-                        onChange={value => {this.setState({minAge:value});}} />  
+                            <CheckBox id="Ages" leftText={"טווח גילאים"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({ageRangeChkB : !prevState.ageRangeChkB}))} isChecked={this.state.ageRangeChkB}/>
+                            <NumericInput initValue={this.state.maxAge} maxValue={99}
+                                onChange={value => this.setState({maxAge:value})} />
+                            <NumericInput initValue={this.state.minAge} minValue={1}
+                                onChange={value => {this.setState({minAge:value});}} 
+                                />  
+                        </View>
+                    </Card.Title>
                 </Card.Content>
                 <Card.Actions>
                     <Button mode='contained' onPress={this.onSearchButtonPress}>חפש</Button>
@@ -153,7 +171,10 @@ const styles = StyleSheet.create({
     lottie: {
         width: 100,
         height: 100
-      }
+      },
+    searchInput: {
+        borderRadius: 3,borderColor: '#9ED3F7', borderWidth: 1, backgroundColor: '#EEF8FF', margin: 8, marginBottom: 0, padding: 10,
+    },
   });
 
 
