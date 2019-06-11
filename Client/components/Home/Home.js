@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
 import { StyleSheet, View, AsyncStorage } from "react-native";
-import { Button, ActivityIndicator, IconButton } from "react-native-paper";
+import { ActivityIndicator, IconButton } from "react-native-paper";
 import { Manager } from '../../consts';
+import TouchIcon from "./TouchIcon";
 import PushNotificationService from '../../helpers/PushNotificationService';
 
 export default class Home extends React.Component {
@@ -39,6 +40,27 @@ export default class Home extends React.Component {
         // }
     }
 
+    getParentOptions=()=>{
+        const options=[]
+        options.push({text:'לוח שנה',image:require('../../assets/calendar.jpg'),navigateFunc:this.navigateToCalendar})
+        options.push({text:'לוח הודעות',image:require('../../assets/feed.png'),navigateFunc:this.navigateToFeed})
+        options.push({text:'חיפוש',image:require('../../assets/search.png'),navigateFunc:this.navigateToSearch})
+        options.push({text:'הילדים שלי',image:require('../../assets/childs.jpg'),navigateFunc:this.navigateToChildren})
+        options.push({text:'הגדרות',image:require('../../assets/settings.png'),navigateFunc:this.navigateToSettings})
+        
+        return options
+    }
+
+    getManagerOptions=()=>{
+        const options=[]
+        options.push({text:'לוח שנה',image:require('../../assets/calendar.jpg'),navigateFunc:this.navigateToCalendar})
+        options.push({text:'לוח הודעות',image:require('../../assets/feed.png'),navigateFunc:this.navigateToFeed})
+        options.push({text:'הקבוצות שלי',image:require('../../assets/group.jpg'),navigateFunc:this.navigateToGroupList})
+        options.push({text:'החוגים שלי',image:require('../../assets/trophy.png'),navigateFunc:this.navigateToHoogList})
+        
+        return options
+    }
+
     navigateToFeed = () => this.props.navigation.navigate('Feed')
     navigateToCalendar = () => this.props.navigation.navigate('Calendar')
     navigateToSearch = () => this.props.navigation.navigate('HoogSearch')
@@ -54,22 +76,22 @@ export default class Home extends React.Component {
 
             <View style={styles.container}>
                 {showSpin ? <ActivityIndicator animating={true} size="large" /> :
-                    ManagerMode ?
-                        <Fragment>
-                            <Button mode="contained" onPress={this.navigateToCalendar}>לוח שנה</Button>
-                            <Button mode="contained" onPress={this.navigateToFeed}>לוח הודעות</Button>
-                            <Button mode="contained" onPress={this.navigateToGroupList}>הקבוצות שלי</Button>
-                            <Button mode="contained" onPress={this.navigateToHoogList}>החוגים שלי</Button>
-                        </Fragment> :
-                        <Fragment>
-                            <Button mode="contained" onPress={this.navigateToCalendar}>לוח שנה</Button>
-                            <Button mode="contained" onPress={this.navigateToFeed}>לוח הודעות</Button>
-                            <Button mode="contained" onPress={this.navigateToSearch}>חיפוש</Button>
-                            <Button mode="contained" onPress={this.navigateToChildren}>הילדים שלי</Button>
-                            <Button mode="contained" onPress={this.navigateToSettings}>הגדרות</Button>
-                        </Fragment>
-                }
+                    <View style={styles.options}>
+                        {ManagerMode ?
+                            <Fragment>
+                                {this.getManagerOptions().map((option,index)=>{
+                                    return <TouchIcon key={index} text={option.text} image={option.image} onPress={option.navigateFunc} />
+                                })}
+                            </Fragment> :
+                            <Fragment>
+                                {this.getParentOptions().map((option,index)=>{
+                                    return <TouchIcon key={index} text={option.text} image={option.image} onPress={option.navigateFunc} />
+                                })}
+                            </Fragment>
+                        }
+                    </View>}
             </View>
+
 
         );
     }
@@ -79,5 +101,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+        padding: 10
+    },
+    options: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })
