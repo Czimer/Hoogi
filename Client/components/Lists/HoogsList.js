@@ -164,7 +164,7 @@ export default class HoogsList extends Component{
     render(){
         const {tableData, tableHead, actionsModalVisible, hoogId, addNewHoogModalVisible, newHoogData} = this.state;
         return(
-            <View>
+            <View style={{flex:1}}>
             {
 
             (tableData !== undefined) &&  
@@ -276,10 +276,10 @@ export default class HoogsList extends Component{
 }
 const styles = StyleSheet.create({
     fab: {
-      position: 'absolute',
-      margin: 50,
-      right: 250,
-      bottom: 0,
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
     },
     propertyText:{
         fontWeight: 'bold',

@@ -26,9 +26,9 @@ export default class Message extends React.PureComponent {
 
         return (
             <React.Fragment>
-                <Card.Title title={message.message}
+                <Card.Title title={message.message} titleStyle={{textAlign:'right',margin:10}} subtitleStyle={{textAlign:'right',margin:10}}
                     subtitle={`${dateTime.toLocaleDateString()}, ${dateTime.toLocaleTimeString()}`}
-                    right={() => message.numberOfPhotos ? <IconButton onPress={this.displayPhotos} icon="photo" /> : <View></View>} />
+                    left={() => message.numberOfPhotos ? <IconButton onPress={this.displayPhotos} icon="photo" /> : <View></View>} />
             </React.Fragment>
         );
     }
@@ -41,5 +41,7 @@ const styles = StyleSheet.create({
         minHeight: 50,
         backgroundColor: '#E0E0E0',
         margin: 10
+    },
+    message:{
     }
 });

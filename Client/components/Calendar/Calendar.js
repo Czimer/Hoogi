@@ -146,7 +146,7 @@ export default class CalendarView extends React.Component {
     render() {
         const { dots, dayAgenda, showSpin, isManager, selectedDate} = this.state;
         return (
-            showSpin ? <ActivityIndicator animating={true} size="large" /> : 
+            showSpin ? <View style={{flex:1,alignItems:'center',justifyContent:'center'}} ><ActivityIndicator animating={true} size="large" /></View>  : 
             <View>
                 <CalendarList style={styles.calendar}
                     theme={styles.theme}

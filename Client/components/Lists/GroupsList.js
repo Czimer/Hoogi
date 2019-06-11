@@ -196,7 +196,7 @@ export default class GroupsList extends Component{
     render(){
         const {tableData, tableHead, actionsModalVisible, groupId, addNewGroupModalVisible, newGroupData} = this.state;
         return(
-            <View>
+            <View style={{flex:1}}>
             {
 
             (tableData !== undefined) &&  
@@ -305,20 +305,19 @@ export default class GroupsList extends Component{
                         </Card>
                     </ScrollView>
                 </Modal> 
-                                
-                <FAB style={styles.fab} icon="add" onPress={this.openAddNewGroupWindow}/>
             </GenericList>            
             }
+            <FAB style={styles.fab} icon="add" onPress={this.openAddNewGroupWindow}/>
             </View>
         );
     }
 }
 const styles = StyleSheet.create({
     fab: {
-      position: 'absolute',
-      margin: 40,
-      right: 240,
-      bottom: 0,
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
     },
     propertyText:{
         fontWeight: 'bold',
