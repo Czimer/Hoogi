@@ -9,6 +9,10 @@ import appConfig from '../../appConfig';
 import { Manager } from '../../consts';
 
 export default class CalendarView extends React.Component {
+    static navigationOptions = ({ navigation }) => {
+        return {title: 'לוח שנה'}
+    }
+
     constructor(props) {
         super(props);
 
@@ -70,7 +74,7 @@ export default class CalendarView extends React.Component {
                     let eventInstance = modifyEvents.map(modEvent => {
                         return {
                             key: modEvent.group_name,
-                            color: "rgb(167, 176, 188)",
+                            color: "rgb(253,201,68)",
                             dates: [modEvent.date]
                         };
                     });
@@ -79,7 +83,7 @@ export default class CalendarView extends React.Component {
 
                     const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : eventInstance.filter(y => y.dates[0] == x)}}));
 
-                    const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: Object.assign(d.value, { selectedColor: 'blue' })})));
+                    const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: Object.assign(d.value)})));
 
                     console.log(markedDatesObject);
 
@@ -124,7 +128,7 @@ export default class CalendarView extends React.Component {
                 
                 const markedDatesArray = uniqueDates.map( x => ({ key: [x], value: { dots : children.filter( y => y.dates.includes(x))}}));
         
-                const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: Object.assign(d.value, { selectedColor: 'blue' })}))); 
+                const markedDatesObject = Object.assign(...markedDatesArray.map(d => ({[d.key[0]]: Object.assign(d.value)}))); 
 
                 console.log(JSON.stringify(markedDatesObject));
 
@@ -145,6 +149,7 @@ export default class CalendarView extends React.Component {
             showSpin ? <ActivityIndicator animating={true} size="large" /> : 
             <View>
                 <CalendarList style={styles.calendar}
+                    theme={styles.theme}
                     horizontal={true}
                     pagingEnabled={true}
                     hideArrows={true}
@@ -170,5 +175,19 @@ LocaleConfig.defaultLocale = 'isr';
       },
       dayAgenda: {
 
+      },
+      theme: {
+        selectedDayBackgroundColor: '#aaaaaa',
+        todayTextColor: '#83c7e2',
+        'stylesheet.day.multiDot' : {
+            base: {
+                width: 32,
+                height: 32,
+                alignItems: 'center',
+                borderRadius: 4,
+                borderWidth: 0.5,
+                borderColor: '#d6d7da',
+            }
+        }
       }
   }

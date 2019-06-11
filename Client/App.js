@@ -6,15 +6,14 @@ const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#3498db',
-    accent: '#f1c40f',
+    primary: '#3498db'
   },
-  fonts: {
-    regular: 'Roboto',
-    medium: 'Roboto',
-    light: 'Roboto Light',
-    thin: 'Roboto Thin',
-  }
+  // fonts: {
+  //   regular: 'Roboto',
+  //   medium: 'Roboto',
+  //   light: 'Roboto Light',
+  //   thin: 'Roboto Thin',
+  // }
 };
 
 // import { I18nManager } from "react-native";

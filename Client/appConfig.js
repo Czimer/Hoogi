@@ -3,14 +3,14 @@ const regex = {
     email: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 }
 
-const baseServerUrl = 'http://10.0.0.40:3000';
+const baseServerUrl = 'http://10.100.102.8:3000';
 
 const appConfig = {
     baseServerUrl:baseServerUrl,
     ServerGraphqlUrl: `${baseServerUrl}/graphql`,
     ServerApiUrl: `${baseServerUrl}/api`,
     regex,
-    locationApiKey:'AIzaSyDe2cx9NLqtDipMKZ1J2EeioMAn2W9L_20',
+    locationApiKey:'',
     hebCalendar: {
         monthNames: ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'],
         monthNamesShort: ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'],

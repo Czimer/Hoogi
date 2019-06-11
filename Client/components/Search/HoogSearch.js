@@ -50,7 +50,6 @@ export default class HoogSearch extends Component{
             <ScrollView>
             <Card>  
                 <Card.Content>
-                    <>
                         <View style={styles.searchInput}>
                             <CheckBox id="Tags" leftText={"תגית"} style={{flex: 1, padding: 10}} onClick={() => this.setState(prevState => ({tagSearchChkB : !prevState.tagSearchChkB}))} isChecked={this.state.tagSearchChkB}/>
                             <TextInput id="tagSearch" label="רשום תגיות חיפוש" onChangeText={(text) => this.setState({tagSearch:text})}/>
@@ -141,7 +140,6 @@ export default class HoogSearch extends Component{
                                 onChange={value => {this.setState({minAge:value});}} 
                                 />  
                         </View>
-                    </Card.Title>
                 </Card.Content>
                 <Card.Actions>
                     <Button mode='contained' onPress={this.onSearchButtonPress}>חפש</Button>
