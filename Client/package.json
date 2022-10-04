@@ -9,7 +9,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "cookie-parser": "^1.4.4",
-    "expo": "^32.0.0",
+    "expo": "^46.0.14",
     "expo-multiple-imagepicker": "^1.0.6",
     "graphql-request": "^1.8.2",
     "link": "^0.1.5",
